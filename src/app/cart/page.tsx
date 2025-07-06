@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { IndianRupee, Trash2, ShoppingCart, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { AiRecommender } from '@/components/ai-recommender';
 
 export default function CartPage() {
   const { cart, removeFromCart } = useCart();
@@ -65,7 +66,7 @@ export default function CartPage() {
         </Card>
       ) : (
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 space-y-8">
             <Card>
               <CardHeader>
                 <CardTitle>Cart Items ({cart.length})</CardTitle>
@@ -100,6 +101,21 @@ export default function CartPage() {
                   ))}
                 </ul>
               </CardContent>
+            </Card>
+
+             <Card>
+                <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className='text-center sm:text-left'>
+                        <h3 className="text-lg font-semibold font-headline">Want to learn more?</h3>
+                        <p className="text-sm text-muted-foreground">Explore more courses or get a personalized bundle from our AI.</p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <Button asChild variant="outline" className='w-full'>
+                            <Link href="/courses">Explore Courses</Link>
+                        </Button>
+                        <AiRecommender />
+                    </div>
+                </CardContent>
             </Card>
           </div>
 
