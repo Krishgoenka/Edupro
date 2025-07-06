@@ -1,0 +1,19 @@
+import { Icons } from '@/components/icons';
+
+export function Footer() {
+  return (
+    <footer className="border-t border-border/40 py-6 md:py-8">
+      <div className="container flex flex-col items-center justify-center gap-4 text-center md:flex-row md:justify-between">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Icons.logo className="h-5 w-5 text-primary" />
+          <p>
+            &copy; {new Date().getFullYear()} EduPro. All rights reserved.
+          </p>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          A project for advancing your career with AI.
+        </p>
+      </div>
+    </footer>
+  );
+}
