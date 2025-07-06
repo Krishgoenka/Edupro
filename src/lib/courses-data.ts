@@ -1,3 +1,4 @@
+
 export type Course = {
   id: string;
   title: string;
@@ -39,7 +40,7 @@ export const courses: Course[] = [
         description: 'Master HTML, CSS, JavaScript, React, and Node.js. Build real-world projects from scratch.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "code editor",
+        dataAiHint: "laptop code",
         domain: "Computer Science",
         category: "Web Development"
     },
@@ -49,7 +50,7 @@ export const courses: Course[] = [
         description: 'Dive into the world of AI. Learn about machine learning, data science, and neural networks.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "robot brain",
+        dataAiHint: "abstract AI",
         domain: "Computer Science",
         category: "AI & ML"
     },
@@ -59,7 +60,7 @@ export const courses: Course[] = [
         description: 'Protect systems from digital attacks. Learn ethical hacking, cryptography, and network security.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "digital lock",
+        dataAiHint: "cyber security",
         domain: "Computer Science",
         category: "Cyber Security"
     },
@@ -69,7 +70,7 @@ export const courses: Course[] = [
         description: 'Master Data Structures and Algorithms using C++ for competitive programming and interviews.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "algorithm flowchart",
+        dataAiHint: "data structure",
         domain: "Computer Science",
         category: "Data Structures & Algorithms"
     },
@@ -79,7 +80,7 @@ export const courses: Course[] = [
         description: 'Learn SQL for data analysis and database management. Covers everything from basic queries to advanced topics.',
         image: 'https://placehold.co/600x400.png',
         price: 399,
-        dataAiHint: "database schema",
+        dataAiHint: "database server",
         domain: "Computer Science",
         category: "Databases"
     },
@@ -89,7 +90,7 @@ export const courses: Course[] = [
         description: 'Understand the core concepts of operating systems, including processes, memory management, and file systems.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "system process",
+        dataAiHint: "computer chip",
         domain: "Computer Science",
         category: "Operating Systems"
     },
@@ -101,7 +102,7 @@ export const courses: Course[] = [
         description: 'Learn the fundamentals of accounting, including debits, credits, and financial statements.',
         image: 'https://placehold.co/600x400.png',
         price: 299,
-        dataAiHint: "financial ledger",
+        dataAiHint: "calculator paperwork",
         domain: "Commerce",
         category: "Accounting"
     },
@@ -111,7 +112,7 @@ export const courses: Course[] = [
         description: 'Understand the basics of Indian taxation, including income tax and GST for individuals and businesses.',
         image: 'https://placehold.co/600x400.png',
         price: 399,
-        dataAiHint: "tax forms",
+        dataAiHint: "tax calculation",
         domain: "Commerce",
         category: "Taxation"
     },
@@ -121,7 +122,7 @@ export const courses: Course[] = [
         description: 'Master financial modeling and data analysis in Excel. Essential skills for any commerce professional.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "spreadsheet chart",
+        dataAiHint: "finance spreadsheet",
         domain: "Commerce",
         category: "Finance Tools"
     },
@@ -131,7 +132,7 @@ export const courses: Course[] = [
         description: 'Get introduced to the legal aspects of business, including contracts, company law, and intellectual property.',
         image: 'https://placehold.co/600x400.png',
         price: 299,
-        dataAiHint: "legal gavel",
+        dataAiHint: "law books",
         domain: "Commerce",
         category: "Business Law"
     },
@@ -143,7 +144,7 @@ export const courses: Course[] = [
         description: 'Boost your confidence and communication skills. Learn to deliver powerful presentations.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "person stage",
+        dataAiHint: "public speaking",
         domain: "Arts & Humanities",
         category: "Public Speaking"
     },
@@ -153,7 +154,7 @@ export const courses: Course[] = [
         description: 'Improve your spoken English and build confidence for interviews and professional settings.',
         image: 'https://placehold.co/600x400.png',
         price: 99,
-        dataAiHint: "people talking",
+        dataAiHint: "conversation class",
         domain: "Soft Skills",
         category: "Confidence Building"
     },
@@ -173,7 +174,7 @@ export const courses: Course[] = [
         description: 'Craft a compelling resume that stands out to tech recruiters and lands you interviews.',
         image: 'https://placehold.co/600x400.png',
         price: 99,
-        dataAiHint: "resume document",
+        dataAiHint: "resume writing",
         domain: "Soft Skills",
         category: "Resume Writing"
     },
@@ -185,7 +186,7 @@ export const courses: Course[] = [
         description: 'A comprehensive course on the Indian Constitution and political system for UPSC aspirants.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "indian parliament",
+        dataAiHint: "indian constitution",
         domain: "UPSC",
         category: "Indian Polity"
     },
@@ -195,7 +196,7 @@ export const courses: Course[] = [
         description: 'Covers physical, Indian, and world geography as per the UPSC syllabus.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "world map",
+        dataAiHint: "topography map",
         domain: "UPSC",
         category: "Geography"
     },
@@ -207,7 +208,7 @@ export const courses: Course[] = [
         description: 'Master quantitative aptitude for the CAT exam with shortcuts, strategies, and extensive practice.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "math formulas",
+        dataAiHint: "mathematics graph",
         domain: "MBA Prep",
         category: "Quantitative Aptitude"
     },
@@ -219,7 +220,7 @@ export const courses: Course[] = [
         description: 'Learn data analysis, visualization, and machine learning with Python libraries like Pandas, NumPy, and Scikit-learn.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "data chart",
+        dataAiHint: "data science",
         domain: "Computer Science",
         category: "AI & ML"
     },
@@ -229,7 +230,7 @@ export const courses: Course[] = [
         description: 'Master SEO, SEM, social media marketing, and content strategy to grow businesses online.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "marketing graph",
+        dataAiHint: "digital marketing",
         domain: "Commerce",
         category: "Finance Tools"
     },
@@ -239,7 +240,7 @@ export const courses: Course[] = [
         description: 'Understand the principles of design, color theory, typography, and create stunning visuals using Adobe tools.',
         image: 'https://placehold.co/600x400.png',
         price: 549,
-        dataAiHint: "design sketch",
+        dataAiHint: "graphic design",
         domain: "Arts & Humanities",
         category: "Communication"
     },
@@ -249,7 +250,7 @@ export const courses: Course[] = [
         description: 'Prepare for the PMP certification exam. Learn about project lifecycles, risk management, and Agile methodologies.',
         image: 'https://placehold.co/600x400.png',
         price: 599,
-        dataAiHint: "task board",
+        dataAiHint: "project plan",
         domain: "Soft Skills",
         category: "Professional Communication"
     }
