@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Icons } from '@/components/icons';
 
 export function Footer() {
@@ -10,9 +11,10 @@ export function Footer() {
             &copy; {new Date().getFullYear()} EduPro. All rights reserved.
           </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          A project for advancing your career with AI.
-        </p>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <Link href="/#about" className="hover:text-primary">About</Link>
+            <a href="mailto:contact@edupro.com" className="hover:text-primary">Contact</a>
+        </div>
       </div>
     </footer>
   );

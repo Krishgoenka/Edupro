@@ -1,30 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import Link from "next/link";
 import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
@@ -32,26 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useToast } from "@/hooks/use-toast";
-import { getCourseBundleAction } from "./actions";
-import type { GenerateAICourseBundleOutput } from "@/ai/flows/generate-course-bundle";
-import { Loader2, BrainCircuit, UploadCloud, BarChartBig, CheckCircle, ChevronRight, User } from "lucide-react";
-
-const formSchema = z.object({
-  resumeText: z.string({ required_error: "Resume text is required." }).min(200, "Resume text must be at least 200 characters long to provide an accurate analysis."),
-  jobRole: z.string({ required_error: "Please select a job role." }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-const jobRoles = [
-  "Software Engineer",
-  "Data Scientist",
-  "Product Manager",
-  "UX/UI Designer",
-  "Marketing Manager",
-  "Financial Analyst",
-];
+import { Star, BrainCircuit, UploadCloud, BarChartBig, User } from "lucide-react";
 
 const features = [
   {
@@ -89,177 +49,74 @@ const testimonials = [
     }
 ];
 
+const featuredCourses = [
+  { id: 1, title: 'Advanced React for Senior Engineers', category: 'Web Development', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 1250, price: 4999, dataAiHint: "code abstract" },
+  { id: 2, title: 'Data Science with Python: Zero to Hero', category: 'Data Science', image: 'https://placehold.co/600x400.png', rating: 4.9, reviews: 3421, price: 7999, dataAiHint: "data visualization" },
+  { id: 3, title: 'Product Management Essentials', category: 'Business', image: 'https://placehold.co/600x400.png', rating: 4.7, reviews: 890, price: 6499, dataAiHint: "team meeting" },
+  { id: 4, title: 'UI/UX Design Masterclass', category: 'Design', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 2100, price: 5999, dataAiHint: "design process" },
+];
+
 export function HomePage() {
-  const [result, setResult] = useState<GenerateAICourseBundleOutput | null>(null);
-  const [isPending, startTransition] = useTransition();
-  const { toast } = useToast();
-  const resultsRef = useRef<HTMLDivElement>(null);
-
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      resumeText: "",
-    },
-  });
-
-  const onSubmit = (data: FormValues) => {
-    startTransition(async () => {
-      setResult(null);
-      const { data: resultData, error } = await getCourseBundleAction(data);
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "An error occurred",
-          description: error,
-        });
-      } else if (resultData) {
-        setResult(resultData);
-        setTimeout(() => {
-          resultsRef.current?.scrollIntoView({ behavior: "smooth" });
-        }, 100);
-      }
-    });
-  };
-  
   return (
     <div className="flex flex-col items-center">
       <section id="hero" className="w-full py-20 md:py-32 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline text-primary">
-                  Unlock Your Career Potential with AI
-                </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Paste your resume, choose your dream job, and let our AI create a personalized learning path to bridge your skill gaps and accelerate your career.
-                </p>
-              </div>
+          <div className="flex flex-col items-center space-y-4 text-center">
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl xl:text-7xl/none font-headline text-primary">
+              Unlock Your Career Potential
+            </h1>
+            <p className="max-w-[700px] text-muted-foreground md:text-xl">
+              EduPro provides AI-powered guidance and personalized learning paths to help you achieve your professional goals. Start your journey today.
+            </p>
+            <div className="space-x-4">
+                <Button asChild size="lg">
+                    <Link href="/courses">Explore Courses</Link>
+                </Button>
             </div>
-            <Card className="shadow-2xl">
-              <CardHeader>
-                <CardTitle>Get Your Personalized Plan</CardTitle>
-                <CardDescription>Fill out the form below to get started.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="resumeText"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Your Resume Text</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Paste the full text of your resume here..."
-                              className="min-h-[200px] resize-y"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="jobRole"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Target Job Role</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a job role" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {jobRoles.map((role) => (
-                                <SelectItem key={role} value={role}>
-                                  {role}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full" disabled={isPending}>
-                      {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Generate My Learning Path
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
 
-      {isPending && (
-         <div className="w-full text-center py-16">
-            <div className="flex justify-center items-center space-x-4">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-              <p className="text-xl font-headline">Analyzing your resume and building your path...</p>
+      <section id="featured-courses" className="w-full py-20 md:py-32 bg-secondary/50">
+        <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Featured Courses</h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+                    Hand-picked courses to help you get ahead in the most in-demand fields.
+                </p>
             </div>
-         </div>
-      )}
-
-      {result && (
-        <section ref={resultsRef} id="results" className="w-full py-20 md:py-32 bg-secondary/50">
-            <div className="container px-4 md:px-6">
-                <div className="text-center space-y-4 mb-16">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">Your Custom Learning Roadmap</h2>
-                    <p className="max-w-[700px] mx-auto text-muted-foreground md:text-xl">
-                        Based on your resume and target role of <span className="font-bold text-primary">{form.getValues().jobRole}</span>, here's what we recommend.
-                    </p>
-                </div>
-                <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-                    <div>
-                        <h3 className="text-2xl font-bold mb-6 font-headline">Key Areas for Development</h3>
-                        <Card>
-                            <CardContent className="p-6">
-                                <ul className="space-y-4">
-                                    {result.skillGaps.map((skill, index) => (
-                                        <li key={index} className="flex items-center">
-                                            <ChevronRight className="h-5 w-5 mr-3 text-primary" />
-                                            <span className="text-lg">{skill}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {featuredCourses.map(course => (
+                    <Link key={course.id} href={`/courses/${course.id}`} className="block">
+                        <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                            <CardHeader className="p-0">
+                                <Image
+                                    src={course.image}
+                                    alt={course.title}
+                                    width={600}
+                                    height={400}
+                                    className="object-cover"
+                                    data-ai-hint={course.dataAiHint}
+                                />
+                            </CardHeader>
+                            <CardContent className="p-4 flex-grow">
+                                <p className="text-sm font-medium text-primary mb-1">{course.category}</p>
+                                <CardTitle className="text-lg font-bold font-headline mb-2 leading-tight">{course.title}</CardTitle>
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                    <span className="font-bold text-amber-500">{course.rating}</span>
+                                    <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+                                    <span>({course.reviews.toLocaleString()} reviews)</span>
+                                </div>
                             </CardContent>
+                            <CardFooter className="p-4 pt-0">
+                                <p className="text-xl font-bold font-headline">₹{course.price.toLocaleString()}</p>
+                            </CardFooter>
                         </Card>
-                    </div>
-                    <div>
-                        <h3 className="text-2xl font-bold mb-6 font-headline">Suggested Courses</h3>
-                         <div className="grid gap-6">
-                            {result.suggestedCourses.map((course) => (
-                                <Link key={course.title} href={course.url} target="_blank" rel="noopener noreferrer" className="block transition-transform duration-300 hover:scale-[1.02]">
-                                    <Card className="flex items-center space-x-4 overflow-hidden h-full">
-                                        <div className="flex-shrink-0">
-                                            <Image
-                                                src={course.thumbnail || "https://placehold.co/150x150.png"}
-                                                alt={course.title}
-                                                width={120}
-                                                height={120}
-                                                className="object-cover h-full"
-                                                data-ai-hint="course thumbnail"
-                                            />
-                                        </div>
-                                        <div className="flex-1 p-4">
-                                            <CardTitle className="text-base font-bold font-headline mb-1">{course.title}</CardTitle>
-                                            <CardDescription className="text-sm">{course.description}</CardDescription>
-                                        </div>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                    </Link>
+                ))}
             </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       <section id="features" className="w-full py-20 md:py-32">
         <div className="container px-4 md:px-6">
@@ -335,17 +192,6 @@ export function HomePage() {
             <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">About EduPro</h2>
             <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               EduPro was founded on the belief that everyone deserves access to a fulfilling career. In a fast-changing job market, it's hard to know which skills to learn. We leverage the power of AI to provide clear, personalized, and actionable guidance, helping you invest in your education wisely and achieve your professional dreams.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="contact" className="w-full py-20 md:py-32 bg-secondary/50">
-        <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Get in Touch</h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              Have questions or feedback? We'd love to hear from you. Reach out to us at <a href="mailto:contact@edupro.com" className="text-primary underline">contact@edupro.com</a>.
             </p>
           </div>
         </div>
