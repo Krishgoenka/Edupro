@@ -1,53 +1,23 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { courses } from '@/lib/courses-data';
 
 // TODO: Replace this with actual user data from Firestore
 const userHasCourses = true; // Set to false to see the empty state
-const myCourses = [
-    { 
-        id: 'web-development', 
-        title: 'Web Development Bootcamp', 
-        image: 'https://placehold.co/600x400.png', 
-        dataAiHint: "code editor",
-        status: 'In Progress',
-        progress: 45,
-    },
-    { 
-        id: 'speaking-skills', 
-        title: 'Public Speaking Mastery',
-        image: 'https://placehold.co/600x400.png', 
-        dataAiHint: "person stage",
-        status: 'Not Started',
-        progress: 0,
-    },
-    {
-        id: 'artificial-intelligence',
-        title: 'Artificial Intelligence A-Z',
-        image: 'https://placehold.co/600x400.png',
-        dataAiHint: "robot brain",
-        status: 'Completed',
-        progress: 100,
-    },
-    {
-        id: 'cyber-security',
-        title: 'Cyber Security Essentials',
-        image: 'https://placehold.co/600x400.png',
-        dataAiHint: "digital lock",
-        status: 'In Progress',
-        progress: 20,
-    },
-    {
-        id: 'data-science-python',
-        title: 'Data Science with Python',
-        image: 'https://placehold.co/600x400.png',
-        dataAiHint: "data chart",
-        status: 'Not Started',
-        progress: 0,
-    },
-];
+const myCourseIds = ['web-development-bootcamp', 'public-speaking-mastery', 'ai-a-z', 'cyber-security-essentials', 'data-science-python', 'digital-marketing-masterclass', 'graphic-design-fundamentals', 'project-management-pmp'];
+
+const myCourses = courses.filter(c => myCourseIds.includes(c.id)).map((course, index) => {
+    const progressValues = [45, 0, 100, 20, 0, 75, 10, 90];
+    const statusValues = ["In Progress", "Not Started", "Completed", "In Progress", "Not Started", "In Progress", "In Progress", "In Progress"];
+    return {
+        ...course,
+        progress: progressValues[index % progressValues.length],
+        status: statusValues[index % statusValues.length],
+    };
+});
 
 export default function DashboardPage() {
     // TODO: Fetch user's enrolled courses from Firestore
@@ -66,16 +36,22 @@ export default function DashboardPage() {
                         {myCourses.map(course => (
                             <Card key={course.id} className="overflow-hidden h-full flex flex-col">
                                 <CardHeader className="p-0">
-                                    <Image
-                                        src={course.image}
-                                        alt={course.title}
-                                        width={600}
-                                        height={400}
-                                        className="object-cover"
-                                        data-ai-hint={course.dataAiHint}
-                                    />
+                                    <Link href={`/dashboard/course/${course.id}`}>
+                                        <Image
+                                            src={course.image}
+                                            alt={course.title}
+                                            width={600}
+                                            height={400}
+                                            className="object-cover w-full h-48"
+                                            data-ai-hint={course.dataAiHint}
+                                        />
+                                    </Link>
                                 </CardHeader>
                                 <CardContent className="p-4 flex-grow">
+                                     <div className="flex justify-between items-center mb-2">
+                                        <p className="text-xs font-semibold uppercase text-primary tracking-wider">{course.domain}</p>
+                                        <p className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">{course.category}</p>
+                                    </div>
                                     <CardTitle className="text-lg font-bold font-headline mb-2 leading-tight">{course.title}</CardTitle>
                                     <div className="space-y-2">
                                         <p className="text-sm text-muted-foreground">Status: <span className="font-medium text-foreground">{course.status}</span></p>

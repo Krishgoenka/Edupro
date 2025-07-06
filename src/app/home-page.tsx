@@ -12,6 +12,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Star, BrainCircuit, UploadCloud, BarChartBig, User } from "lucide-react";
+import { courses } from "@/lib/courses-data";
 
 const features = [
   {
@@ -49,12 +50,8 @@ const testimonials = [
     }
 ];
 
-const featuredCourses = [
-  { id: 1, title: 'Advanced React for Senior Engineers', category: 'Web Development', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 1250, price: 4999, dataAiHint: "react code" },
-  { id: 2, title: 'Data Science with Python: Zero to Hero', category: 'Data Science', image: 'https://placehold.co/600x400.png', rating: 4.9, reviews: 3421, price: 7999, dataAiHint: "python data" },
-  { id: 3, title: 'Product Management Essentials', category: 'Business', image: 'https://placehold.co/600x400.png', rating: 4.7, reviews: 890, price: 6499, dataAiHint: "product roadmap" },
-  { id: 4, title: 'UI/UX Design Masterclass', category: 'Design', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 2100, price: 5999, dataAiHint: "ui design" },
-];
+const featuredCourseIds = ["web-development-bootcamp", "data-science-python", "public-speaking-mastery", "cyber-security-essentials"];
+const featuredCourses = courses.filter(course => featuredCourseIds.includes(course.id));
 
 export function HomePage() {
   return (
@@ -87,32 +84,31 @@ export function HomePage() {
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {featuredCourses.map(course => (
-                    <Link key={course.id} href={`/courses/${course.id}`} className="block">
-                        <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                            <CardHeader className="p-0">
-                                <Image
-                                    src={course.image}
-                                    alt={course.title}
-                                    width={600}
-                                    height={400}
-                                    className="object-cover"
-                                    data-ai-hint={course.dataAiHint}
-                                />
-                            </CardHeader>
-                            <CardContent className="p-4 flex-grow">
-                                <p className="text-sm font-medium text-primary mb-1">{course.category}</p>
-                                <CardTitle className="text-lg font-bold font-headline mb-2 leading-tight">{course.title}</CardTitle>
-                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                    <span className="font-bold text-amber-500">{course.rating}</span>
-                                    <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
-                                    <span>({course.reviews.toLocaleString()} reviews)</span>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="p-4 pt-0">
-                                <p className="text-xl font-bold font-headline">₹{course.price.toLocaleString()}</p>
-                            </CardFooter>
-                        </Card>
-                    </Link>
+                  <Link key={course.id} href={`/courses/${course.id}`} className="block group">
+                    <Card className="overflow-hidden h-full flex flex-col transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1">
+                        <CardHeader className="p-0">
+                            <Image
+                                src={course.image}
+                                alt={course.title}
+                                width={600}
+                                height={400}
+                                className="object-cover w-full h-48"
+                                data-ai-hint={course.dataAiHint}
+                            />
+                        </CardHeader>
+                        <CardContent className="p-4 flex-grow">
+                             <div className="flex justify-between items-center mb-2">
+                                <p className="text-xs font-semibold uppercase text-primary tracking-wider">{course.domain}</p>
+                                <p className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded-full">{course.category}</p>
+                            </div>
+                            <CardTitle className="text-lg font-bold font-headline mb-2 leading-tight group-hover:text-primary transition-colors">{course.title}</CardTitle>
+                             <CardDescription className="text-sm">{course.description}</CardDescription>
+                        </CardContent>
+                        <CardFooter className="p-4 pt-0">
+                            <p className="text-xl font-bold font-headline">₹{course.price.toLocaleString()}</p>
+                        </CardFooter>
+                    </Card>
+                   </Link>
                 ))}
             </div>
         </div>

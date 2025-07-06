@@ -5,7 +5,11 @@ import {
   AnalyzeResumeInput, 
   AnalyzeResumeOutput 
 } from "@/ai/flows/generate-course-bundle";
-const pdf = require("pdf-parse");
+import {
+  generatePersonalizedBundle,
+  PersonalizedBundleOutput
+} from '@/ai/flows/generate-personalized-bundle';
+import pdf from "pdf-parse";
 
 export async function analyzeResumeAction(
   formData: FormData
@@ -48,5 +52,29 @@ export async function analyzeResumeAction(
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return { data: null, error: `Failed to analyze resume. ${errorMessage}` };
+  }
+}
+
+export async function getPersonalizedBundleAction(
+  userInput: string
+): Promise<{
+  data: PersonalizedBundleOutput | null;
+  error: string | null;
+}> {
+  try {
+    if (!userInput) {
+      return { data: null, error: "User input is missing." };
+    }
+
+    // TODO: Add check for Firebase Auth. If not logged in, return error.
+    const result = await generatePersonalizedBundle({ userInput });
+
+    // TODO: Save the generated bundle and user input to Firestore under the user's ID.
+
+    return { data: result, error: null };
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return { data: null, error: `Failed to generate bundle. ${errorMessage}` };
   }
 }
