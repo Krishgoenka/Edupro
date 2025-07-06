@@ -10,7 +10,7 @@ const courses = [
         description: 'Master the fundamentals of web development with HTML, CSS, JavaScript, React, and Node.js. Build real-world projects.',
         image: 'https://placehold.co/600x400.png', 
         price: 499, 
-        dataAiHint: "web development code" 
+        dataAiHint: "code editor" 
     },
     { 
         id: 'artificial-intelligence', 
@@ -18,7 +18,7 @@ const courses = [
         description: 'Dive into the world of AI. Learn about machine learning, data science, neural networks, and build your own AI models.',
         image: 'https://placehold.co/600x400.png', 
         price: 599, 
-        dataAiHint: "ai abstract" 
+        dataAiHint: "robot brain" 
     },
     { 
         id: 'cyber-security', 
@@ -26,7 +26,7 @@ const courses = [
         description: 'Protect systems and networks from digital attacks. Learn ethical hacking, cryptography, and network security.',
         image: 'https://placehold.co/600x400.png', 
         price: 599, 
-        dataAiHint: "cyber security lock" 
+        dataAiHint: "digital lock" 
     },
     { 
         id: 'speaking-skills', 
@@ -34,7 +34,7 @@ const courses = [
         description: 'Boost your confidence and communication skills. Learn to deliver powerful presentations and speak with impact.',
         image: 'https://placehold.co/600x400.png', 
         price: 499, 
-        dataAiHint: "public speaking presentation" 
+        dataAiHint: "person stage" 
     },
     {
         id: 'data-science-python',
@@ -42,7 +42,7 @@ const courses = [
         description: 'Learn data analysis, visualization, and machine learning with Python libraries like Pandas, NumPy, and Scikit-learn.',
         image: 'https://placehold.co/600x400.png',
         price: 799,
-        dataAiHint: "data science chart"
+        dataAiHint: "data chart"
     },
     {
         id: 'digital-marketing',
@@ -50,7 +50,7 @@ const courses = [
         description: 'Master SEO, SEM, social media marketing, and content strategy to grow businesses online.',
         image: 'https://placehold.co/600x400.png',
         price: 699,
-        dataAiHint: "marketing analytics"
+        dataAiHint: "marketing graph"
     },
     {
         id: 'graphic-design',
@@ -58,7 +58,7 @@ const courses = [
         description: 'Understand the principles of design, color theory, typography, and create stunning visuals using Adobe tools.',
         image: 'https://placehold.co/600x400.png',
         price: 549,
-        dataAiHint: "design tools palette"
+        dataAiHint: "design sketch"
     },
     {
         id: 'project-management',
@@ -66,7 +66,7 @@ const courses = [
         description: 'Prepare for the PMP certification exam. Learn about project lifecycles, risk management, and Agile methodologies.',
         image: 'https://placehold.co/600x400.png',
         price: 899,
-        dataAiHint: "gantt chart"
+        dataAiHint: "task board"
     },
     {
         id: 'financial-analyst',
@@ -74,7 +74,7 @@ const courses = [
         description: 'Learn financial modeling, valuation, and Excel skills to become a top financial analyst.',
         image: 'https://placehold.co/600x400.png',
         price: 799,
-        dataAiHint: "stock market graph"
+        dataAiHint: "finance chart"
     },
     {
         id: 'photography-basics',
@@ -82,7 +82,7 @@ const courses = [
         description: 'Master your camera settings, composition, and editing techniques to take breathtaking photos.',
         image: 'https://placehold.co/600x400.png',
         price: 499,
-        dataAiHint: "camera lens"
+        dataAiHint: "camera photo"
     }
 ];
 

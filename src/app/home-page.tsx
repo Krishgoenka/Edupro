@@ -50,10 +50,10 @@ const testimonials = [
 ];
 
 const featuredCourses = [
-  { id: 1, title: 'Advanced React for Senior Engineers', category: 'Web Development', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 1250, price: 4999, dataAiHint: "code abstract" },
-  { id: 2, title: 'Data Science with Python: Zero to Hero', category: 'Data Science', image: 'https://placehold.co/600x400.png', rating: 4.9, reviews: 3421, price: 7999, dataAiHint: "data visualization" },
-  { id: 3, title: 'Product Management Essentials', category: 'Business', image: 'https://placehold.co/600x400.png', rating: 4.7, reviews: 890, price: 6499, dataAiHint: "team meeting" },
-  { id: 4, title: 'UI/UX Design Masterclass', category: 'Design', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 2100, price: 5999, dataAiHint: "design process" },
+  { id: 1, title: 'Advanced React for Senior Engineers', category: 'Web Development', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 1250, price: 4999, dataAiHint: "react code" },
+  { id: 2, title: 'Data Science with Python: Zero to Hero', category: 'Data Science', image: 'https://placehold.co/600x400.png', rating: 4.9, reviews: 3421, price: 7999, dataAiHint: "python data" },
+  { id: 3, title: 'Product Management Essentials', category: 'Business', image: 'https://placehold.co/600x400.png', rating: 4.7, reviews: 890, price: 6499, dataAiHint: "product roadmap" },
+  { id: 4, title: 'UI/UX Design Masterclass', category: 'Design', image: 'https://placehold.co/600x400.png', rating: 4.8, reviews: 2100, price: 5999, dataAiHint: "ui design" },
 ];
 
 export function HomePage() {
