@@ -22,7 +22,6 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   jobDescription: z.string({ required_error: "Job description is required." }).min(100, "Job description must be at least 100 characters."),
@@ -85,74 +84,70 @@ export default function ResumePage() {
     <div className="flex flex-col items-center">
       <section id="resume-advisor" className="w-full py-20 md:py-24 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
-            <div className="flex flex-col justify-center space-y-4">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline text-primary">
-                  AI-Powered Resume Advisor
-                </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Upload your resume and paste a job description to get instant, AI-driven feedback. We'll identify missing skills and provide actionable advice to make your resume stand out.
-                </p>
-                 <p className="text-sm text-amber-600 dark:text-amber-400">Note: Login is required to save and track your results.</p>
-              </div>
-            </div>
-            <Card className="shadow-2xl">
-              <CardHeader>
-                <CardTitle>Get Your Personalized Analysis</CardTitle>
-                <CardDescription>Upload your PDF resume and the job description below.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
+          <div className="max-w-4xl mx-auto text-center space-y-4 mb-12">
+            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline text-primary">
+              AI-Powered Resume Advisor
+            </h1>
+            <p className="max-w-[700px] mx-auto text-muted-foreground md:text-xl">
+              Upload your resume and paste a job description to get instant, AI-driven feedback. We'll identify missing skills and provide actionable advice to make your resume stand out.
+            </p>
+            <p className="text-sm text-amber-600 dark:text-amber-400">Note: Login is required to save and track your results.</p>
+          </div>
+          <Card className="max-w-4xl mx-auto shadow-2xl">
+            <CardHeader>
+              <CardTitle>Get Your Personalized Analysis</CardTitle>
+              <CardDescription>Upload your PDF resume and the job description below.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="jobDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Job Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Paste the full job description here..."
+                            className="min-h-[200px] resize-y"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
                       control={form.control}
-                      name="jobDescription"
-                      render={({ field }) => (
+                      name="resume"
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
-                          <FormLabel>Job Description</FormLabel>
+                          <FormLabel>Upload Resume (PDF only, max 5MB)</FormLabel>
                           <FormControl>
-                            <Textarea
-                              placeholder="Paste the full job description here..."
-                              className="min-h-[200px] resize-y"
-                              {...field}
+                            <Input
+                              type="file"
+                              accept="application/pdf"
+                              onChange={(e) => {
+                                if (e.target.files) {
+                                  onChange(e.target.files[0]);
+                                }
+                              }}
+                              {...rest}
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                     <FormField
-                        control={form.control}
-                        name="resume"
-                        render={({ field: { onChange, value, ...rest } }) => (
-                          <FormItem>
-                            <FormLabel>Upload Resume (PDF only, max 5MB)</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="file"
-                                accept="application/pdf"
-                                onChange={(e) => {
-                                  if (e.target.files) {
-                                    onChange(e.target.files[0]);
-                                  }
-                                }}
-                                {...rest}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    <Button type="submit" className="w-full" disabled={isPending}>
-                      {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Enhance Resume
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </div>
+                  <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+                    {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Enhance Resume
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -175,20 +170,17 @@ export default function ResumePage() {
                     </p>
                 </div>
 
-                <div className="grid gap-8">
+                <div className="grid gap-8 max-w-5xl mx-auto">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-3 text-2xl font-headline">
+                            <CardTitle className="flex items-center gap-3 text-2xl font-headline text-center justify-center">
                                 <Target className="h-7 w-7 text-primary"/>
                                 Overall Match Score
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="flex items-center gap-4">
-                                <Progress value={result.matchPercentage} className="h-4" />
-                                <span className="text-2xl font-bold font-headline text-primary">{result.matchPercentage}%</span>
-                            </div>
-                            <p className="text-muted-foreground">This score reflects how well your resume aligns with the key requirements and keywords in the job description.</p>
+                        <CardContent className="space-y-4 text-center">
+                            <p className="text-7xl font-bold font-headline text-primary">{result.matchPercentage}%</p>
+                            <p className="text-muted-foreground max-w-md mx-auto">This score reflects how well your resume aligns with the key requirements and keywords in the job description.</p>
                         </CardContent>
                     </Card>
 
