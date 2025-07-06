@@ -1,35 +1,46 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { IndianRupee, Trash2, ShoppingCart } from 'lucide-react';
+import { IndianRupee, Trash2, ShoppingCart, Tag } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, removeFromCart } = useCart();
   const { toast } = useToast();
+  const [coupon, setCoupon] = useState('');
 
   const handleRemove = (courseId: string) => {
     removeFromCart(courseId);
-    toast({
-      title: 'Item removed',
-      description: 'The course has been removed from your cart.',
-    });
   };
 
   const handleCheckout = () => {
     // This is where payment gateway logic would be triggered.
-    // For now, we'll simulate a successful checkout.
     toast({
-      title: 'This is a demo',
-      description: 'A real payment gateway has not been implemented.',
+      title: "This feature is not yet available",
+      description: "We're working on integrating a secure payment gateway.",
     });
+  };
+
+  const handleApplyCoupon = () => {
+    if (coupon.trim() !== '') {
+      toast({
+        title: "Invalid Coupon",
+        description: `The coupon "${coupon}" is not valid.`,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Please enter a coupon code."
+      });
+    }
   };
 
   const total = cart.reduce((acc, course) => acc + course.price, 0);
@@ -102,16 +113,30 @@ export default function CartPage() {
                   <span>Subtotal</span>
                   <span className='flex items-center'><IndianRupee className="h-4 w-4" />{total}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Taxes & Fees</span>
                   <span>Calculated at checkout</span>
                 </div>
+                
                 <Separator />
+                
+                <div className="space-y-2">
+                    <label htmlFor="coupon" className="text-sm font-medium flex items-center gap-2">
+                        <Tag className="h-4 w-4 text-muted-foreground"/>
+                        Coupon Code
+                    </label>
+                    <div className="flex space-x-2">
+                        <Input id="coupon" placeholder="Enter coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} />
+                        <Button variant="secondary" onClick={handleApplyCoupon}>Apply</Button>
+                    </div>
+                </div>
+
+                <Separator />
+
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span className='flex items-center'><IndianRupee className="h-5 w-5" />{total}</span>
                 </div>
-                {/* Coupon Code section can be added here */}
                 <Button className="w-full" size="lg" onClick={handleCheckout}>
                   Proceed to Checkout
                 </Button>
