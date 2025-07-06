@@ -1,14 +1,17 @@
 
 "use client";
 
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/context/cart-context';
 import { courses } from '@/lib/courses-data';
 import type { Course } from '@/lib/courses-data';
-import { IndianRupee } from 'lucide-react';
+import { IndianRupee, Clock, BarChart2, CheckCircle, Video, FileText, Infinity as InfinityIcon } from 'lucide-react';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -27,37 +30,118 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <div className="container py-12">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-headline">{course.title}</CardTitle>
-          <CardDescription>Start your learning journey today!</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-             <Image 
-                src={course.image} 
-                alt={course.title}
-                width={1280} 
-                height={720}
-                className="rounded-lg object-cover"
-                data-ai-hint={course.dataAiHint}
-              />
+    <div className="bg-muted/40">
+      <div className="bg-background">
+        <div className="container py-8 md:py-12 grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="text-sm text-muted-foreground">
+                <Link href="/courses" className="hover:text-primary">Courses</Link> &gt; <span>{course.domain}</span>
+            </div>
+            <h1 className="text-4xl font-bold font-headline">{course.title}</h1>
+            <p className="text-lg text-muted-foreground">{course.description}</p>
+            <div className="flex items-center gap-4">
+              <Avatar>
+                <AvatarImage src={course.tutor.image} alt={course.tutor.name} data-ai-hint={course.tutor.dataAiHint} />
+                <AvatarFallback>{course.tutor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold">Created by {course.tutor.name}</p>
+              </div>
+            </div>
+             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <BarChart2 className="h-4 w-4" />
+                    <span>{course.level}</span>
+                </div>
+                 <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
+                    <span>{course.duration} of video content</span>
+                </div>
+            </div>
           </div>
-          <div>
-            <h2 className="text-2xl font-bold font-headline">About This Course</h2>
-            <p className="text-muted-foreground mt-2">
-              {course.description}
-            </p>
-          </div>
-          <div className="pt-4 flex items-center gap-6">
-            <Button size="lg" onClick={() => addToCart(course as Course)}>
-              Add to Cart
-            </Button>
-            <p className="text-3xl font-bold font-headline flex items-center"><IndianRupee className="h-7 w-7" />{course.price}</p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+      
+      <div className="container py-12 grid lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-12">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-2xl font-headline">What you'll learn</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {course.features.map((feature, index) => (
+                            <li key={index} className="flex items-start gap-3">
+                                <CheckCircle className="h-5 w-5 mt-1 text-primary flex-shrink-0"/>
+                                <span>{feature}</span>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+
+            <div className="space-y-4">
+                <h2 className="text-2xl font-bold font-headline">Course curriculum</h2>
+                <Accordion type="single" collapsible className="w-full">
+                    {course.curriculum.map((item, index) => (
+                         <AccordionItem key={index} value={`item-${index}`} className="bg-background">
+                            <AccordionTrigger className="px-6">
+                               <div className="flex items-center justify-between w-full">
+                                    <span>{item.title}</span>
+                                    <span className="text-sm text-muted-foreground">{item.duration}</span>
+                               </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="px-6">
+                                (Placeholder for module content)
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+        </div>
+
+        <div className="lg:sticky top-24 space-y-4">
+            <Card className="overflow-hidden">
+                <Image 
+                    src={course.image} 
+                    alt={course.title}
+                    width={1280} 
+                    height={720}
+                    className="w-full object-cover"
+                    data-ai-hint={course.dataAiHint}
+                />
+                <CardContent className="p-6 space-y-4">
+                    <p className="text-4xl font-bold font-headline flex items-center"><IndianRupee className="h-9 w-9" />{course.price}</p>
+                    <Button size="lg" className="w-full" onClick={() => addToCart(course as Course)}>
+                        Add to Cart
+                    </Button>
+                    <Button size="lg" variant="outline" className="w-full">
+                        Buy Now
+                    </Button>
+                    <p className="text-center text-xs text-muted-foreground">30-Day Money-Back Guarantee</p>
+                    
+                    <div className="space-y-2 pt-4">
+                        <h3 className="font-bold">This course includes:</h3>
+                        <ul className="text-sm text-muted-foreground space-y-2">
+                             <li className="flex items-center gap-2">
+                                <Video className="h-4 w-4 text-primary" />
+                                <span>{course.duration} on-demand video</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <FileText className="h-4 w-4 text-primary" />
+                                <span>Articles & resources</span>
+                            </li>
+                             <li className="flex items-center gap-2">
+                                <InfinityIcon className="h-4 w-4 text-primary" />
+                                <span>Full lifetime access</span>
+                            </li>
+                        </ul>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+
+      </div>
     </div>
   );
 }
