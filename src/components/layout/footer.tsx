@@ -12,7 +12,7 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link href="/#about" className="hover:text-primary">About</Link>
+            <Link href="/about" className="hover:text-primary">About</Link>
             <a href="mailto:contact@edupro.com" className="hover:text-primary">Contact</a>
         </div>
       </div>

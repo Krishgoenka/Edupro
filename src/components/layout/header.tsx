@@ -41,7 +41,7 @@ export function Header() {
     { href: "/resume", label: "Resume Advisor" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/#features", label: "Features" },
-    { href: "/#about", label: "About" },
+    { href: "/about", label: "About" },
   ];
 
   return (

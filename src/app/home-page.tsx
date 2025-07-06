@@ -42,10 +42,10 @@ export function HomePage() {
             </p>
             <div className="space-x-4 mt-4">
                 <Button asChild size="lg">
-                    <Link href="/resume">Analyze Your Resume</Link>
-                </Button>
-                 <Button asChild size="lg" variant="outline">
                     <Link href="/courses">Explore Courses</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                    <Link href="/resume">Analyze Your Resume</Link>
                 </Button>
             </div>
           </div>
