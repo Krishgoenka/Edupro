@@ -21,7 +21,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
-import { Loader2, ListChecks, FileText, CheckCircle } from "lucide-react";
+import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   jobDescription: z.string({ required_error: "Job description is required." }).min(100, "Job description must be at least 100 characters."),
@@ -46,6 +47,13 @@ export default function ResumePage() {
       jobDescription: "",
     },
   });
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied to clipboard!",
+    });
+  };
 
   const onSubmit = (data: FormValues) => {
     startTransition(async () => {
@@ -158,52 +166,93 @@ export default function ResumePage() {
       )}
 
       {result && (
-        <section ref={resultsRef} id="results" className="w-full py-20 md:py-32 bg-secondary/50">
+        <section ref={resultsRef} id="results" className="w-full py-20 md:py-24 bg-secondary/50">
             <div className="container px-4 md:px-6">
-                <div className="text-center space-y-4 mb-16">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">Your Resume Analysis</h2>
+                <div className="text-center space-y-4 mb-12">
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">Your Personalized Feedback</h2>
                     <p className="max-w-[700px] mx-auto text-muted-foreground md:text-xl">
-                        Here's how your resume stacks up and how you can improve it.
+                        Here's how your resume stacks up against the job description.
                     </p>
                 </div>
-                <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-                    <div>
-                        <h3 className="text-2xl font-bold mb-6 font-headline flex items-center gap-3"><FileText className="h-7 w-7 text-primary"/> Skill Gap Analysis</h3>
-                        <Card>
-                          <CardContent className="p-0">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead className="w-1/2">Missing Skills</TableHead>
-                                  <TableHead className="w-1/2">Skills to Add</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {result.analysisTable.map((item, index) => (
-                                  <TableRow key={index}>
-                                    <TableCell>{item.missingSkill}</TableCell>
-                                    <TableCell>{item.skillToAdd}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </CardContent>
-                        </Card>
-                    </div>
-                    <div>
-                        <h3 className="text-2xl font-bold mb-6 font-headline flex items-center gap-3"><ListChecks className="h-7 w-7 text-primary"/> Improvement Suggestions</h3>
-                         <Card>
-                            <CardContent className="p-6">
-                              <ul className="space-y-4">
-                                {result.recommendations.map((rec, index) => (
-                                  <li key={index} className="flex items-start gap-3">
-                                    <CheckCircle className="h-5 w-5 mt-1 text-green-600 flex-shrink-0" />
-                                    <span>{rec}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </CardContent>
-                        </Card>
+
+                <div className="grid gap-8">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-3 text-2xl font-headline">
+                                <Target className="h-7 w-7 text-primary"/>
+                                Overall Match Score
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center gap-4">
+                                <Progress value={result.matchPercentage} className="h-4" />
+                                <span className="text-2xl font-bold font-headline text-primary">{result.matchPercentage}%</span>
+                            </div>
+                            <p className="text-muted-foreground">This score reflects how well your resume aligns with the key requirements and keywords in the job description.</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center justify-between text-2xl font-headline">
+                                <div className="flex items-center gap-3">
+                                    <PenSquare className="h-7 w-7 text-primary"/>
+                                    Suggested Professional Summary
+                                </div>
+                                <Button variant="ghost" size="icon" onClick={() => handleCopy(result.revisedSummary)}>
+                                    <Copy className="h-5 w-5"/>
+                                    <span className="sr-only">Copy summary</span>
+                                </Button>
+                            </CardTitle>
+                             <CardDescription>
+                                Here’s an improved summary tailored for this role. You can copy and use it in your resume.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <blockquote className="border-l-4 border-primary pl-4 py-2 bg-background italic text-muted-foreground">
+                                {result.revisedSummary}
+                            </blockquote>
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid gap-8 lg:grid-cols-2">
+                        <div>
+                             <h3 className="text-2xl font-bold mb-4 font-headline flex items-center gap-3"><FileText className="h-7 w-7 text-primary"/> Skill Gap Analysis</h3>
+                            <Card>
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead className="w-1/2">Missing Skill</TableHead>
+                                      <TableHead className="w-1/2">Suggested Improvement</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {result.analysisTable.map((item, index) => (
+                                      <TableRow key={index}>
+                                        <TableCell className="font-medium">{item.missingSkill}</TableCell>
+                                        <TableCell>{item.suggestedImprovement}</TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                            </Card>
+                        </div>
+
+                        <div>
+                            <h3 className="text-2xl font-bold mb-4 font-headline flex items-center gap-3"><ListChecks className="h-7 w-7 text-primary"/> Actionable Recommendations</h3>
+                             <Card>
+                                <CardContent className="p-6">
+                                  <ul className="space-y-4">
+                                    {result.recommendations.map((rec, index) => (
+                                      <li key={index} className="flex items-start gap-3">
+                                        <CheckCircle className="h-5 w-5 mt-1 text-green-600 flex-shrink-0" />
+                                        <span>{rec}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </div>

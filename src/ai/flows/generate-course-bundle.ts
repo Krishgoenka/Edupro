@@ -19,11 +19,13 @@ export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
 const AnalysisSchema = z.object({
     missingSkill: z.string().describe("A skill that is missing from the resume but required by the job description."),
-    skillToAdd: z.string().describe("A corresponding skill or phrasing to add to the resume."),
+    suggestedImprovement: z.string().describe("A corresponding skill or phrasing to add to the resume to address the missing skill."),
 });
 
 const AnalyzeResumeOutputSchema = z.object({
-  analysisTable: z.array(AnalysisSchema).describe("A table of missing skills and suggested skills to add. This should contain at least 3 items."),
+  matchPercentage: z.number().min(0).max(100).describe("A percentage (0-100) representing how well the resume matches the job description, rounded to the nearest integer."),
+  revisedSummary: z.string().describe("An improved professional summary for the resume, rewritten to be 2-4 sentences long and tailored to the job description."),
+  analysisTable: z.array(AnalysisSchema).describe("A table of missing skills and suggested improvements. This should contain at least 3 items."),
   recommendations: z.array(z.string()).describe("A list of 3-5 bulleted recommendations on how the applicant can improve their resume to better align with the job description."),
 });
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
@@ -38,11 +40,14 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
   prompt: `You are an experienced technical HR manager. Your task is to review the provided resume against the job description.
-First, generate a table with two columns:
-- Column 1: Missing Skills
-- Column 2: Skills to Add
 
-Then, provide recommendations on how the applicant can improve their resume to better align with the job description.
+Analyze the resume and job description to generate the following:
+1.  A match percentage (0-100) indicating how well the resume aligns with the job description.
+2.  A rewritten, improved professional summary (2-4 sentences) that is tailored to the job description.
+3.  A table with two columns:
+    - Column 1: Missing Skill (skills required by the job but missing from the resume)
+    - Column 2: Suggested Improvement (how to phrase this skill on the resume)
+4.  A list of 3-5 actionable recommendations for overall resume improvement.
 
 Job Description:
 {{{jobDescription}}}
