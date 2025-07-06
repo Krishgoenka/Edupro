@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { AuthProvider } from '@/context/auth-context';
+import { CartProvider } from '@/context/cart-context';
 
 export const metadata: Metadata = {
   title: 'EduPro',
@@ -24,14 +25,16 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <div className="flex flex-col min-h-dvh bg-background">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-          <Toaster />
+          <CartProvider>
+            <div className="flex flex-col min-h-dvh bg-background">
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
+            <Toaster />
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

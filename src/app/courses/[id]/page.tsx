@@ -1,69 +1,60 @@
+
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/auth-context';
-import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/context/cart-context';
+import { courses } from '@/lib/courses-data';
+import type { Course } from '@/lib/courses-data';
+import { IndianRupee } from 'lucide-react';
 
 export default function CourseDetailPage() {
   const params = useParams();
-  const id = params.id;
-  const router = useRouter();
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const id = params.id as string;
+  const { addToCart } = useCart();
+  
+  const course = courses.find(c => c.id === id);
 
-  const handleBuyCourse = () => {
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Required",
-        description: "Please log in to purchase a course.",
-      });
-      router.push("/login");
-    } else {
-      // TODO: Add to firestore
-      toast({
-        title: "Success!",
-        description: "Course added to your dashboard.",
-      });
-      router.push("/dashboard");
-    }
-  };
-
-  // In a real app, you would fetch course details based on the id
-  const courseTitle = `Details for Course: ${id}`;
-  const courseDescription = `(Full course info, curriculum, instructor bio, and reviews will be displayed here. This is a placeholder page.)`;
+  if (!course) {
+    return (
+        <div className="container py-12 text-center">
+            <h1 className="text-2xl font-bold">Course not found</h1>
+            <p>Sorry, we couldn't find the course you were looking for.</p>
+        </div>
+    )
+  }
 
   return (
     <div className="container py-12">
       <Card>
         <CardHeader>
-          <CardTitle className="text-3xl font-headline">{courseTitle}</CardTitle>
+          <CardTitle className="text-3xl font-headline">{course.title}</CardTitle>
           <CardDescription>Start your learning journey today!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
              <Image 
-                src="https://placehold.co/1280x720.png" 
-                alt="Video placeholder" 
+                src={course.image} 
+                alt={course.title}
                 width={1280} 
                 height={720}
                 className="rounded-lg object-cover"
-                data-ai-hint="video player"
+                data-ai-hint={course.dataAiHint}
               />
           </div>
           <div>
             <h2 className="text-2xl font-bold font-headline">About This Course</h2>
             <p className="text-muted-foreground mt-2">
-              {courseDescription}
+              {course.description}
             </p>
           </div>
-          <div className="pt-4">
-            <Button size="lg" onClick={handleBuyCourse}>
-              Buy Course - ₹499
+          <div className="pt-4 flex items-center gap-6">
+            <Button size="lg" onClick={() => addToCart(course as Course)}>
+              Add to Cart
             </Button>
+            <p className="text-3xl font-bold font-headline flex items-center"><IndianRupee className="h-7 w-7" />{course.price}</p>
           </div>
         </CardContent>
       </Card>

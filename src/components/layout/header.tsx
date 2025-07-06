@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -5,14 +6,16 @@ import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
+import { useCart } from '@/context/cart-context';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut } from 'lucide-react';
+import { Menu, LogOut, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function Header() {
   const { user } = useAuth();
+  const { cart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -67,6 +70,17 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="hidden md:flex items-center space-x-2">
+            <Button asChild variant="ghost" size="icon" className="relative">
+              <Link href="/cart">
+                <ShoppingCart className="h-5 w-5" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                    {cart.length}
+                  </span>
+                )}
+                <span className="sr-only">Shopping Cart</span>
+              </Link>
+            </Button>
             {user ? (
               <Button onClick={handleLogout} variant="ghost">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -103,6 +117,9 @@ export function Header() {
                         {link.label}
                       </Link>
                     ))}
+                     <Link href="/cart" className="text-lg font-medium">
+                        Cart ({cart.length})
+                     </Link>
                   </nav>
                   <div className="mt-6 flex flex-col gap-2">
                     {user ? (

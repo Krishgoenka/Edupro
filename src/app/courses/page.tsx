@@ -1,43 +1,24 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courses as allCourses, domains, categoriesByDomain, Domain } from '@/lib/courses-data';
 import { AiRecommender } from '@/components/ai-recommender';
-import { useAuth } from '@/context/auth-context';
-import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/context/cart-context';
+import type { Course } from '@/lib/courses-data';
+import { IndianRupee } from 'lucide-react';
 
 export default function CoursesPage() {
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
-    const router = useRouter();
-    const { user } = useAuth();
-    const { toast } = useToast();
-
-    const handleBuyCourse = () => {
-        if (!user) {
-          toast({
-            variant: "destructive",
-            title: "Authentication Required",
-            description: "Please log in to purchase a course.",
-          });
-          router.push("/login");
-        } else {
-          // TODO: Add to firestore
-          toast({
-            title: "Success!",
-            description: "Course added to your dashboard.",
-          });
-          router.push("/dashboard");
-        }
-      };
+    const { addToCart } = useCart();
 
     const handleDomainChange = (value: Domain | "All") => {
         const newDomain = value === "All" ? "" : value;
@@ -141,9 +122,9 @@ export default function CoursesPage() {
                             <CardDescription className="text-sm">{course.description}</CardDescription>
                         </CardContent>
                         <CardFooter className="p-4 pt-0 flex justify-between items-center">
-                            <p className="text-xl font-bold font-headline">₹{course.price}</p>
-                            <Button onClick={handleBuyCourse}>
-                                Buy Course
+                            <p className="text-xl font-bold font-headline flex items-center"><IndianRupee className="h-5 w-5" />{course.price}</p>
+                            <Button onClick={() => addToCart(course as Course)}>
+                                Add to Cart
                             </Button>
                         </CardFooter>
                     </Card>

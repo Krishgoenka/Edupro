@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useTransition } from 'react';
@@ -12,6 +13,10 @@ import type { PersonalizedBundleOutput } from '@/ai/flows/generate-personalized-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Separator } from './ui/separator';
 import { useAuth } from '@/context/auth-context';
+import { useCart } from '@/context/cart-context';
+import { courses } from '@/lib/courses-data';
+import type { Course } from '@/lib/courses-data';
+
 
 export function AiRecommender() {
     const [open, setOpen] = useState(false);
@@ -20,6 +25,7 @@ export function AiRecommender() {
     const [result, setResult] = useState<PersonalizedBundleOutput | null>(null);
     const { toast } = useToast();
     const { user } = useAuth();
+    const { addToCart } = useCart();
     const router = useRouter();
 
     const handleAuthCheck = () => {
@@ -63,16 +69,23 @@ export function AiRecommender() {
         });
     };
 
-    const handleEnroll = () => {
+    const handleAddBundleToCart = () => {
+        if (!result) return;
         if (!handleAuthCheck()) return;
 
-        // TODO: Implement Firestore logic to enroll user in all bundle courses
-        toast({
-            title: "Enrolled!",
-            description: "Your personalized bundle has been added to your dashboard.",
+        result.recommendedCourses.forEach(course => {
+            const fullCourse = courses.find(c => c.id === course.id);
+            if(fullCourse) {
+                 addToCart(fullCourse as Course);
+            }
         });
-        router.push("/dashboard");
+        
+        toast({
+            title: "Bundle Added!",
+            description: "Your personalized bundle has been added to your cart.",
+        });
         setOpen(false);
+        router.push("/cart");
     }
 
     const handleReset = () => {
@@ -131,7 +144,7 @@ export function AiRecommender() {
                                         <CardHeader>
                                             <div className='flex justify-between items-start'>
                                                 <CardTitle className='text-lg font-headline'>{course.title}</CardTitle>
-                                                <p className='text-lg font-bold text-primary'>₹{course.price}</p>
+                                                <p className='text-lg font-bold text-primary flex items-center'><IndianRupee className="h-5 w-5" />{course.price}</p>
                                             </div>
                                              <CardDescription className='flex items-start gap-2 pt-2'>
                                                 <CheckCircle className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
@@ -157,8 +170,8 @@ export function AiRecommender() {
                     {result ? (
                         <>
                             <Button variant="outline" onClick={handleReset}>Create a New Bundle</Button>
-                            <Button onClick={handleEnroll}>
-                                Enroll Now - ₹{totalBundlePrice}
+                            <Button onClick={handleAddBundleToCart}>
+                                Add Bundle to Cart - ₹{totalBundlePrice}
                             </Button>
                         </>
                     ) : (
