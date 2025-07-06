@@ -23,6 +23,30 @@ const myCourses = [
         status: 'Not Started',
         progress: 0,
     },
+    {
+        id: 'artificial-intelligence',
+        title: 'Artificial Intelligence A-Z',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: "ai abstract",
+        status: 'Completed',
+        progress: 100,
+    },
+    {
+        id: 'cyber-security',
+        title: 'Cyber Security Essentials',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: "cyber security lock",
+        status: 'In Progress',
+        progress: 20,
+    },
+    {
+        id: 'data-science-python',
+        title: 'Data Science with Python',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: "data science chart",
+        status: 'Not Started',
+        progress: 0,
+    },
 ];
 
 export default function DashboardPage() {
@@ -62,7 +86,7 @@ export default function DashboardPage() {
                                 <CardFooter className="p-4 pt-0">
                                     <Button asChild className="w-full">
                                         <Link href={`/dashboard/course/${course.id}`}>
-                                            {course.progress > 0 ? 'Continue Learning' : 'Start Course'}
+                                            {course.progress === 100 ? 'Review Course' : course.progress > 0 ? 'Continue Learning' : 'Start Course'}
                                         </Link>
                                     </Button>
                                 </CardFooter>

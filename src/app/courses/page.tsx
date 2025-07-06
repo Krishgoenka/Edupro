@@ -36,6 +36,54 @@ const courses = [
         price: 499, 
         dataAiHint: "public speaking presentation" 
     },
+    {
+        id: 'data-science-python',
+        title: 'Data Science with Python',
+        description: 'Learn data analysis, visualization, and machine learning with Python libraries like Pandas, NumPy, and Scikit-learn.',
+        image: 'https://placehold.co/600x400.png',
+        price: 799,
+        dataAiHint: "data science chart"
+    },
+    {
+        id: 'digital-marketing',
+        title: 'Digital Marketing Masterclass',
+        description: 'Master SEO, SEM, social media marketing, and content strategy to grow businesses online.',
+        image: 'https://placehold.co/600x400.png',
+        price: 699,
+        dataAiHint: "marketing analytics"
+    },
+    {
+        id: 'graphic-design',
+        title: 'Graphic Design Fundamentals',
+        description: 'Understand the principles of design, color theory, typography, and create stunning visuals using Adobe tools.',
+        image: 'https://placehold.co/600x400.png',
+        price: 549,
+        dataAiHint: "design tools palette"
+    },
+    {
+        id: 'project-management',
+        title: 'Project Management Professional (PMP)',
+        description: 'Prepare for the PMP certification exam. Learn about project lifecycles, risk management, and Agile methodologies.',
+        image: 'https://placehold.co/600x400.png',
+        price: 899,
+        dataAiHint: "gantt chart"
+    },
+    {
+        id: 'financial-analyst',
+        title: 'The Complete Financial Analyst Course',
+        description: 'Learn financial modeling, valuation, and Excel skills to become a top financial analyst.',
+        image: 'https://placehold.co/600x400.png',
+        price: 799,
+        dataAiHint: "stock market graph"
+    },
+    {
+        id: 'photography-basics',
+        title: 'Photography for Beginners',
+        description: 'Master your camera settings, composition, and editing techniques to take breathtaking photos.',
+        image: 'https://placehold.co/600x400.png',
+        price: 499,
+        dataAiHint: "camera lens"
+    }
 ];
 
 export default function CoursesPage() {

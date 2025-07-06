@@ -28,6 +28,11 @@ const courseData = {
         title: 'Cyber Security Essentials',
         description: 'Protect systems and networks from digital attacks. Learn ethical hacking, cryptography, and network security.',
         videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' // Placeholder video
+    },
+    'data-science-python': {
+        title: 'Data Science with Python',
+        description: 'Learn data analysis, visualization, and machine learning with Python libraries like Pandas, NumPy, and Scikit-learn.',
+        videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' // Placeholder video
     }
 };
 
