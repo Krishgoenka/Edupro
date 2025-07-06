@@ -21,6 +21,10 @@ export default function CoursesPage() {
         setSelectedCategory(""); // Reset category when domain changes
     };
 
+    const handleCategoryChange = (value: string) => {
+        setSelectedCategory(value === "all" ? "" : value);
+    };
+
     const availableCategories = useMemo(() => {
         return selectedDomain ? categoriesByDomain[selectedDomain] : [];
     }, [selectedDomain]);
@@ -61,12 +65,12 @@ export default function CoursesPage() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Choose Your Course Category</label>
-                        <Select onValueChange={setSelectedCategory} value={selectedCategory} disabled={!selectedDomain}>
+                        <Select onValueChange={handleCategoryChange} value={selectedCategory} disabled={!selectedDomain}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select a category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Categories</SelectItem>
+                                <SelectItem value="all">All Categories</SelectItem>
                                 {availableCategories.map(category => (
                                     <SelectItem key={category} value={category}>{category}</SelectItem>
                                 ))}
