@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +11,7 @@ import { getPersonalizedBundleAction } from '@/app/actions';
 import type { PersonalizedBundleOutput } from '@/ai/flows/generate-personalized-bundle';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Separator } from './ui/separator';
-import Link from 'next/link';
+import { useAuth } from '@/context/auth-context';
 
 export function AiRecommender() {
     const [open, setOpen] = useState(false);
@@ -18,8 +19,26 @@ export function AiRecommender() {
     const [userInput, setUserInput] = useState('');
     const [result, setResult] = useState<PersonalizedBundleOutput | null>(null);
     const { toast } = useToast();
+    const { user } = useAuth();
+    const router = useRouter();
+
+    const handleAuthCheck = () => {
+        if (!user) {
+            toast({
+                variant: "destructive",
+                title: "Authentication Required",
+                description: "Please log in to use the AI Recommender.",
+            });
+            router.push("/login");
+            setOpen(false); // Close dialog on redirect
+            return false;
+        }
+        return true;
+    };
 
     const handleSubmit = () => {
+        if (!handleAuthCheck()) return;
+
         if (userInput.trim().length < 20) {
             toast({
                 variant: "destructive",
@@ -30,8 +49,6 @@ export function AiRecommender() {
         }
 
         startTransition(async () => {
-            // TODO: Add check for Firebase Auth. If not logged in, redirect to '/login'.
-            // For now, we proceed directly to the action.
             const { data, error } = await getPersonalizedBundleAction(userInput);
 
             if (error) {
@@ -45,6 +62,18 @@ export function AiRecommender() {
             }
         });
     };
+
+    const handleEnroll = () => {
+        if (!handleAuthCheck()) return;
+
+        // TODO: Implement Firestore logic to enroll user in all bundle courses
+        toast({
+            title: "Enrolled!",
+            description: "Your personalized bundle has been added to your dashboard.",
+        });
+        router.push("/dashboard");
+        setOpen(false);
+    }
 
     const handleReset = () => {
         setResult(null);
@@ -128,9 +157,8 @@ export function AiRecommender() {
                     {result ? (
                         <>
                             <Button variant="outline" onClick={handleReset}>Create a New Bundle</Button>
-                            {/* TODO: Implement Firestore logic to enroll user in all bundle courses and redirect */}
-                            <Button asChild>
-                                <Link href="/dashboard">Enroll Now - ₹{totalBundlePrice}</Link>
+                            <Button onClick={handleEnroll}>
+                                Enroll Now - ₹{totalBundlePrice}
                             </Button>
                         </>
                     ) : (

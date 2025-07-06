@@ -4,6 +4,7 @@ import React, { useState, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 const formSchema = z.object({
   jobDescription: z.string({ required_error: "Job description is required." }).min(100, "Job description must be at least 100 characters."),
@@ -39,6 +41,8 @@ export default function ResumePage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,6 +59,16 @@ export default function ResumePage() {
   };
 
   const onSubmit = (data: FormValues) => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to analyze your resume.",
+      });
+      router.push("/login");
+      return;
+    }
+
     startTransition(async () => {
       setResult(null);
 
@@ -62,7 +76,6 @@ export default function ResumePage() {
       formData.append('jobDescription', data.jobDescription);
       formData.append('resume', data.resume);
 
-      // TODO: Add check for Firebase Auth. If not logged in, redirect to '/login'.
       const { data: resultData, error } = await analyzeResumeAction(formData);
 
       if (error) {
@@ -91,7 +104,6 @@ export default function ResumePage() {
             <p className="max-w-[700px] mx-auto text-muted-foreground md:text-xl">
               Upload your resume and paste a job description to get instant, AI-driven feedback. We'll identify missing skills and provide actionable advice to make your resume stand out.
             </p>
-            <p className="text-sm text-amber-600 dark:text-amber-400">Note: Login is required to save and track your results.</p>
           </div>
           <Card className="max-w-4xl mx-auto shadow-2xl">
             <CardHeader>

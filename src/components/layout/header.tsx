@@ -1,12 +1,38 @@
 "use client";
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useAuth } from '@/context/auth-context';
 import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export function Header() {
+  const { user } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/');
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "Something went wrong. Please try again.",
+      });
+    }
+  };
+
   const navLinks = [
     { href: "/courses", label: "Courses" },
     { href: "/resume", label: "Resume Advisor" },
@@ -40,12 +66,21 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="hidden md:flex items-center space-x-2">
-            <Button asChild variant="ghost">
-              <Link href="/login">Log In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/signup">Sign Up</Link>
-            </Button>
+            {user ? (
+              <Button onClick={handleLogout} variant="ghost">
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </Button>
+            ) : (
+              <>
+                <Button asChild variant="ghost">
+                  <Link href="/login">Log In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
           <div className="md:hidden">
             <Sheet>
@@ -69,12 +104,21 @@ export function Header() {
                     ))}
                   </nav>
                   <div className="mt-6 flex flex-col gap-2">
-                    <Button asChild variant="ghost">
-                      <Link href="/login">Log In</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href="/signup">Sign Up</Link>
-                    </Button>
+                    {user ? (
+                       <Button onClick={handleLogout}>
+                         <LogOut className="mr-2 h-4 w-4" />
+                         Log Out
+                       </Button>
+                    ) : (
+                      <>
+                        <Button asChild variant="ghost">
+                          <Link href="/login">Log In</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href="/signup">Sign Up</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

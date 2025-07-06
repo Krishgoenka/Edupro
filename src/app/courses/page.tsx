@@ -3,17 +3,41 @@
 import React, { useState, useMemo } from 'react';
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courses as allCourses, domains, categoriesByDomain, Domain } from '@/lib/courses-data';
 import { AiRecommender } from '@/components/ai-recommender';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CoursesPage() {
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const router = useRouter();
+    const { user } = useAuth();
+    const { toast } = useToast();
+
+    const handleBuyCourse = () => {
+        if (!user) {
+          toast({
+            variant: "destructive",
+            title: "Authentication Required",
+            description: "Please log in to purchase a course.",
+          });
+          router.push("/login");
+        } else {
+          // TODO: Add to firestore
+          toast({
+            title: "Success!",
+            description: "Course added to your dashboard.",
+          });
+          router.push("/dashboard");
+        }
+      };
 
     const handleDomainChange = (value: Domain | "All") => {
         const newDomain = value === "All" ? "" : value;
@@ -118,14 +142,8 @@ export default function CoursesPage() {
                         </CardContent>
                         <CardFooter className="p-4 pt-0 flex justify-between items-center">
                             <p className="text-xl font-bold font-headline">₹{course.price}</p>
-                            {/* 
-                              TODO: Implement Firebase Auth check.
-                              If user is not logged in, clicking this button should redirect to '/login'.
-                              If logged in, it should trigger a function to add the course to the user's data in Firestore
-                              and then redirect to '/dashboard'.
-                            */}
-                            <Button asChild>
-                                <Link href="/dashboard">Buy Course</Link>
+                            <Button onClick={handleBuyCourse}>
+                                Buy Course
                             </Button>
                         </CardFooter>
                     </Card>

@@ -1,14 +1,36 @@
 "use client";
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useAuth } from '@/context/auth-context';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CourseDetailPage() {
   const params = useParams();
   const id = params.id;
+  const router = useRouter();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleBuyCourse = () => {
+    if (!user) {
+      toast({
+        variant: "destructive",
+        title: "Authentication Required",
+        description: "Please log in to purchase a course.",
+      });
+      router.push("/login");
+    } else {
+      // TODO: Add to firestore
+      toast({
+        title: "Success!",
+        description: "Course added to your dashboard.",
+      });
+      router.push("/dashboard");
+    }
+  };
 
   // In a real app, you would fetch course details based on the id
   const courseTitle = `Details for Course: ${id}`;
@@ -39,14 +61,8 @@ export default function CourseDetailPage() {
             </p>
           </div>
           <div className="pt-4">
-             {/* 
-                TODO: Implement Firebase Auth check.
-                If user is not logged in, clicking this button should redirect to '/login'.
-                If logged in, it should trigger a function to add the course to the user's data in Firestore
-                and then redirect to '/dashboard'.
-              */}
-            <Button size="lg" asChild>
-                <Link href="/dashboard">Buy Course - ₹499</Link>
+            <Button size="lg" onClick={handleBuyCourse}>
+              Buy Course - ₹499
             </Button>
           </div>
         </CardContent>
