@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
 import React from "react";
 
@@ -25,6 +26,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = React.useTransition();
+  const [isGooglePending, startGoogleTransition] = React.useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,6 +56,25 @@ export default function SignupPage() {
     });
   }
 
+  const handleGoogleSignIn = () => {
+    startGoogleTransition(async () => {
+      try {
+        await signInWithPopup(auth, googleProvider);
+        toast({
+          title: "Account Created!",
+          description: "You have been successfully signed up.",
+        });
+        router.push("/dashboard");
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Sign Up Failed",
+          description: error.message,
+        });
+      }
+    });
+  };
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)] py-12">
       <Card className="w-full max-w-sm">
@@ -71,7 +92,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Full Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} />
+                      <Input placeholder="Your Name" {...field} disabled={isPending || isGooglePending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -84,7 +105,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m@example.com" {...field} />
+                      <Input placeholder="m@example.com" {...field} disabled={isPending || isGooglePending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,18 +118,36 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" {...field} disabled={isPending || isGooglePending} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending}>
+              <Button type="submit" className="w-full" disabled={isPending || isGooglePending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Account
               </Button>
             </form>
           </Form>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isPending || isGooglePending}>
+            {isGooglePending ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.google className="mr-2 h-4 w-4" />
+            )}
+            Google
+          </Button>
         </CardContent>
         <div className="mt-4 p-6 pt-0 text-center text-sm">
           Already have an account?{" "}

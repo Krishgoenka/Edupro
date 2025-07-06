@@ -4,50 +4,25 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import { Star, BrainCircuit, UploadCloud, BarChartBig, User } from "lucide-react";
+import { BrainCircuit, ListChecks, FileScan } from "lucide-react";
 import { courses } from "@/lib/courses-data";
 
 const features = [
   {
-    icon: <UploadCloud className="h-10 w-10 text-primary" />,
+    icon: <FileScan className="h-10 w-10 text-primary" />,
     title: "Instant Resume Analysis",
-    description: "Simply paste your resume and let our AI parse your skills and experience in seconds.",
+    description: "Upload your resume and a job description to see your match score and get AI-powered improvement tips in seconds.",
   },
   {
     icon: <BrainCircuit className="h-10 w-10 text-primary" />,
     title: "AI-Powered Skill Matching",
-    description: "We match your profile against trending job roles to identify your strengths and skill gaps.",
+    description: "Our AI identifies critical skill gaps based on your career goals and suggests the precise courses to fill them.",
   },
   {
-    icon: <BarChartBig className="h-10 w-10 text-primary" />,
+    icon: <ListChecks className="h-10 w-10 text-primary" />,
     title: "Personalized Learning Paths",
-    description: "Receive a custom-curated course bundle to bridge your skill gaps and boost your career.",
+    description: "Receive a custom-curated course bundle designed to bridge your skill gaps and accelerate your career growth.",
   },
-];
-
-const testimonials = [
-    {
-        quote: "EduPro gave me the exact roadmap I needed. I landed my dream job as a Product Manager just two months after completing the suggested courses!",
-        name: "Sarah J.",
-        role: "Product Manager",
-    },
-    {
-        quote: "The skill gap analysis was a real eye-opener. I didn't realize how much I was missing for a senior role. This tool is invaluable.",
-        name: "Michael B.",
-        role: "Senior Software Engineer",
-    },
-    {
-        quote: "As someone switching careers, EduPro was a lifesaver. It demystified the process and gave me a clear, actionable plan.",
-        name: "Emily C.",
-        role: "UX/UI Designer",
-    }
 ];
 
 const featuredCourseIds = ["web-development-bootcamp", "data-science-python", "public-speaking-mastery", "cyber-security-essentials"];
@@ -65,8 +40,11 @@ export function HomePage() {
             <p className="max-w-[700px] text-muted-foreground md:text-xl">
               EduPro provides AI-powered guidance and personalized learning paths to help you achieve your professional goals. Start your journey today.
             </p>
-            <div className="space-x-4">
+            <div className="space-x-4 mt-4">
                 <Button asChild size="lg">
+                    <Link href="/resume">Analyze Your Resume</Link>
+                </Button>
+                 <Button asChild size="lg" variant="outline">
                     <Link href="/courses">Explore Courses</Link>
                 </Button>
             </div>
@@ -137,52 +115,7 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="testimonials" className="w-full py-20 md:py-32 bg-secondary/50">
-          <div className="container px-4 md:px-6">
-              <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-                  <div className="inline-block rounded-lg bg-background px-3 py-1 text-sm">Testimonials</div>
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Trusted by Ambitious Professionals</h2>
-                  <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
-                      See what our users are saying about their journey with EduPro.
-                  </p>
-              </div>
-              <Carousel
-                  opts={{
-                      align: "start",
-                  }}
-                  className="w-full max-w-4xl mx-auto"
-              >
-                  <CarouselContent>
-                      {testimonials.map((testimonial, index) => (
-                          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                              <div className="p-1 h-full">
-                                  <Card className="flex flex-col justify-between h-full shadow-lg">
-                                      <CardContent className="p-6 flex-grow">
-                                          <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
-                                      </CardContent>
-                                      <CardHeader className="pt-0">
-                                          <div className="flex items-center gap-3">
-                                              <div className="p-2 bg-primary rounded-full">
-                                                <User className="h-6 w-6 text-primary-foreground"/>
-                                              </div>
-                                              <div>
-                                                  <CardTitle className="text-base font-bold font-headline">{testimonial.name}</CardTitle>
-                                                  <CardDescription>{testimonial.role}</CardDescription>
-                                              </div>
-                                          </div>
-                                      </CardHeader>
-                                  </Card>
-                              </div>
-                          </CarouselItem>
-                      ))}
-                  </CarouselContent>
-                  <CarouselPrevious />
-                  <CarouselNext />
-              </Carousel>
-          </div>
-      </section>
-
-      <section id="about" className="w-full py-20 md:py-32">
+      <section id="about" className="w-full py-20 md:py-32  bg-secondary/50">
         <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
           <div className="space-y-3">
             <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">About EduPro</h2>
