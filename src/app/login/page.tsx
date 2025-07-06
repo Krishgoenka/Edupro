@@ -25,7 +25,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isPending, startTransition] = React.useTransition();
-  const [isGooglePending, startGoogleTransition] = React.useTransition();
+  const [isGoogleLoading, setIsGoogleLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,23 +54,24 @@ export default function LoginPage() {
     });
   }
 
-  const handleGoogleSignIn = () => {
-    startGoogleTransition(async () => {
-      try {
-        await signInWithPopup(auth, googleProvider);
-        toast({
-          title: "Success!",
-          description: "You've been logged in.",
-        });
-        router.push("/dashboard");
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: error.message,
-        });
-      }
-    });
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithPopup(auth, googleProvider);
+      toast({
+        title: "Success!",
+        description: "You've been logged in.",
+      });
+      router.push("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: error.message,
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -90,7 +91,7 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="m@example.com" {...field} disabled={isPending || isGooglePending}/>
+                      <Input placeholder="m@example.com" {...field} disabled={isPending || isGoogleLoading}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -103,13 +104,13 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} disabled={isPending || isGooglePending}/>
+                      <Input type="password" {...field} disabled={isPending || isGoogleLoading}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isPending || isGooglePending}>
+              <Button type="submit" className="w-full" disabled={isPending || isGoogleLoading}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Log In
               </Button>
@@ -125,8 +126,8 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isPending || isGooglePending}>
-            {isGooglePending ? (
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isPending || isGoogleLoading}>
+            {isGoogleLoading ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <Icons.google className="mr-2 h-4 w-4" />

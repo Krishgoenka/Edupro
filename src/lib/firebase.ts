@@ -5,12 +5,12 @@ import { getFirestore } from "firebase/firestore";
 // IMPORTANT: Replace this with your own Firebase project's configuration
 // from the Firebase console.
 const firebaseConfig = {
-  apiKey: "AIzaSyDusvnfd_Up4FWH4rJ13Mu9dadCgxUqJ-8",
-  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID"
+  apiKey: "AIzaSyC8Z3pPe5LE8eMEg15CmfeI1m7qOpaBs0U",
+  authDomain: "edupro-5q9xx.firebaseapp.com",
+  projectId: "edupro-5q9xx",
+  storageBucket: "edupro-5q9xx.firebasestorage.app",
+  messagingSenderId: "1055644959527",
+  appId: "1:1055644959527:web:f67fc78884c99ea7375f02"
 };
 
 // Initialize Firebase
@@ -20,3 +20,7 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 export { app, auth, db, googleProvider };
+
+
+
+
