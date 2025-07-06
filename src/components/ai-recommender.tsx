@@ -12,7 +12,6 @@ import { getPersonalizedBundleAction } from '@/app/actions';
 import type { PersonalizedBundleOutput } from '@/ai/flows/generate-personalized-bundle';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Separator } from './ui/separator';
-import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
 import { courses } from '@/lib/courses-data';
 import type { Course } from '@/lib/courses-data';
@@ -24,27 +23,10 @@ export function AiRecommender() {
     const [userInput, setUserInput] = useState('');
     const [result, setResult] = useState<PersonalizedBundleOutput | null>(null);
     const { toast } = useToast();
-    const { user } = useAuth();
     const { addToCart } = useCart();
     const router = useRouter();
 
-    const handleAuthCheck = () => {
-        if (!user) {
-            toast({
-                variant: "destructive",
-                title: "Authentication Required",
-                description: "Please log in to use the AI Recommender.",
-            });
-            router.push("/login");
-            setOpen(false); // Close dialog on redirect
-            return false;
-        }
-        return true;
-    };
-
     const handleSubmit = () => {
-        if (!handleAuthCheck()) return;
-
         if (userInput.trim().length < 20) {
             toast({
                 variant: "destructive",
@@ -71,7 +53,6 @@ export function AiRecommender() {
 
     const handleAddBundleToCart = () => {
         if (!result) return;
-        if (!handleAuthCheck()) return;
 
         result.recommendedCourses.forEach(course => {
             const fullCourse = courses.find(c => c.id === course.id);

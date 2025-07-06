@@ -4,7 +4,6 @@ import React, { useState, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +22,6 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy } from "lucide-react";
-import { useAuth } from "@/context/auth-context";
 
 const formSchema = z.object({
   jobDescription: z.string({ required_error: "Job description is required." }).min(100, "Job description must be at least 100 characters."),
@@ -41,8 +39,6 @@ export default function ResumePage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const resultsRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
-  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -59,16 +55,6 @@ export default function ResumePage() {
   };
 
   const onSubmit = (data: FormValues) => {
-    if (!user) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Required",
-        description: "Please log in to analyze your resume.",
-      });
-      router.push("/login");
-      return;
-    }
-
     startTransition(async () => {
       setResult(null);
 
