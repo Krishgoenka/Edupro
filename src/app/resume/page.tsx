@@ -142,7 +142,7 @@ export default function ResumePage() {
                     />
                   <Button type="submit" className="w-full" size="lg" disabled={isPending}>
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Enhance Resume
+                    Analyse
                   </Button>
                 </form>
               </Form>
