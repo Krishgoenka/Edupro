@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const AnalyzeResumeInputSchema = z.object({
+const AnalyzeResumeInputSchema = z.object({
   jobDescription: z.string().describe('The job description text.'),
   resumeText: z.string().describe('The text extracted from the resume.'),
 });
@@ -22,7 +22,7 @@ const AnalysisSchema = z.object({
     skillToAdd: z.string().describe("A corresponding skill or phrasing to add to the resume."),
 });
 
-export const AnalyzeResumeOutputSchema = z.object({
+const AnalyzeResumeOutputSchema = z.object({
   analysisTable: z.array(AnalysisSchema).describe("A table of missing skills and suggested skills to add. This should contain at least 3 items."),
   recommendations: z.array(z.string()).describe("A list of 3-5 bulleted recommendations on how the applicant can improve their resume to better align with the job description."),
 });
