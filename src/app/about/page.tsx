@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'Meet the passionate team behind EduPro, dedicated to revolutionizing personalized education and career guidance through AI.',
+};
 
 const teamMembers = [
   { name: 'Alex Doe', role: 'Founder & CEO', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
