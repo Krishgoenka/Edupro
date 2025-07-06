@@ -1,63 +1,62 @@
 'use server';
 
 /**
- * @fileOverview AI-powered course bundle generator based on resume analysis and skill gap identification.
+ * @fileOverview An AI agent for analyzing a resume against a job description.
  *
- * - generateAICourseBundle - A function that takes a resume and job role as input and returns a course bundle.
- * - GenerateAICourseBundleInput - The input type for the generateAICourseBundle function.
- * - GenerateAICourseBundleOutput - The return type for the generateAICourseBundle function.
+ * - analyzeResume - A function that handles the resume analysis process.
+ * - AnalyzeResumeInput - The input type for the analyzeResume function.
+ * - AnalyzeResumeOutput - The return type for the analyzeResume function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const GenerateAICourseBundleInputSchema = z.object({
-  resumeText: z.string().describe('The text content of the resume.'),
-  jobRole: z.string().describe('The trending job role to match against.'),
+export const AnalyzeResumeInputSchema = z.object({
+  jobDescription: z.string().describe('The job description text.'),
+  resumeText: z.string().describe('The text extracted from the resume.'),
 });
-export type GenerateAICourseBundleInput = z.infer<typeof GenerateAICourseBundleInputSchema>;
+export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
-const CourseSchema = z.object({
-  title: z.string().describe('The title of the course.'),
-  description: z.string().describe('A brief description of the course.'),
-  thumbnail: z.string().describe('URL of the course thumbnail image.'),
-  url: z.string().url().describe('URL of the course.'),
+const AnalysisSchema = z.object({
+    missingSkill: z.string().describe("A skill that is missing from the resume but required by the job description."),
+    skillToAdd: z.string().describe("A corresponding skill or phrasing to add to the resume."),
 });
 
-const GenerateAICourseBundleOutputSchema = z.object({
-  skillGaps: z.array(z.string()).describe('List of skills missing from the resume compared to the job role.'),
-  suggestedCourses: z.array(CourseSchema).describe('A list of suggested courses to address the skill gaps.'),
+export const AnalyzeResumeOutputSchema = z.object({
+  analysisTable: z.array(AnalysisSchema).describe("A table of missing skills and suggested skills to add. This should contain at least 3 items."),
+  recommendations: z.array(z.string()).describe("A list of 3-5 bulleted recommendations on how the applicant can improve their resume to better align with the job description."),
 });
-export type GenerateAICourseBundleOutput = z.infer<typeof GenerateAICourseBundleOutputSchema>;
+export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
 
-export async function generateAICourseBundle(input: GenerateAICourseBundleInput): Promise<GenerateAICourseBundleOutput> {
-  return generateAICourseBundleFlow(input);
+
+export async function analyzeResume(input: AnalyzeResumeInput): Promise<AnalyzeResumeOutput> {
+  return analyzeResumeFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateAICourseBundlePrompt',
-  input: {schema: GenerateAICourseBundleInputSchema},
-  output: {schema: GenerateAICourseBundleOutputSchema},
-  prompt: `You are an AI career coach. A user will provide their resume and a job role that they are interested in. You will analyze the resume, compare it to the requirements of the job role, identify skill gaps, and suggest a course bundle to address these gaps.
+  name: 'analyzeResumePrompt',
+  input: {schema: AnalyzeResumeInputSchema},
+  output: {schema: AnalyzeResumeOutputSchema},
+  prompt: `You are an experienced technical HR manager. Your task is to review the provided resume against the job description.
+First, generate a table with two columns:
+- Column 1: Missing Skills
+- Column 2: Skills to Add
 
-Resume:
-{{resumeText}}
+Then, provide recommendations on how the applicant can improve their resume to better align with the job description.
 
-Job Role:
-{{jobRole}}
+Job Description:
+{{{jobDescription}}}
 
-Analyze the resume, compare it to the job role, identify skill gaps, and suggest a course bundle with at least 3 courses to address these gaps.  The suggested courses should have a title, a brief description, a thumbnail URL, and a course URL.  Return the skill gaps as a list of strings.
-
-Ensure that the course bundle is tailored to address the specific skills gaps identified in the resume.
-
-{{output}}`,
+Resume Text:
+{{{resumeText}}}
+`,
 });
 
-const generateAICourseBundleFlow = ai.defineFlow(
+const analyzeResumeFlow = ai.defineFlow(
   {
-    name: 'generateAICourseBundleFlow',
-    inputSchema: GenerateAICourseBundleInputSchema,
-    outputSchema: GenerateAICourseBundleOutputSchema,
+    name: 'analyzeResumeFlow',
+    inputSchema: AnalyzeResumeInputSchema,
+    outputSchema: AnalyzeResumeOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
