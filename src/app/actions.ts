@@ -5,7 +5,7 @@ import {
   AnalyzeResumeInput, 
   AnalyzeResumeOutput 
 } from "@/ai/flows/generate-course-bundle";
-import pdf from "pdf-parse";
+const pdf = require("pdf-parse");
 
 export async function analyzeResumeAction(
   formData: FormData
