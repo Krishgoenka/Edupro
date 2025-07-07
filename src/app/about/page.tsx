@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -8,11 +9,12 @@ export const metadata: Metadata = {
 };
 
 const teamMembers = [
-  { name: 'Alex Doe', role: 'Founder & CEO', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Jane Smith', role: 'Chief Technology Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Sam Wilson', role: 'Chief Financial Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Maria Garcia', role: 'Chief Operating Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Ken Watanabe', role: 'Chief Product Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Krish Goenka', role: 'Founder & CEO', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Samrat Ghosh', role: 'Chief Technology Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Rohit Gupta', role: 'Chief Financial Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Sanjana Prasad', role: 'Chief Operating Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Dev Kumar', role: 'Chief Product Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Md Habib Alam', role: 'Chief Marketing Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
 ];
 
 export default function AboutPage() {
@@ -36,7 +38,7 @@ export default function AboutPage() {
                 The passionate individuals leading EduPro to revolutionize personalized education.
             </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {teamMembers.map((member) => (
             <div key={member.name} className="text-center flex flex-col items-center">
                 <Avatar className="h-32 w-32 mb-4">
