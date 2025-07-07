@@ -5,7 +5,7 @@ import React, { useState, useRef, useTransition, useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useReactToPrint } from "react-to-print";
+import ReactToPrint from 'react-to-print';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -150,7 +150,7 @@ type CreatorFormValues = z.infer<typeof creatorFormSchema>;
 
 const PrintableResume = React.forwardRef<HTMLDivElement, { data: GeneratedResume }>(({ data }, ref) => {
   return (
-    <div ref={ref} className="font-[Georgia,serif] text-black">
+    <div ref={ref} className="font-[Georgia,serif] text-black bg-white p-12">
       <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center">{data.personalDetails.name}</h1>
         <div className="flex justify-center gap-x-4 gap-y-1 text-sm text-gray-600 my-2 flex-wrap text-center">
@@ -207,8 +207,8 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const sanitizedInitialData = React.useMemo(() => {
     const sanitize = (obj: any): any => {
         if (obj === null || obj === undefined) return '';
-        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined && item !== '');
-        if (typeof obj === 'object') {
+        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined);
+        if (typeof obj === 'object' && obj !== null) {
             const newObj: {[key: string]: any} = {};
             for (const key in obj) {
                 newObj[key] = sanitize(obj[key]);
@@ -257,13 +257,7 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
 
   const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
   const { fields: eduFields, append: appendEdu, remove: removeEdu } = useFieldArray({ control: form.control, name: "education" });
-
-  const handlePrint = useReactToPrint({
-    content: () => resumeRef.current,
-    documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
-    onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
-  });
-
+  
   const watchedData = form.watch();
 
   return (
@@ -273,17 +267,23 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Your Generated Resume</h2>
                 <p className="text-muted-foreground md:text-xl">Review, edit, and download your new resume.</p>
             </div>
-            <button
-                onClick={handlePrint}
-                className={cn(buttonVariants({ size: 'lg' }))}
-            >
-                <Download className="mr-2 h-5 w-5"/>Download as PDF
-            </button>
+             <ReactToPrint
+                trigger={() => (
+                    <button className={cn(buttonVariants({ size: 'lg' }))}>
+                        <Download className="mr-2 h-5 w-5"/>Download as PDF
+                    </button>
+                )}
+                content={() => resumeRef.current}
+                documentTitle={`${form.getValues('personalDetails.name') || 'resume'}-EduPro`}
+                onAfterPrint={() => toast({ title: "Resume Downloaded!" })}
+            />
         </div>
 
-        {/* Print-only version */}
-        <div className="hidden print:block">
-          <PrintableResume ref={resumeRef} data={watchedData} />
+        {/* This component is only for printing */}
+        <div className="hidden">
+            <div className="print:block">
+                <PrintableResume ref={resumeRef} data={watchedData} />
+            </div>
         </div>
         
         {/* Screen-only, editable version */}
@@ -408,7 +408,9 @@ function ResumeCreator() {
                       <Input
                         type="file"
                         accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
-                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                        onChange={(e) => {
+                          field.onChange(e.target.files ? e.target.files[0] : null);
+                        }}
                       />
                     </FormControl>
                     <FormMessage />
