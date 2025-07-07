@@ -9,6 +9,11 @@ import {
   generatePersonalizedBundle,
   PersonalizedBundleOutput
 } from '@/ai/flows/generate-personalized-bundle';
+import { 
+  generateResume,
+  GenerateResumeInput,
+  GeneratedResume
+} from "@/ai/flows/generate-resume";
 import pdf from "pdf-parse";
 
 export async function analyzeResumeAction(
@@ -76,5 +81,45 @@ export async function getPersonalizedBundleAction(
     console.error(error);
     const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
     return { data: null, error: `Failed to generate bundle. ${errorMessage}` };
+  }
+}
+
+export async function generateResumeAction(
+  formData: FormData
+): Promise<{
+  data: GeneratedResume | null;
+  error: string | null;
+}> {
+  try {
+    const userInput = formData.get('userInput') as string;
+    const resumeFile = formData.get('resumeFile') as File | null;
+
+    let resumeText = userInput;
+
+    if (resumeFile && resumeFile.size > 0) {
+        if (resumeFile.type !== "application/pdf") {
+            return { data: null, error: "Only PDF files are accepted for upload." };
+        }
+        const fileBuffer = Buffer.from(await resumeFile.arrayBuffer());
+        const pdfData = await pdf(fileBuffer);
+        // If there was user input text, prepend it to the PDF text.
+        resumeText = userInput ? `${userInput}\n\n---RESUME CONTENT---\n\n${pdfData.text}` : pdfData.text;
+    }
+
+    if (!resumeText) {
+      return { data: null, error: "No input provided. Please type your details or upload a file." };
+    }
+
+    const input: GenerateResumeInput = {
+      userInput: resumeText,
+    };
+    
+    const result = await generateResume(input);
+
+    return { data: result, error: null };
+  } catch (error) {
+    console.error(error);
+    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    return { data: null, error: `Failed to generate resume. ${errorMessage}` };
   }
 }
