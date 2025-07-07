@@ -30,6 +30,7 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
             setLoading(true);
+            const defaultCourseIds = new Set(['ai-a-z', 'web-development-bootcamp', 'graphic-design-fundamentals', 'data-science-python']);
             let enrolledCourseData: EnrolledCourseData[] = [];
             
             if (user) {
@@ -65,29 +66,28 @@ export default function DashboardPage() {
                 }
             }
             
-            let coursesToDisplay: CourseWithProgress[];
+            const enrolledCourseMap = new Map(enrolledCourseData.map(c => [c.id, c.progress]));
+            const allCourseIdsToShow = new Set([...defaultCourseIds, ...enrolledCourseMap.keys()]);
 
-            if (enrolledCourseData.length === 0) {
-                const defaultCourseIds = ['ai-a-z', 'web-development-bootcamp', 'graphic-design-fundamentals', 'data-science-python'];
-                coursesToDisplay = allCourses
-                    .filter(c => defaultCourseIds.includes(c.id))
-                    .map((course) => {
-                        const progress = (course.id.charCodeAt(0) * course.id.length) % 75 + 10;
-                        let status = "In Progress";
-                        return { ...course, progress, status };
-                    });
-            } else {
-                const enrolledCourseMap = new Map(enrolledCourseData.map(c => [c.id, c.progress]));
-                coursesToDisplay = allCourses
-                    .filter(c => enrolledCourseMap.has(c.id))
-                    .map((course) => {
-                        const progress = enrolledCourseMap.get(course.id) || 0;
-                        let status = "Not Started";
-                        if (progress === 100) status = "Completed";
-                        else if (progress > 0) status = "In Progress";
-                        return { ...course, progress, status };
-                    });
-            }
+            const coursesToDisplay = allCourses
+                .filter(c => allCourseIdsToShow.has(c.id))
+                .map((course) => {
+                    let progress: number;
+                    let status: string;
+
+                    if (enrolledCourseMap.has(course.id)) {
+                        progress = enrolledCourseMap.get(course.id)!;
+                    } else {
+                        // This is a default course not yet enrolled in, give it some mock progress
+                        progress = (course.id.charCodeAt(0) * course.id.length) % 75 + 10;
+                    }
+
+                    if (progress === 100) status = "Completed";
+                    else if (progress > 0) status = "In Progress";
+                    else status = "Not Started";
+                    
+                    return { ...course, progress, status };
+                });
             
             setEnrolledCourses(coursesToDisplay);
             setLoading(false);
@@ -247,6 +247,7 @@ export default function DashboardPage() {
                         ) : (
                              <div className="text-center col-span-full py-16">
                                 <p className="text-lg text-muted-foreground">No courses match your filters.</p>
+
                                 <p className="text-sm text-muted-foreground">Try adjusting your selections.</p>
                             </div>
                         )}
@@ -265,3 +266,5 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+    
