@@ -5,7 +5,7 @@ import React, { useState, useRef, useTransition, useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import ReactToPrint from 'react-to-print';
+import { useReactToPrint } from 'react-to-print';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -88,7 +88,7 @@ function ResumeAnalyzer() {
             <FormField
               control={form.control}
               name="resume"
-              render={({ field: { onChange, onBlur, name, ref } }) => (
+              render={({ field: { onChange, value, ...rest } }) => (
                 <FormItem>
                   <FormLabel>Upload Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
                   <FormControl>
@@ -96,9 +96,7 @@ function ResumeAnalyzer() {
                       type="file"
                       accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
                       onChange={(e) => onChange(e.target.files?.[0])}
-                      onBlur={onBlur}
-                      ref={ref}
-                      name={name}
+                      {...rest}
                     />
                   </FormControl>
                   <FormMessage />
@@ -249,6 +247,12 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
     resolver: zodResolver(GeneratedResumeSchema),
     defaultValues: sanitizedInitialData,
   });
+  
+  const handlePrint = useReactToPrint({
+    content: () => resumeRef.current,
+    documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
+    onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
+  });
 
   useEffect(() => {
     form.reset(sanitizedInitialData);
@@ -267,16 +271,12 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Your Generated Resume</h2>
                 <p className="text-muted-foreground md:text-xl">Review, edit, and download your new resume.</p>
             </div>
-             <ReactToPrint
-                trigger={() => (
-                    <button className={cn(buttonVariants({ size: 'lg' }))}>
-                        <Download className="mr-2 h-5 w-5"/>Download as PDF
-                    </button>
-                )}
-                content={() => resumeRef.current}
-                documentTitle={`${form.getValues('personalDetails.name') || 'resume'}-EduPro`}
-                onAfterPrint={() => toast({ title: "Resume Downloaded!" })}
-            />
+            <button
+                onClick={handlePrint}
+                className={cn(buttonVariants({ size: 'lg' }))}
+            >
+                <Download className="mr-2 h-5 w-5"/>Download as PDF
+            </button>
         </div>
 
         {/* This component is only for printing */}
