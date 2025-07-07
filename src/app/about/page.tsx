@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -9,12 +10,12 @@ export const metadata: Metadata = {
 };
 
 const teamMembers = [
-  { name: 'Krish Goenka', role: 'Founder & CEO', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Samrat Ghosh', role: 'Chief Technology Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Rohit Gupta', role: 'Chief Financial Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Sanjana Prasad', role: 'Chief Operating Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Dev Kumar', role: 'Chief Product Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
-  { name: 'Md Habib Alam', role: 'Chief Marketing Officer', image: 'https://placehold.co/400x400.png', dataAiHint: 'person portrait' },
+  { name: 'Krish Goenka', role: 'Founder & CEO', image: '/krish.jpg', dataAiHint: 'person portrait' },
+  { name: 'Sanjana Prasad', role: 'Chief Operating Officer', image: '/sanjana.jpg', dataAiHint: 'person portrait' },
+  { name: 'Samrat Ghosh', role: 'Chief Technology Officer', image: '/samrat.jpg', dataAiHint: 'person portrait' },
+  { name: 'Rohit Gupta', role: 'Chief Financial Officer', image: '/rohit.jpg', dataAiHint: 'person portrait' },
+  { name: 'Dev Kumar', role: 'Chief Product Officer', image: '/dev.jpg', dataAiHint: 'person portrait' },
+  { name: 'Md Habib Alam', role: 'Chief Marketing Officer', image: '/habib.jpg', dataAiHint: 'person portrait' },
 ];
 
 export default function AboutPage() {
@@ -42,7 +43,7 @@ export default function AboutPage() {
           {teamMembers.map((member) => (
             <div key={member.name} className="text-center flex flex-col items-center">
                 <Avatar className="h-32 w-32 mb-4">
-                    <AvatarImage src={member.image} alt={member.name} data-ai-hint={member.dataAiHint} />
+                    <AvatarImage src={member.image} alt={member.name} />
                     <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <h3 className="text-xl font-bold font-headline">{member.name}</h3>
