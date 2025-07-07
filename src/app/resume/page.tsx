@@ -5,7 +5,6 @@ import React, { useState, useRef, useTransition, useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useReactToPrint } from 'react-to-print';
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -147,9 +146,9 @@ const creatorFormSchema = z.object({
 type CreatorFormValues = z.infer<typeof creatorFormSchema>;
 
 
-const PrintableResume = React.forwardRef<HTMLDivElement, { data: GeneratedResume }>(({ data }, ref) => {
+const PrintableResume = ({ data }: { data: GeneratedResume }) => {
   return (
-    <div ref={ref} className="font-[Georgia,serif] text-black bg-white p-12">
+    <div className="font-[Georgia,serif] text-black bg-white p-12">
       <div className="w-full max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center">{data.personalDetails.name}</h1>
         <div className="flex justify-center gap-x-4 gap-y-1 text-sm text-gray-600 my-2 flex-wrap text-center">
@@ -195,14 +194,11 @@ const PrintableResume = React.forwardRef<HTMLDivElement, { data: GeneratedResume
       </div>
     </div>
   );
-});
+};
 PrintableResume.displayName = 'PrintableResume';
 
 
 const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
-  const resumeRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-  
   const sanitizedData = React.useMemo(() => {
     const data = initialData || {};
     return {
@@ -215,18 +211,18 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
         location: data.personalDetails?.location ?? '',
       },
       summary: data.summary ?? '',
-      experience: (Array.isArray(data.experience) ? data.experience : []).map(exp => ({
+      experience: (Array.isArray(data.experience) ? data.experience : []).filter(Boolean).map(exp => ({
         role: exp?.role ?? '',
         company: exp?.company ?? '',
         dates: exp?.dates ?? '',
-        description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
-      })).filter(Boolean),
-      education: (Array.isArray(data.education) ? data.education : []).map(edu => ({
+        description: (Array.isArray(exp?.description) ? exp.description : []).filter(Boolean).map(d => d ?? ''),
+      })),
+      education: (Array.isArray(data.education) ? data.education : []).filter(Boolean).map(edu => ({
         degree: edu?.degree ?? '',
         institution: edu?.institution ?? '',
         dates: edu?.dates ?? '',
-      })).filter(Boolean),
-      skills: Array.isArray(data.skills) ? data.skills.map(s => s ?? '') : [],
+      })),
+      skills: Array.isArray(data.skills) ? data.skills.filter(Boolean).map(s => s ?? '') : [],
     };
   }, [initialData]);
 
@@ -235,11 +231,9 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
     defaultValues: sanitizedData,
   });
 
-  const handlePrint = useReactToPrint({
-    content: () => resumeRef.current,
-    documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
-    onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
-  });
+  const handlePrint = () => {
+    window.print();
+  };
 
   useEffect(() => {
     form.reset(sanitizedData);
@@ -265,15 +259,15 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
             </button>
         </div>
 
-        {/* This component is only for printing */}
-        <div className="hidden">
-            <div className="print:block">
-                <PrintableResume ref={resumeRef} data={watchedData} />
-            </div>
+        {/* This component is only for printing, but rendered off-screen */}
+        <div className="absolute -left-[9999px] top-0">
+          <div className="printable-area">
+            <PrintableResume data={watchedData} />
+          </div>
         </div>
         
         {/* Screen-only, editable version */}
-        <div className="block print:hidden">
+        <div className="block">
             <Form {...form}>
                 <div className="p-8 bg-white text-black font-[Georgia,serif] shadow-lg rounded-md">
                     <div className="w-full max-w-4xl mx-auto">
@@ -459,5 +453,3 @@ export default function ResumePage() {
     </div>
   );
 }
-
-    
