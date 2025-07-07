@@ -1,9 +1,10 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,37 +15,61 @@ import { Input } from '@/components/ui/input';
 import { AiRecommender } from '@/components/ai-recommender';
 
 export default function CartPage() {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, clearCart } = useCart();
   const { toast } = useToast();
+  const router = useRouter();
   const [coupon, setCoupon] = useState('');
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
 
   const handleRemove = (courseId: string) => {
     removeFromCart(courseId);
+    setIsCouponApplied(false);
   };
 
+  const subtotal = useMemo(() => cart.reduce((acc, course) => acc + course.price, 0), [cart]);
+  
+  const total = isCouponApplied ? 0 : subtotal;
+
   const handleCheckout = () => {
-    // This is where payment gateway logic would be triggered.
-    toast({
-      title: "This feature is not yet available",
-      description: "We're working on integrating a secure payment gateway.",
-    });
+    // Check if the cart is not empty and the total is 0 due to the coupon
+    if (total === 0 && cart.length > 0 && isCouponApplied) {
+        // In a real app, you would add these courses to the user's enrolled list in Firestore.
+        clearCart();
+        toast({
+            title: "Courses Purchased!",
+            description: "Your new courses are now available on your dashboard.",
+        });
+        router.push("/dashboard");
+    } else {
+        // This is where payment gateway logic would be triggered for non-free checkouts.
+        toast({
+          title: "This feature is not yet available",
+          description: "We're working on integrating a secure payment gateway.",
+        });
+    }
   };
 
   const handleApplyCoupon = () => {
-    if (coupon.trim() !== '') {
+    if (coupon.trim().toUpperCase() === 'TESTFREE') {
+      setIsCouponApplied(true);
+      toast({
+        title: "Coupon Applied!",
+        description: "Your order is now free.",
+      });
+    } else if (coupon.trim() !== '') {
+      setIsCouponApplied(false);
       toast({
         title: "Invalid Coupon",
         description: `The coupon "${coupon}" is not valid.`,
         variant: "destructive",
       });
     } else {
+      setIsCouponApplied(false);
       toast({
         title: "Please enter a coupon code."
       });
     }
   };
-
-  const total = cart.reduce((acc, course) => acc + course.price, 0);
 
   return (
     <div className="container py-12">
@@ -127,11 +152,11 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className='flex items-center'><IndianRupee className="h-4 w-4" />{total}</span>
+                  <span className='flex items-center'><IndianRupee className="h-4 w-4" />{subtotal}</span>
                 </div>
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>Taxes & Fees</span>
-                  <span>Calculated at checkout</span>
+                  <span>{isCouponApplied ? 'Free' : 'Calculated at checkout'}</span>
                 </div>
                 
                 <Separator />
@@ -142,9 +167,20 @@ export default function CartPage() {
                         Coupon Code
                     </label>
                     <div className="flex space-x-2">
-                        <Input id="coupon" placeholder="Enter coupon" value={coupon} onChange={(e) => setCoupon(e.target.value)} />
+                        <Input 
+                            id="coupon" 
+                            placeholder="Enter coupon" 
+                            value={coupon} 
+                            onChange={(e) => {
+                                setCoupon(e.target.value)
+                                if (isCouponApplied) setIsCouponApplied(false);
+                            }}
+                        />
                         <Button variant="secondary" onClick={handleApplyCoupon}>Apply</Button>
                     </div>
+                    {isCouponApplied && (
+                        <p className="text-sm text-green-600 font-medium pt-1">"TESTFREE" applied! Your order is free.</p>
+                    )}
                 </div>
 
                 <Separator />
@@ -154,7 +190,7 @@ export default function CartPage() {
                   <span className='flex items-center'><IndianRupee className="h-5 w-5" />{total}</span>
                 </div>
                 <Button className="w-full" size="lg" onClick={handleCheckout}>
-                  Proceed to Checkout
+                  {total === 0 && cart.length > 0 ? 'Get for Free' : 'Proceed to Checkout'}
                 </Button>
               </CardContent>
             </Card>
