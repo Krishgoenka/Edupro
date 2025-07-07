@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Icons } from '@/components/icons';
+import Image from "next/image";
 import { Linkedin } from "lucide-react";
 
 export function Footer() {
@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="border-t border-border/40 py-6 md:py-8">
       <div className="container flex flex-col items-center justify-center gap-4 text-center md:flex-row md:justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Icons.logo className="h-5 w-5 text-primary" />
+          <Image src="/icon.jpg" alt="EduPro Logo" width={20} height={20} className="rounded-md" />
           <p>
             &copy; {new Date().getFullYear()} EduPro. All rights reserved.
           </p>
