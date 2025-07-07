@@ -5,7 +5,8 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
-import { SplashScreen } from '@/components/splash-screen';
+import { SplashProvider } from '@/context/splash-context';
+import { SplashManager } from '@/components/splash-manager';
 
 export const metadata: Metadata = {
   title: {
@@ -56,17 +57,19 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
         <AuthProvider>
-          <CartProvider>
-            <SplashScreen />
-            <div className="flex flex-col min-h-dvh bg-background">
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-            </div>
-            <Toaster />
-          </CartProvider>
+          <SplashProvider>
+            <CartProvider>
+              <SplashManager />
+              <div className="flex flex-col min-h-dvh bg-background">
+                <Header />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+              <Toaster />
+            </CartProvider>
+          </SplashProvider>
         </AuthProvider>
       </body>
     </html>

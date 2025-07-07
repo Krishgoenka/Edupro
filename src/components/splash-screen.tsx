@@ -3,23 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
-const SPLASH_SEEN_KEY = 'splash_screen_seen';
-
 export function SplashScreen() {
-  // Check session storage immediately. If we've seen it, we start in the finished state.
-  // This avoids a flash of the splash screen on navigation.
-  const [isFinished, setIsFinished] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem(SPLASH_SEEN_KEY) === 'true';
-    }
-    return false;
-  });
-
   const [isFading, setIsFading] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
 
   useEffect(() => {
-    if (isFinished) return;
-
     // Start the fade-out process after the initial logo animation
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
@@ -28,16 +16,13 @@ export function SplashScreen() {
     // Remove the splash screen from the DOM after it has faded out
     const finishTimer = setTimeout(() => {
       setIsFinished(true);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem(SPLASH_SEEN_KEY, 'true');
-      }
     }, 2200); // 1.5s wait + 0.7s fade duration
 
     return () => {
       clearTimeout(fadeTimer);
       clearTimeout(finishTimer);
     };
-  }, [isFinished]);
+  }, []); // Runs only on mount
 
   if (isFinished) {
     return null;

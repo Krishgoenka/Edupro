@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuth } from '@/context/auth-context';
 import { useCart } from '@/context/cart-context';
+import { useSplash } from '@/context/splash-context';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu, LogOut, ShoppingCart } from 'lucide-react';
@@ -18,6 +19,7 @@ export function Header() {
   const { cart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
+  const { triggerSplash } = useSplash();
 
   const handleLogout = async () => {
     try {
@@ -48,7 +50,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container relative flex h-14 max-w-screen-2xl items-center">
         <div className="flex items-center">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Link href="/" className="mr-6 flex items-center space-x-2" onClick={triggerSplash}>
             <Image src="/icon.jpg" alt="EduPro Logo" width={28} height={28} className="rounded-md" />
             <span className="font-bold font-headline">
               EduPro
