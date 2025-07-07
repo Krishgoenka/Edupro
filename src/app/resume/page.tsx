@@ -147,18 +147,18 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
       location: initialData.personalDetails?.location ?? '',
     },
     summary: initialData.summary ?? '',
-    experience: (initialData.experience ?? []).map(exp => ({
-      role: exp.role ?? '',
-      company: exp.company ?? '',
-      dates: exp.dates ?? '',
-      description: (exp.description ?? []).map(d => d ?? ''),
+    experience: (Array.isArray(initialData.experience) ? initialData.experience : []).map(exp => ({
+      role: exp?.role ?? '',
+      company: exp?.company ?? '',
+      dates: exp?.dates ?? '',
+      description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
     })),
-    education: (initialData.education ?? []).map(edu => ({
-      degree: edu.degree ?? '',
-      institution: edu.institution ?? '',
-      dates: edu.dates ?? '',
+    education: (Array.isArray(initialData.education) ? initialData.education : []).map(edu => ({
+      degree: edu?.degree ?? '',
+      institution: edu?.institution ?? '',
+      dates: edu?.dates ?? '',
     })),
-    skills: initialData.skills ?? [],
+    skills: Array.isArray(initialData.skills) ? initialData.skills.map(s => s ?? '') : [],
   };
   
   const form = useForm<GeneratedResume>({
