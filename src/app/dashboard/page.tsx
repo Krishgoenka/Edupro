@@ -46,6 +46,11 @@ export default function DashboardPage() {
                 courseIds = localEnrolled ? JSON.parse(localEnrolled) : [];
             }
             
+            // If there are no enrolled courses, show some default ones for demonstration.
+            if (courseIds.length === 0) {
+                courseIds = ['web-development-bootcamp', 'ai-a-z', 'public-speaking-mastery'];
+            }
+
             const coursesWithProgress = allCourses
                 .filter(c => courseIds.includes(c.id))
                 .map((course) => {
