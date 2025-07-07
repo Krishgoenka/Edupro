@@ -84,13 +84,26 @@ function ResumeAnalyzer() {
                 <FormMessage />
               </FormItem>
             )} />
-            <FormField control={form.control} name="resume" render={({ field: { onChange, ...rest } }) => (
-              <FormItem>
-                <FormLabel>Upload Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
-                <FormControl><Input type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+            <FormField
+              control={form.control}
+              name="resume"
+              render={({ field: { onChange, onBlur, name, ref } }) => (
+                <FormItem>
+                  <FormLabel>Upload Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                      onChange={(e) => onChange(e.target.files?.[0])}
+                      onBlur={onBlur}
+                      ref={ref}
+                      name={name}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button type="submit" className="w-full" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Analyze
             </Button>
@@ -266,7 +279,14 @@ function ResumeCreator() {
       if (error) {
         toast({ variant: "destructive", title: "An error occurred", description: error });
       } else if (resultData) {
-        setResult(resultData);
+        const validatedResult = GeneratedResumeSchema.safeParse(resultData);
+        if (validatedResult.success) {
+            setResult(validatedResult.data);
+        } else {
+            // Even if validation fails, we can try to sanitize and show it
+            setResult(resultData); 
+            console.error("AI returned data that doesn't match schema:", validatedResult.error);
+        }
         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
       }
     });
@@ -290,13 +310,26 @@ function ResumeCreator() {
                 </FormItem>
               )} />
               <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or</span></div>
-              <FormField control={form.control} name="resumeFile" render={({ field: { onChange, ...rest } }) => (
-                <FormItem>
-                  <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
-                  <FormControl><Input type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
+              <FormField
+                control={form.control}
+                name="resumeFile"
+                render={({ field: { onChange, onBlur, name, ref } }) => (
+                  <FormItem>
+                    <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="file"
+                        accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                        onChange={(e) => onChange(e.target.files?.[0])}
+                        onBlur={onBlur}
+                        ref={ref}
+                        name={name}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" className="w-full" size="lg" disabled={isPending}>
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Generate Resume
