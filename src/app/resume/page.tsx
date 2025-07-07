@@ -202,12 +202,6 @@ PrintableResume.displayName = 'PrintableResume';
 const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  const handlePrint = useReactToPrint({
-    content: () => resumeRef.current,
-    documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
-    onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
-  });
   
   const sanitizedData = React.useMemo(() => {
     const data = initialData || {};
@@ -239,6 +233,12 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const form = useForm<GeneratedResume>({
     resolver: zodResolver(GeneratedResumeSchema),
     defaultValues: sanitizedData,
+  });
+
+  const handlePrint = useReactToPrint({
+    content: () => resumeRef.current,
+    documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
+    onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
   });
 
   useEffect(() => {
@@ -390,7 +390,7 @@ function ResumeCreator() {
               <FormField
                 control={form.control}
                 name="resumeFile"
-                render={({ field }) => (
+                render={({ field: { onChange, value, ...rest } }) => (
                   <FormItem>
                     <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
                     <FormControl>
@@ -398,8 +398,9 @@ function ResumeCreator() {
                         type="file"
                         accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
                         onChange={(e) => {
-                          field.onChange(e.target.files ? e.target.files[0] : null);
+                          onChange(e.target.files ? e.target.files[0] : null);
                         }}
+                        {...rest}
                       />
                     </FormControl>
                     <FormMessage />
@@ -458,3 +459,5 @@ export default function ResumePage() {
     </div>
   );
 }
+
+    
