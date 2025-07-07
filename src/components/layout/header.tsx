@@ -40,8 +40,8 @@ export function Header() {
     { href: "/courses", label: "Courses" },
     { href: "/resume", label: "Resume Advisor" },
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/#features", label: "Features" },
     { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (
