@@ -270,8 +270,8 @@ function ResumeCreator() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField control={form.control} name="userInput" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Your Professional Story</FormLabel>
-                  <FormControl><Textarea placeholder="Tell me about your career goals, experience, skills, and education. The more details, the better!" className="min-h-[200px] resize-y" {...field} /></FormControl>
+                  <FormLabel>Your Professional Story / Modification Instructions</FormLabel>
+                  <FormControl><Textarea placeholder="Describe your experience, or if uploading a file, tell the AI what changes you'd like to make. For example: 'Make my summary more punchy and add a project about a Next.js e-commerce site.'" className="min-h-[200px] resize-y" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
