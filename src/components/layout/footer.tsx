@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icons } from '@/components/icons';
+import { Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -13,7 +14,10 @@ export function Footer() {
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/about" className="hover:text-primary">About</Link>
-            <a href="mailto:contact@edupro.com" className="hover:text-primary">Contact</a>
+            <a href="mailto:eduproesd@gmail.com" className="hover:text-primary">Contact</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+              <Linkedin className="h-5 w-5" />
+            </a>
         </div>
       </div>
     </footer>

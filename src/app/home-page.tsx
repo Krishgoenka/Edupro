@@ -122,8 +122,8 @@ export function HomePage() {
         <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
           <div className="space-y-3">
             <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">About EduPro</h2>
-            <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              EduPro was founded on the belief that everyone deserves access to a fulfilling career. In a fast-changing job market, it's hard to know which skills to learn. We leverage the power of AI to provide clear, personalized, and actionable guidance, helping you invest in your education wisely and achieve your professional dreams.
+            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
+              At EduPro, we're not just building a platform; we're building futures. Our mission is to bridge the gap between ambition and achievement by making high-quality, AI-driven education accessible to all. We believe that the right skills can unlock unimaginable potential. That's why we've created a space where learners can find clear direction, personalized learning paths, and the support they need to conquer the challenges of tomorrow's job market. Join us and transform your potential into your profession.
             </p>
           </div>
         </div>
