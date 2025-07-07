@@ -21,10 +21,8 @@ export const metadata: Metadata = {
     siteName: 'EduPro',
     images: [
       {
-        url: 'https://placehold.co/1200x630.png',
-        width: 1200,
-        height: 630,
-        alt: 'EduPro - AI-Powered Career Advancement',
+        url: '/icon.jpg',
+        alt: 'EduPro Logo',
       },
     ],
     locale: 'en_US',
@@ -34,7 +32,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'EduPro: Unlock Your Career Potential with AI',
     description: 'AI-driven career guidance and personalized online courses. Get your resume analyzed and find the perfect learning path.',
-    images: ['https://placehold.co/1200x630.png'],
+    images: ['/icon.jpg'],
   },
 };
 
