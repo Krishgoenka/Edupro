@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import { Linkedin } from "lucide-react";
@@ -10,7 +9,8 @@ export function Footer() {
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Image src="/icon.jpg" alt="EduPro Logo" width={20} height={20} className="rounded-md" />
           <p>
-            &copy; {new Date().getFullYear()} EduPro. All rights reserved.
+            &copy; {new Date().getFullYear()}{" "}
+            <strong>EduPro. All rights reserved.</strong>
           </p>
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
