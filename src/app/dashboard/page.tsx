@@ -15,6 +15,7 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Activity, Loader2 } from 'lucide-react';
 
+type EnrolledCourseData = { id: string; progress: number };
 type CourseWithProgress = Course & { progress: number; status: string; };
 
 export default function DashboardPage() {
@@ -29,45 +30,66 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
             setLoading(true);
-            let courseIds: string[] = [];
+            let enrolledCourseData: EnrolledCourseData[] = [];
             
             if (user) {
                 const userCoursesRef = doc(db, 'userCourses', user.uid);
                 try {
                     const docSnap = await getDoc(userCoursesRef);
                     if (docSnap.exists()) {
-                        courseIds = docSnap.data().courseIds || [];
+                        const data = docSnap.data();
+                        if (data.courses) {
+                            enrolledCourseData = data.courses;
+                        } else if (data.courseIds) { // Backwards compatibility for old format
+                            enrolledCourseData = data.courseIds.map((id: string) => ({
+                                id,
+                                progress: (id.charCodeAt(0) * id.length) % 101,
+                            }));
+                        }
                     }
                 } catch (error) {
                     console.error("Error fetching user courses from Firestore:", error);
                 }
             } else {
                 const localEnrolled = localStorage.getItem('guestEnrolledCourses');
-                courseIds = localEnrolled ? JSON.parse(localEnrolled) : [];
+                if (localEnrolled) {
+                    const parsed = JSON.parse(localEnrolled);
+                    if (parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null && 'id' in parsed[0]) {
+                        enrolledCourseData = parsed; // New format
+                    } else if (parsed.length > 0) { // Old format
+                        enrolledCourseData = parsed.map((id: string) => ({
+                            id,
+                            progress: (id.charCodeAt(0) * id.length) % 101,
+                        }));
+                    }
+                }
             }
             
-            // If there are no enrolled courses, show some default ones for demonstration.
-            if (courseIds.length === 0) {
-                courseIds = ['web-development-bootcamp', 'ai-a-z', 'public-speaking-mastery'];
+            let coursesToDisplay: CourseWithProgress[];
+
+            if (enrolledCourseData.length === 0) {
+                const defaultCourseIds = ['ai-a-z', 'web-development-bootcamp', 'graphic-design-fundamentals', 'data-science-python'];
+                coursesToDisplay = allCourses
+                    .filter(c => defaultCourseIds.includes(c.id))
+                    .map((course) => {
+                        const progress = (course.id.charCodeAt(0) * course.id.length) % 75 + 10;
+                        let status = "In Progress";
+                        return { ...course, progress, status };
+                    });
+            } else {
+                const enrolledCourseMap = new Map(enrolledCourseData.map(c => [c.id, c.progress]));
+                coursesToDisplay = allCourses
+                    .filter(c => enrolledCourseMap.has(c.id))
+                    .map((course) => {
+                        const progress = enrolledCourseMap.get(course.id) || 0;
+                        let status = "Not Started";
+                        if (progress === 100) status = "Completed";
+                        else if (progress > 0) status = "In Progress";
+                        return { ...course, progress, status };
+                    });
             }
-
-            const coursesWithProgress = allCourses
-                .filter(c => courseIds.includes(c.id))
-                .map((course) => {
-                    // Simulate persistent progress based on course ID
-                    const progress = (course.id.charCodeAt(0) * course.id.length) % 101;
-                    let status = "Not Started";
-                    if (progress === 100) status = "Completed";
-                    else if (progress > 0) status = "In Progress";
-
-                    return {
-                        ...course,
-                        progress,
-                        status
-                    };
-                });
             
-            setEnrolledCourses(coursesWithProgress);
+            setEnrolledCourses(coursesToDisplay);
             setLoading(false);
         };
 

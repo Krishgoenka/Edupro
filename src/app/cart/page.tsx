@@ -37,21 +37,42 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (total === 0 && cart.length > 0 && isCouponApplied) {
-        const courseIdsToAdd = cart.map(c => c.id);
+        const newCoursesWithProgress = cart.map(c => ({ id: c.id, progress: 0 }));
 
         if (user) {
             const userCoursesRef = doc(db, 'userCourses', user.uid);
             const docSnap = await getDoc(userCoursesRef);
+            let updatedCourses: {id: string, progress: number}[] = [];
+
             if (docSnap.exists()) {
-                await updateDoc(userCoursesRef, { courseIds: arrayUnion(...courseIdsToAdd) });
+                const data = docSnap.data();
+                let existingCourses: {id: string, progress: number}[] = [];
+                if (data.courses) {
+                    existingCourses = data.courses;
+                } else if (data.courseIds) { // For backwards compatibility
+                     existingCourses = data.courseIds.map((id:string) => ({id, progress: (id.charCodeAt(0) * id.length) % 101}))
+                }
+                const coursesToAdd = newCoursesWithProgress.filter(nc => !existingCourses.some(ec => ec.id === nc.id));
+                updatedCourses = [...existingCourses, ...coursesToAdd];
             } else {
-                await setDoc(userCoursesRef, { courseIds: courseIdsToAdd });
+                updatedCourses = newCoursesWithProgress;
             }
+            await setDoc(userCoursesRef, { courses: updatedCourses }, { merge: true });
+
         } else {
             const localEnrolled = localStorage.getItem('guestEnrolledCourses');
-            const currentIds = localEnrolled ? JSON.parse(localEnrolled) : [];
-            const newIds = [...new Set([...currentIds, ...courseIdsToAdd])];
-            localStorage.setItem('guestEnrolledCourses', JSON.stringify(newIds));
+            let currentCourses: {id: string, progress: number}[] = [];
+            if(localEnrolled) {
+                 const parsed = JSON.parse(localEnrolled);
+                 if (parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null && 'id' in parsed[0]) {
+                     currentCourses = parsed;
+                 } else if (parsed.length > 0) {
+                     currentCourses = parsed.map((id:string) => ({id, progress: (id.charCodeAt(0) * id.length) % 101}))
+                 }
+            }
+            const coursesToAdd = newCoursesWithProgress.filter(nc => !currentCourses.some(ec => ec.id === nc.id));
+            const updatedCourses = [...currentCourses, ...coursesToAdd];
+            localStorage.setItem('guestEnrolledCourses', JSON.stringify(updatedCourses));
         }
         
         clearCart();
