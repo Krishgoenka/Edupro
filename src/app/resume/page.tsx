@@ -16,8 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction, generateResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
-import type { GeneratedResume } from "@/ai/flows/generate-resume";
-import { GeneratedResumeSchema } from "@/ai/flows/generate-resume";
+import { GeneratedResumeSchema, type GeneratedResume } from "@/ai/schemas/resume";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy, Wand2, Download, Trash2, PlusCircle, User, Briefcase, GraduationCap, Sparkles } from "lucide-react";
 
 // --- Resume Analyzer Component ---
