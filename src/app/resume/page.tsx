@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useReactToPrint } from "react-to-print";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ import { analyzeResumeAction, generateResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
 import { GeneratedResumeSchema, type GeneratedResume } from "@/ai/schemas/resume";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy, Wand2, Download, Trash2, PlusCircle, User, Briefcase, GraduationCap, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // --- Resume Analyzer Component ---
 
@@ -150,34 +151,56 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  const sanitizedInitialData: GeneratedResume = {
-    personalDetails: {
-      name: initialData.personalDetails?.name ?? '',
-      email: initialData.personalDetails?.email ?? '',
-      phone: initialData.personalDetails?.phone ?? '',
-      linkedin: initialData.personalDetails?.linkedin ?? '',
-      github: initialData.personalDetails?.github ?? '',
-      location: initialData.personalDetails?.location ?? '',
-    },
-    summary: initialData.summary ?? '',
-    experience: (Array.isArray(initialData.experience) ? initialData.experience : []).map(exp => ({
-      role: exp?.role ?? '',
-      company: exp?.company ?? '',
-      dates: exp?.dates ?? '',
-      description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
-    })),
-    education: (Array.isArray(initialData.education) ? initialData.education : []).map(edu => ({
-      degree: edu?.degree ?? '',
-      institution: edu?.institution ?? '',
-      dates: edu?.dates ?? '',
-    })),
-    skills: Array.isArray(initialData.skills) ? initialData.skills.map(s => s ?? '') : [],
-  };
+  const sanitizedInitialData = React.useMemo(() => {
+    const sanitize = (obj: any): any => {
+        if (obj === null || obj === undefined) return '';
+        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined);
+        if (typeof obj === 'object') {
+            const newObj: {[key: string]: any} = {};
+            for (const key in obj) {
+                newObj[key] = sanitize(obj[key]);
+            }
+            return newObj;
+        }
+        return obj;
+    };
+
+    const deepSanitized = sanitize(initialData);
+
+    return {
+      personalDetails: {
+        name: deepSanitized.personalDetails?.name ?? '',
+        email: deepSanitized.personalDetails?.email ?? '',
+        phone: deepSanitized.personalDetails?.phone ?? '',
+        linkedin: deepSanitized.personalDetails?.linkedin ?? '',
+        github: deepSanitized.personalDetails?.github ?? '',
+        location: deepSanitized.personalDetails?.location ?? '',
+      },
+      summary: deepSanitized.summary ?? '',
+      experience: (Array.isArray(deepSanitized.experience) ? deepSanitized.experience : []).map(exp => ({
+        role: exp?.role ?? '',
+        company: exp?.company ?? '',
+        dates: exp?.dates ?? '',
+        description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
+      })),
+      education: (Array.isArray(deepSanitized.education) ? deepSanitized.education : []).map(edu => ({
+        degree: edu?.degree ?? '',
+        institution: edu?.institution ?? '',
+        dates: edu?.dates ?? '',
+      })),
+      skills: Array.isArray(deepSanitized.skills) ? deepSanitized.skills.map(s => s ?? '') : [],
+    };
+  }, [initialData]);
   
   const form = useForm<GeneratedResume>({
     resolver: zodResolver(GeneratedResumeSchema),
     defaultValues: sanitizedInitialData,
   });
+
+  useEffect(() => {
+    form.reset(sanitizedInitialData);
+  }, [sanitizedInitialData, form]);
+
 
   const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
   const { fields: eduFields, append: appendEdu, remove: removeEdu } = useFieldArray({ control: form.control, name: "education" });
@@ -197,7 +220,12 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Your Generated Resume</h2>
                 <p className="text-muted-foreground md:text-xl">Review, edit, and download your new resume.</p>
             </div>
-            <Button onClick={handlePrint} size="lg"><Download className="mr-2 h-5 w-5"/>Download as PDF</Button>
+            <button
+                onClick={handlePrint}
+                className={cn(buttonVariants({ size: 'lg' }))}
+            >
+                <Download className="mr-2 h-5 w-5"/>Download as PDF
+            </button>
         </div>
 
         <Form {...form}>
@@ -313,17 +341,17 @@ function ResumeCreator() {
               <FormField
                 control={form.control}
                 name="resumeFile"
-                render={({ field: { onChange, onBlur, name, ref } }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
                     <FormControl>
                       <Input
                         type="file"
                         accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
-                        onChange={(e) => onChange(e.target.files?.[0])}
-                        onBlur={onBlur}
-                        ref={ref}
-                        name={name}
+                        onChange={(e) => field.onChange(e.target.files?.[0])}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                        name={field.name}
                       />
                     </FormControl>
                     <FormMessage />
