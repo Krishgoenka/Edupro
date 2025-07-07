@@ -199,8 +199,12 @@ PrintableResume.displayName = 'PrintableResume';
 
 
 const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
+  const { toast } = useToast();
+
   const sanitizedData = React.useMemo(() => {
     const data = initialData || {};
+    const sanitizeArray = (arr: any[] | undefined) => (Array.isArray(arr) ? arr : []).filter(Boolean);
+
     return {
       personalDetails: {
         name: data.personalDetails?.name ?? '',
@@ -211,18 +215,18 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
         location: data.personalDetails?.location ?? '',
       },
       summary: data.summary ?? '',
-      experience: (Array.isArray(data.experience) ? data.experience : []).filter(Boolean).map(exp => ({
+      experience: sanitizeArray(data.experience).map(exp => ({
         role: exp?.role ?? '',
         company: exp?.company ?? '',
         dates: exp?.dates ?? '',
-        description: (Array.isArray(exp?.description) ? exp.description : []).filter(Boolean).map(d => d ?? ''),
+        description: sanitizeArray(exp?.description).map(d => d ?? ''),
       })),
-      education: (Array.isArray(data.education) ? data.education : []).filter(Boolean).map(edu => ({
+      education: sanitizeArray(data.education).map(edu => ({
         degree: edu?.degree ?? '',
         institution: edu?.institution ?? '',
         dates: edu?.dates ?? '',
       })),
-      skills: Array.isArray(data.skills) ? data.skills.filter(Boolean).map(s => s ?? '') : [],
+      skills: sanitizeArray(data.skills).map(s => s ?? ''),
     };
   }, [initialData]);
 
@@ -232,7 +236,9 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   });
 
   const handlePrint = () => {
+    document.title = `${form.getValues('personalDetails.name') || 'resume'}-EduPro`;
     window.print();
+    toast({ title: "Your resume is being prepared for download." });
   };
 
   useEffect(() => {
@@ -384,7 +390,7 @@ function ResumeCreator() {
               <FormField
                 control={form.control}
                 name="resumeFile"
-                render={({ field: { onChange, value, ...rest } }) => (
+                render={({ field: { onChange, ...rest } }) => (
                   <FormItem>
                     <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
                     <FormControl>
@@ -394,7 +400,6 @@ function ResumeCreator() {
                         onChange={(e) => {
                           onChange(e.target.files ? e.target.files[0] : null);
                         }}
-                        {...rest}
                       />
                     </FormControl>
                     <FormMessage />
