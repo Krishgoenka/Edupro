@@ -132,18 +132,26 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const { toast } = useToast();
   
   const sanitizedInitialData: GeneratedResume = {
-    ...initialData,
     personalDetails: {
-      name: initialData.personalDetails.name ?? '',
-      email: initialData.personalDetails.email ?? '',
-      phone: initialData.personalDetails.phone ?? '',
-      linkedin: initialData.personalDetails.linkedin ?? '',
-      github: initialData.personalDetails.github ?? '',
-      location: initialData.personalDetails.location ?? '',
+      name: initialData.personalDetails?.name ?? '',
+      email: initialData.personalDetails?.email ?? '',
+      phone: initialData.personalDetails?.phone ?? '',
+      linkedin: initialData.personalDetails?.linkedin ?? '',
+      github: initialData.personalDetails?.github ?? '',
+      location: initialData.personalDetails?.location ?? '',
     },
     summary: initialData.summary ?? '',
-    experience: initialData.experience ?? [],
-    education: initialData.education ?? [],
+    experience: (initialData.experience ?? []).map(exp => ({
+      role: exp.role ?? '',
+      company: exp.company ?? '',
+      dates: exp.dates ?? '',
+      description: (exp.description ?? []).map(d => d ?? ''),
+    })),
+    education: (initialData.education ?? []).map(edu => ({
+      degree: edu.degree ?? '',
+      institution: edu.institution ?? '',
+      dates: edu.dates ?? '',
+    })),
     skills: initialData.skills ?? [],
   };
   
