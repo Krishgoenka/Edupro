@@ -88,15 +88,16 @@ function ResumeAnalyzer() {
             <FormField
               control={form.control}
               name="resume"
-              render={({ field: { onChange, value, ...rest } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Upload Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
                   <FormControl>
                     <Input
                       type="file"
                       accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
-                      onChange={(e) => onChange(e.target.files?.[0])}
-                      {...rest}
+                      onChange={(e) => {
+                        field.onChange(e.target.files ? e.target.files[0] : null);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -201,63 +202,48 @@ PrintableResume.displayName = 'PrintableResume';
 const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  
-  const sanitizedInitialData = React.useMemo(() => {
-    const sanitize = (obj: any): any => {
-        if (obj === null || obj === undefined) return '';
-        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined);
-        if (typeof obj === 'object' && obj !== null) {
-            const newObj: {[key: string]: any} = {};
-            for (const key in obj) {
-                newObj[key] = sanitize(obj[key]);
-            }
-            return newObj;
-        }
-        return obj;
-    };
 
-    const deepSanitized = sanitize(initialData);
-
-    return {
-      personalDetails: {
-        name: deepSanitized.personalDetails?.name ?? '',
-        email: deepSanitized.personalDetails?.email ?? '',
-        phone: deepSanitized.personalDetails?.phone ?? '',
-        linkedin: deepSanitized.personalDetails?.linkedin ?? '',
-        github: deepSanitized.personalDetails?.github ?? '',
-        location: deepSanitized.personalDetails?.location ?? '',
-      },
-      summary: deepSanitized.summary ?? '',
-      experience: (Array.isArray(deepSanitized.experience) ? deepSanitized.experience : []).map(exp => ({
-        role: exp?.role ?? '',
-        company: exp?.company ?? '',
-        dates: exp?.dates ?? '',
-        description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
-      })),
-      education: (Array.isArray(deepSanitized.education) ? deepSanitized.education : []).map(edu => ({
-        degree: edu?.degree ?? '',
-        institution: edu?.institution ?? '',
-        dates: edu?.dates ?? '',
-      })),
-      skills: Array.isArray(deepSanitized.skills) ? deepSanitized.skills.map(s => s ?? '') : [],
-    };
-  }, [initialData]);
-  
-  const form = useForm<GeneratedResume>({
-    resolver: zodResolver(GeneratedResumeSchema),
-    defaultValues: sanitizedInitialData,
-  });
-  
   const handlePrint = useReactToPrint({
     content: () => resumeRef.current,
     documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
     onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
   });
+  
+  const sanitizedData = React.useMemo(() => {
+    const data = initialData || {};
+    return {
+      personalDetails: {
+        name: data.personalDetails?.name ?? '',
+        email: data.personalDetails?.email ?? '',
+        phone: data.personalDetails?.phone ?? '',
+        linkedin: data.personalDetails?.linkedin ?? '',
+        github: data.personalDetails?.github ?? '',
+        location: data.personalDetails?.location ?? '',
+      },
+      summary: data.summary ?? '',
+      experience: (Array.isArray(data.experience) ? data.experience : []).map(exp => ({
+        role: exp?.role ?? '',
+        company: exp?.company ?? '',
+        dates: exp?.dates ?? '',
+        description: (Array.isArray(exp?.description) ? exp.description : []).map(d => d ?? ''),
+      })).filter(Boolean),
+      education: (Array.isArray(data.education) ? data.education : []).map(edu => ({
+        degree: edu?.degree ?? '',
+        institution: edu?.institution ?? '',
+        dates: edu?.dates ?? '',
+      })).filter(Boolean),
+      skills: Array.isArray(data.skills) ? data.skills.map(s => s ?? '') : [],
+    };
+  }, [initialData]);
+
+  const form = useForm<GeneratedResume>({
+    resolver: zodResolver(GeneratedResumeSchema),
+    defaultValues: sanitizedData,
+  });
 
   useEffect(() => {
-    form.reset(sanitizedInitialData);
-  }, [sanitizedInitialData, form]);
-
+    form.reset(sanitizedData);
+  }, [sanitizedData, form]);
 
   const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
   const { fields: eduFields, append: appendEdu, remove: removeEdu } = useFieldArray({ control: form.control, name: "education" });
@@ -371,8 +357,11 @@ function ResumeCreator() {
         if (validatedResult.success) {
             setResult(validatedResult.data);
         } else {
-            // Even if validation fails, we can try to sanitize and show it
-            setResult(resultData); 
+            toast({
+                variant: "destructive",
+                title: "AI Generation Error",
+                description: "The AI returned data in an unexpected format. Please try generating again.",
+            });
             console.error("AI returned data that doesn't match schema:", validatedResult.error);
         }
         setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
