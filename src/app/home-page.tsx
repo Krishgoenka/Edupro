@@ -1,10 +1,11 @@
+
 "use client";
 
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { BrainCircuit, ListChecks, FileScan } from "lucide-react";
+import { BrainCircuit, ListChecks, FileScan, Sparkles, Target, Goal } from "lucide-react";
 import { courses } from "@/lib/courses-data";
 
 const features = [
@@ -30,6 +31,25 @@ const features = [
 
 const featuredCourseIds = ["web-development-bootcamp", "data-science-python", "public-speaking-mastery", "cyber-security-essentials"];
 const featuredCourses = courses.filter(course => featuredCourseIds.includes(course.id));
+
+const whyChooseUs = [
+  {
+    icon: <Sparkles className="h-10 w-10 text-primary" />,
+    title: "AI-Powered Guidance",
+    description: "Receive truly personalized learning paths and resume feedback, powered by cutting-edge AI to match your unique career goals.",
+  },
+  {
+    icon: <Target className="h-10 w-10 text-primary" />,
+    title: "Career-Focused Curriculum",
+    description: "Our courses are designed to bridge the gap between academic knowledge and real-world job requirements, getting you ready for tomorrow's market.",
+  },
+  {
+    icon: <Goal className="h-10 w-10 text-primary" />,
+    title: "Your Future, Our Mission",
+    description: "We're not just an e-learning platform; we're your dedicated partner in transforming potential into a successful profession.",
+  },
+];
+
 
 export function HomePage() {
   return (
@@ -118,14 +138,29 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="about" className="w-full py-20 md:py-32  bg-secondary/50">
-        <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">About EduPro</h2>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-              At EduPro, we're not just building a platform; we're building futures. Our mission is to bridge the gap between ambition and achievement by making high-quality, AI-driven education accessible to all. We believe that the right skills can unlock unimaginable potential. That's why we've created a space where learners can find clear direction, personalized learning paths, and the support they need to conquer the challenges of tomorrow's job market. Join us and transform your potential into your profession.
-            </p>
-          </div>
+      <section id="why-us" className="w-full py-20 md:py-32  bg-secondary/50">
+        <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Why Choose EduPro?</h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed">
+                    We are committed to bridging the gap between ambition and achievement, one learner at a time.
+                </p>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-stretch gap-8 lg:grid-cols-3">
+                {whyChooseUs.map((item, index) => (
+                    <Card key={index} className="flex flex-col items-center text-center p-8 transition-all hover:shadow-xl hover:-translate-y-1">
+                        <CardHeader className="p-0 mb-4">
+                            <div className="bg-primary/10 p-4 rounded-full">
+                                {item.icon}
+                            </div>
+                        </CardHeader>
+                        <CardTitle className="mb-2 font-headline text-xl">{item.title}</CardTitle>
+                        <CardContent className="p-0">
+                            <p className="text-muted-foreground">{item.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
       </section>
     </div>
