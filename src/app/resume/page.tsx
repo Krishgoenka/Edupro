@@ -147,6 +147,59 @@ const creatorFormSchema = z.object({
 });
 type CreatorFormValues = z.infer<typeof creatorFormSchema>;
 
+
+const PrintableResume = React.forwardRef<HTMLDivElement, { data: GeneratedResume }>(({ data }, ref) => {
+  return (
+    <div ref={ref} className="font-[Georgia,serif] text-black">
+      <div className="w-full max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center">{data.personalDetails.name}</h1>
+        <div className="flex justify-center gap-x-4 gap-y-1 text-sm text-gray-600 my-2 flex-wrap text-center">
+            {data.personalDetails.email && <p>{data.personalDetails.email}</p>}
+            {data.personalDetails.phone && <p>{data.personalDetails.phone}</p>}
+            {data.personalDetails.location && <p>{data.personalDetails.location}</p>}
+            {data.personalDetails.linkedin && <p>{data.personalDetails.linkedin}</p>}
+            {data.personalDetails.github && <p>{data.personalDetails.github}</p>}
+        </div>
+        
+        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SUMMARY</h3>
+        <p className="w-full text-sm">{data.summary}</p>
+
+        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EXPERIENCE</h3>
+        {data.experience.map((exp, index) => (
+            <div key={index} className="mb-4">
+                <div className="flex justify-between font-bold">
+                    <p className="text-md">{exp.role}</p>
+                    <p className="text-md text-right">{exp.dates}</p>
+                </div>
+                <p className="italic">{exp.company}</p>
+                <ul className="list-disc list-inside mt-1 ml-4 space-y-1 text-sm">
+                    {exp.description.map((desc, descIndex) => (
+                        <li key={descIndex}>{desc}</li>
+                    ))}
+                </ul>
+            </div>
+        ))}
+
+        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EDUCATION</h3>
+        {data.education.map((edu, index) => (
+            <div key={index} className="mb-2">
+                <div className="flex justify-between font-bold">
+                   <p className="text-md">{edu.degree}</p>
+                   <p className="text-md text-right">{edu.dates}</p>
+                </div>
+                 <p className="italic">{edu.institution}</p>
+            </div>
+        ))}
+
+        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SKILLS</h3>
+        <p className="w-full text-sm">{Array.isArray(data.skills) ? data.skills.join(', ') : ''}</p>
+      </div>
+    </div>
+  );
+});
+PrintableResume.displayName = 'PrintableResume';
+
+
 const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -154,7 +207,7 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const sanitizedInitialData = React.useMemo(() => {
     const sanitize = (obj: any): any => {
         if (obj === null || obj === undefined) return '';
-        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined);
+        if (Array.isArray(obj)) return obj.map(item => sanitize(item)).filter(item => item !== null && item !== undefined && item !== '');
         if (typeof obj === 'object') {
             const newObj: {[key: string]: any} = {};
             for (const key in obj) {
@@ -210,8 +263,8 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
     documentTitle: `${form.getValues('personalDetails.name') || 'resume'}-EduPro`,
     onAfterPrint: () => toast({ title: "Resume Downloaded!" }),
   });
-  
-  const watchedName = form.watch("personalDetails.name");
+
+  const watchedData = form.watch();
 
   return (
      <div className="mt-12">
@@ -228,58 +281,65 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
             </button>
         </div>
 
-        <Form {...form}>
-            <div ref={resumeRef} className="p-8 bg-white text-black font-[Georgia,serif] print:p-0 print:shadow-none print:bg-white print:text-black">
-                {/* Printable Resume Content */}
-                <div className="w-full max-w-4xl mx-auto">
-                    <Controller control={form.control} name="personalDetails.name" render={({ field }) => ( <Input {...field} className="text-4xl font-bold text-center border-0 p-0 h-auto print:text-black" /> )}/>
-                    <div className="flex justify-center gap-x-4 gap-y-1 text-sm text-gray-600 my-2 flex-wrap">
-                        <Controller control={form.control} name="personalDetails.email" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto print:text-black" />} />
-                        <Controller control={form.control} name="personalDetails.phone" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto print:text-black" />} />
-                        <Controller control={form.control} name="personalDetails.location" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto print:text-black" />} />
-                        <Controller control={form.control} name="personalDetails.linkedin" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto print:text-black" />} />
-                        <Controller control={form.control} name="personalDetails.github" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto print:text-black" />} />
+        {/* Print-only version */}
+        <div className="hidden print:block">
+          <PrintableResume ref={resumeRef} data={watchedData} />
+        </div>
+        
+        {/* Screen-only, editable version */}
+        <div className="block print:hidden">
+            <Form {...form}>
+                <div className="p-8 bg-white text-black font-[Georgia,serif] shadow-lg rounded-md">
+                    <div className="w-full max-w-4xl mx-auto">
+                        <Controller control={form.control} name="personalDetails.name" render={({ field }) => ( <Input {...field} className="text-4xl font-bold text-center border-0 p-0 h-auto" /> )}/>
+                        <div className="flex justify-center gap-x-4 gap-y-1 text-sm text-gray-600 my-2 flex-wrap">
+                            <Controller control={form.control} name="personalDetails.email" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto" />} />
+                            <Controller control={form.control} name="personalDetails.phone" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto" />} />
+                            <Controller control={form.control} name="personalDetails.location" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto" />} />
+                            <Controller control={form.control} name="personalDetails.linkedin" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto" />} />
+                            <Controller control={form.control} name="personalDetails.github" render={({ field }) => <Input {...field} className="border-0 p-0 h-auto" />} />
+                        </div>
+                        
+                        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SUMMARY</h3>
+                        <Controller control={form.control} name="summary" render={({ field }) => <Textarea {...field} className="w-full text-sm border-0 p-0" />} />
+
+                        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EXPERIENCE</h3>
+                        {expFields.map((field, index) => (
+                            <div key={field.id} className="mb-4 relative group">
+                                <div className="flex justify-between font-bold">
+                                    <Controller control={form.control} name={`experience.${index}.role`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold" />} />
+                                    <Controller control={form.control} name={`experience.${index}.dates`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold text-right" />} />
+                                </div>
+                                <Controller control={form.control} name={`experience.${index}.company`} render={({ field }) => <Input {...field} className="italic border-0 p-0 h-auto" />} />
+                                <ul className="list-disc list-inside mt-1 ml-4 space-y-1">
+                                    {field.description.map((_, descIndex) => (
+                                        <li key={descIndex}><Controller control={form.control} name={`experience.${index}.description.${descIndex}`} render={({ field }) => <Textarea {...field} className="w-full text-sm border-0 p-0 inline-block" />} /></li>
+                                    ))}
+                                </ul>
+                                <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => removeExp(index)}><Trash2 className="h-4 w-4"/></Button>
+                            </div>
+                        ))}
+                        <Button variant="ghost" onClick={() => appendExp({ role: '', company: '', dates: '', description: [''] })}><PlusCircle className="mr-2"/>Add Experience</Button>
+
+                        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EDUCATION</h3>
+                        {eduFields.map((field, index) => (
+                            <div key={field.id} className="mb-2 relative group">
+                                <div className="flex justify-between font-bold">
+                                   <Controller control={form.control} name={`education.${index}.degree`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold" />} />
+                                   <Controller control={form.control} name={`education.${index}.dates`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold text-right" />} />
+                                </div>
+                                 <Controller control={form.control} name={`education.${index}.institution`} render={({ field }) => <Input {...field} className="italic border-0 p-0 h-auto" />} />
+                                 <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={() => removeEdu(index)}><Trash2 className="h-4 w-4"/></Button>
+                            </div>
+                        ))}
+                        <Button variant="ghost" onClick={() => appendEdu({ degree: '', institution: '', dates: '' })}><PlusCircle className="mr-2"/>Add Education</Button>
+
+                        <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SKILLS</h3>
+                        <Controller control={form.control} name="skills" render={({ field }) => <Textarea {...field} onChange={(e) => field.onChange(e.target.value.split(','))} value={Array.isArray(field.value) ? field.value.join(', ') : ''} className="w-full text-sm border-0 p-0" />} />
                     </div>
-                    
-                    <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SUMMARY</h3>
-                    <Controller control={form.control} name="summary" render={({ field }) => <Textarea {...field} className="w-full text-sm border-0 p-0 print:text-black" />} />
-
-                    <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EXPERIENCE</h3>
-                    {expFields.map((field, index) => (
-                        <div key={field.id} className="mb-4 relative group">
-                            <div className="flex justify-between font-bold">
-                                <Controller control={form.control} name={`experience.${index}.role`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold print:text-black" />} />
-                                <Controller control={form.control} name={`experience.${index}.dates`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold text-right print:text-black" />} />
-                            </div>
-                            <Controller control={form.control} name={`experience.${index}.company`} render={({ field }) => <Input {...field} className="italic border-0 p-0 h-auto print:text-black" />} />
-                            <ul className="list-disc list-inside mt-1 ml-4 space-y-1">
-                                {field.description.map((_, descIndex) => (
-                                    <li key={descIndex}><Controller control={form.control} name={`experience.${index}.description.${descIndex}`} render={({ field }) => <Textarea {...field} className="w-full text-sm border-0 p-0 inline-block print:text-black" />} /></li>
-                                ))}
-                            </ul>
-                            <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 print:hidden" onClick={() => removeExp(index)}><Trash2 className="h-4 w-4"/></Button>
-                        </div>
-                    ))}
-                    <Button variant="ghost" className="print:hidden" onClick={() => appendExp({ role: '', company: '', dates: '', description: [''] })}><PlusCircle className="mr-2"/>Add Experience</Button>
-
-                    <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">EDUCATION</h3>
-                    {eduFields.map((field, index) => (
-                        <div key={field.id} className="mb-2 relative group">
-                            <div className="flex justify-between font-bold">
-                               <Controller control={form.control} name={`education.${index}.degree`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold print:text-black" />} />
-                               <Controller control={form.control} name={`education.${index}.dates`} render={({ field }) => <Input {...field} className="text-md border-0 p-0 h-auto font-bold text-right print:text-black" />} />
-                            </div>
-                             <Controller control={form.control} name={`education.${index}.institution`} render={({ field }) => <Input {...field} className="italic border-0 p-0 h-auto print:text-black" />} />
-                             <Button variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 print:hidden" onClick={() => removeEdu(index)}><Trash2 className="h-4 w-4"/></Button>
-                        </div>
-                    ))}
-                    <Button variant="ghost" className="print:hidden" onClick={() => appendEdu({ degree: '', institution: '', dates: '' })}><PlusCircle className="mr-2"/>Add Education</Button>
-
-                    <h3 className="text-lg font-bold border-b-2 border-gray-300 mt-6 mb-2">SKILLS</h3>
-                    <Controller control={form.control} name="skills" render={({ field }) => <Textarea {...field} onChange={(e) => field.onChange(e.target.value.split(','))} value={Array.isArray(field.value) ? field.value.join(', ') : ''} className="w-full text-sm border-0 p-0 print:text-black" />} />
                 </div>
-            </div>
-        </Form>
+            </Form>
+        </div>
     </div>
   );
 };
@@ -349,9 +409,6 @@ function ResumeCreator() {
                         type="file"
                         accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
                         onChange={(e) => field.onChange(e.target.files?.[0])}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                        name={field.name}
                       />
                     </FormControl>
                     <FormMessage />
