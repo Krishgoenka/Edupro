@@ -9,17 +9,22 @@ import { useCart } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { IndianRupee, Trash2, ShoppingCart, Tag } from 'lucide-react';
+import { IndianRupee, Trash2, ShoppingCart, Tag, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { AiRecommender } from '@/components/ai-recommender';
+import { useAuth } from '@/context/auth-context';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const [coupon, setCoupon] = useState('');
   const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
   const handleRemove = (courseId: string) => {
     removeFromCart(courseId);
@@ -30,18 +35,34 @@ export default function CartPage() {
   
   const total = isCouponApplied ? 0 : subtotal;
 
-  const handleCheckout = () => {
-    // Check if the cart is not empty and the total is 0 due to the coupon
+  const handleCheckout = async () => {
     if (total === 0 && cart.length > 0 && isCouponApplied) {
-        // In a real app, you would add these courses to the user's enrolled list in Firestore.
+        const courseIdsToAdd = cart.map(c => c.id);
+
+        if (user) {
+            const userCoursesRef = doc(db, 'userCourses', user.uid);
+            const docSnap = await getDoc(userCoursesRef);
+            if (docSnap.exists()) {
+                await updateDoc(userCoursesRef, { courseIds: arrayUnion(...courseIdsToAdd) });
+            } else {
+                await setDoc(userCoursesRef, { courseIds: courseIdsToAdd });
+            }
+        } else {
+            const localEnrolled = localStorage.getItem('guestEnrolledCourses');
+            const currentIds = localEnrolled ? JSON.parse(localEnrolled) : [];
+            const newIds = [...new Set([...currentIds, ...courseIdsToAdd])];
+            localStorage.setItem('guestEnrolledCourses', JSON.stringify(newIds));
+        }
+        
         clearCart();
-        toast({
-            title: "Courses Purchased!",
-            description: "Your new courses are now available on your dashboard.",
-        });
-        router.push("/dashboard");
+
+        setShowSuccessOverlay(true);
+        setTimeout(() => {
+            setShowSuccessOverlay(false);
+            router.push("/dashboard");
+        }, 2000);
+
     } else {
-        // This is where payment gateway logic would be triggered for non-free checkouts.
         toast({
           title: "This feature is not yet available",
           description: "We're working on integrating a secure payment gateway.",
@@ -194,6 +215,15 @@ export default function CartPage() {
                 </Button>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      )}
+      {showSuccessOverlay && (
+        <div className="fixed inset-0 bg-background/90 flex items-center justify-center z-50">
+          <div className="text-center">
+            <CheckCircle className="h-24 w-24 text-green-500 mx-auto animate-pulse" />
+            <h2 className="text-2xl font-bold mt-4 font-headline text-primary">Courses Purchased!</h2>
+            <p className="text-muted-foreground">You will be redirected to your dashboard.</p>
           </div>
         </div>
       )}

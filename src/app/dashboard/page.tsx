@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -8,35 +9,71 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Progress } from '@/components/ui/progress';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courses, domains, categoriesByDomain, Domain } from '@/lib/courses-data';
+import { courses as allCourses, domains, categoriesByDomain, Domain, Course } from '@/lib/courses-data';
 import { useAuth } from '@/context/auth-context';
-import { Activity } from 'lucide-react';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { Activity, Loader2 } from 'lucide-react';
 
-// TODO: Replace this with actual user data from Firestore
-const userHasCourses = true; // Set to false to see the empty state
-const myCourseIds = ['web-development-bootcamp', 'public-speaking-mastery', 'ai-a-z', 'cyber-security-essentials', 'data-science-python', 'digital-marketing-masterclass', 'graphic-design-fundamentals', 'project-management-pmp'];
-
-const myCourses = courses.filter(c => myCourseIds.includes(c.id)).map((course, index) => {
-    const progressValues = [45, 0, 100, 20, 0, 75, 10, 90];
-    const statusValues = ["In Progress", "Not Started", "Completed", "In Progress", "Not Started", "In Progress", "In Progress", "In Progress"];
-    return {
-        ...course,
-        progress: progressValues[index % progressValues.length],
-        status: statusValues[index % statusValues.length],
-    };
-});
+type CourseWithProgress = Course & { progress: number; status: string; };
 
 export default function DashboardPage() {
     const { user } = useAuth();
-    // TODO: Fetch user's enrolled courses from Firestore
+    const [enrolledCourses, setEnrolledCourses] = useState<CourseWithProgress[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
 
+    useEffect(() => {
+        const fetchEnrolledCourses = async () => {
+            setLoading(true);
+            let courseIds: string[] = [];
+            
+            if (user) {
+                const userCoursesRef = doc(db, 'userCourses', user.uid);
+                try {
+                    const docSnap = await getDoc(userCoursesRef);
+                    if (docSnap.exists()) {
+                        courseIds = docSnap.data().courseIds || [];
+                    }
+                } catch (error) {
+                    console.error("Error fetching user courses from Firestore:", error);
+                }
+            } else {
+                const localEnrolled = localStorage.getItem('guestEnrolledCourses');
+                courseIds = localEnrolled ? JSON.parse(localEnrolled) : [];
+            }
+            
+            const coursesWithProgress = allCourses
+                .filter(c => courseIds.includes(c.id))
+                .map((course) => {
+                    // Simulate persistent progress based on course ID
+                    const progress = (course.id.charCodeAt(0) * course.id.length) % 101;
+                    let status = "Not Started";
+                    if (progress === 100) status = "Completed";
+                    else if (progress > 0) status = "In Progress";
+
+                    return {
+                        ...course,
+                        progress,
+                        status
+                    };
+                });
+            
+            setEnrolledCourses(coursesWithProgress);
+            setLoading(false);
+        };
+
+        fetchEnrolledCourses();
+    }, [user]);
+
+
     const handleDomainChange = (value: Domain | "All") => {
         const newDomain = value === "All" ? "" : value;
         setSelectedDomain(newDomain);
-        setSelectedCategory(""); // Reset category when domain changes
+        setSelectedCategory(""); 
     };
 
     const handleCategoryChange = (value: string) => {
@@ -48,21 +85,28 @@ export default function DashboardPage() {
     }, [selectedDomain]);
 
     const filteredCourses = useMemo(() => {
-        // Filter the user's courses, not all courses
-        return myCourses.filter(course => {
+        return enrolledCourses.filter(course => {
             const domainMatch = selectedDomain ? course.domain === selectedDomain : true;
             const categoryMatch = selectedCategory ? course.category === selectedCategory : true;
             const searchMatch = searchTerm ? course.title.toLowerCase().includes(searchTerm.toLowerCase()) || course.description.toLowerCase().includes(searchTerm.toLowerCase()) : true;
             return domainMatch && categoryMatch && searchMatch;
         });
-    }, [selectedDomain, selectedCategory, searchTerm]);
+    }, [enrolledCourses, selectedDomain, selectedCategory, searchTerm]);
 
     const totalProgress = useMemo(() => {
-        if (myCourses.length === 0) return 0;
-        const sum = myCourses.reduce((acc, course) => acc + course.progress, 0);
-        return Math.round(sum / myCourses.length);
-    }, []);
+        if (enrolledCourses.length === 0) return 0;
+        const sum = enrolledCourses.reduce((acc, course) => acc + course.progress, 0);
+        return Math.round(sum / enrolledCourses.length);
+    }, [enrolledCourses]);
     
+    if (loading) {
+        return (
+           <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+               <Loader2 className="h-12 w-12 animate-spin text-primary" />
+           </div>
+       );
+   }
+
     return (
         <div className="container py-12">
             <div className="mb-12">
@@ -71,7 +115,7 @@ export default function DashboardPage() {
             </div>
 
             <section>
-                 {userHasCourses && (
+                 {enrolledCourses.length > 0 && (
                     <Card className="mb-12">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3 text-2xl font-headline">
@@ -92,7 +136,7 @@ export default function DashboardPage() {
                 )}
                 
                 <h2 className="text-3xl font-bold font-headline mb-6">My Courses</h2>
-                {userHasCourses ? (
+                {enrolledCourses.length > 0 ? (
                     <>
                         <Card className="mb-8 p-4 shadow-lg">
                             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 items-end">
