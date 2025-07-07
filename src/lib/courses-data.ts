@@ -8,6 +8,7 @@ export type Course = {
   dataAiHint: string;
   domain: "Computer Science" | "Commerce" | "Arts & Humanities" | "UPSC" | "Soft Skills" | "MBA Prep" | "Government Exams";
   category: string;
+  videoUrl: string;
   tutor: {
     name: string;
     image: string;
@@ -55,6 +56,7 @@ export const courses: Course[] = [
         dataAiHint: "laptop code",
         domain: "Computer Science",
         category: "Web Development",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Rohan Sharma', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Build 5 real-world web applications',
@@ -81,6 +83,7 @@ export const courses: Course[] = [
         dataAiHint: "abstract AI",
         domain: "Computer Science",
         category: "AI & ML",
+        videoUrl: 'https://www.youtube.com/embed/t-9hZ1v_L8k',
         tutor: { name: 'Priya Singh', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Understand the theory behind Artificial Intelligence',
@@ -106,6 +109,7 @@ export const courses: Course[] = [
         dataAiHint: "cyber security",
         domain: "Computer Science",
         category: "Cyber Security",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Ankit Mehta', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Learn the fundamentals of ethical hacking',
@@ -131,6 +135,7 @@ export const courses: Course[] = [
         dataAiHint: "data structure",
         domain: "Computer Science",
         category: "Data Structures & Algorithms",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Vikram Kumar', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Solve complex problems using data structures',
@@ -156,6 +161,7 @@ export const courses: Course[] = [
         dataAiHint: "database server",
         domain: "Computer Science",
         category: "Databases",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Neha Gupta', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Write complex SQL queries with confidence',
@@ -181,6 +187,7 @@ export const courses: Course[] = [
         dataAiHint: "computer chip",
         domain: "Computer Science",
         category: "Operating Systems",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Sanjay Patel', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Understand how operating systems work internally',
@@ -208,6 +215,7 @@ export const courses: Course[] = [
         dataAiHint: "calculator paperwork",
         domain: "Commerce",
         category: "Accounting",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Ravi Jain', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Master the double-entry accounting system',
@@ -232,6 +240,7 @@ export const courses: Course[] = [
         dataAiHint: "tax calculation",
         domain: "Commerce",
         category: "Taxation",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Sunita Agarwal', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Understand the Indian income tax system',
@@ -256,6 +265,7 @@ export const courses: Course[] = [
         dataAiHint: "finance spreadsheet",
         domain: "Commerce",
         category: "Finance Tools",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Amit Verma', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Build financial models from scratch',
@@ -281,6 +291,7 @@ export const courses: Course[] = [
         dataAiHint: "law books",
         domain: "Commerce",
         category: "Business Law",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Kavita Desai', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Understand the Indian Contract Act',
@@ -307,6 +318,7 @@ export const courses: Course[] = [
         dataAiHint: "public speaking",
         domain: "Arts & Humanities",
         category: "Public Speaking",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Aisha Khan', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Overcome stage fright and speak with confidence',
@@ -331,6 +343,7 @@ export const courses: Course[] = [
         dataAiHint: "conversation class",
         domain: "Soft Skills",
         category: "Confidence Building",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Sarah Joseph', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Improve your pronunciation and fluency',
@@ -355,6 +368,7 @@ export const courses: Course[] = [
         dataAiHint: "job interview",
         domain: "Soft Skills",
         category: "Interview Prep",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Rajesh Nair', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Learn to answer common interview questions',
@@ -379,6 +393,7 @@ export const courses: Course[] = [
         dataAiHint: "resume writing",
         domain: "Soft Skills",
         category: "Resume Writing",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Divya Reddy', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Learn to format your resume for ATS systems',
@@ -405,6 +420,7 @@ export const courses: Course[] = [
         dataAiHint: "indian constitution",
         domain: "UPSC",
         category: "Indian Polity",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Dr. Ishaan Trivedi', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Master the Indian Constitution chapter-by-chapter',
@@ -430,6 +446,7 @@ export const courses: Course[] = [
         dataAiHint: "topography map",
         domain: "UPSC",
         category: "Geography",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Prof. Meera Iyer', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Understand key geographical concepts and phenomena',
@@ -457,6 +474,7 @@ export const courses: Course[] = [
         dataAiHint: "mathematics graph",
         domain: "MBA Prep",
         category: "Quantitative Aptitude",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Arjun Desai', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Learn shortcuts and tricks to solve problems faster',
@@ -484,6 +502,7 @@ export const courses: Course[] = [
         dataAiHint: "data science",
         domain: "Computer Science",
         category: "AI & ML",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Priya Singh', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Perform data analysis and manipulation with Pandas',
@@ -509,6 +528,7 @@ export const courses: Course[] = [
         dataAiHint: "digital marketing",
         domain: "Commerce",
         category: "Finance Tools",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Vivek Malhotra', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Learn Search Engine Optimization (SEO) from basics',
@@ -533,6 +553,7 @@ export const courses: Course[] = [
         dataAiHint: "graphic design",
         domain: "Arts & Humanities",
         category: "Communication",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'Elena Rodriguez', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Master the core principles of great design',
@@ -557,6 +578,7 @@ export const courses: Course[] = [
         dataAiHint: "project plan",
         domain: "Soft Skills",
         category: "Professional Communication",
+        videoUrl: 'https://www.youtube.com/embed/rokGy0huYEA',
         tutor: { name: 'David Lee', image: 'https://placehold.co/100x100.png', dataAiHint: 'person portrait' },
         features: [
             'Prepare and pass the PMP certification exam',
