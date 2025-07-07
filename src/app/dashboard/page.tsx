@@ -4,11 +4,13 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { courses, domains, categoriesByDomain, Domain } from '@/lib/courses-data';
+import { useAuth } from '@/context/auth-context';
+import { Activity } from 'lucide-react';
 
 // TODO: Replace this with actual user data from Firestore
 const userHasCourses = true; // Set to false to see the empty state
@@ -25,6 +27,7 @@ const myCourses = courses.filter(c => myCourseIds.includes(c.id)).map((course, i
 });
 
 export default function DashboardPage() {
+    const { user } = useAuth();
     // TODO: Fetch user's enrolled courses from Firestore
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
     const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -53,15 +56,41 @@ export default function DashboardPage() {
             return domainMatch && categoryMatch && searchMatch;
         });
     }, [selectedDomain, selectedCategory, searchTerm]);
+
+    const totalProgress = useMemo(() => {
+        if (myCourses.length === 0) return 0;
+        const sum = myCourses.reduce((acc, course) => acc + course.progress, 0);
+        return Math.round(sum / myCourses.length);
+    }, []);
     
     return (
         <div className="container py-12">
             <div className="mb-12">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Your Dashboard</h1>
-                <p className="text-muted-foreground md:text-xl mt-2">Welcome back! Continue your learning journey.</p>
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">Welcome {user?.displayName || 'Back'}!</h1>
+                <p className="text-muted-foreground md:text-xl mt-2">Let's continue your learning journey.</p>
             </div>
 
             <section>
+                 {userHasCourses && (
+                    <Card className="mb-12">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-3 text-2xl font-headline">
+                                <Activity className="h-6 w-6 text-primary" />
+                                Overall Progress
+                            </CardTitle>
+                            <CardDescription>
+                                Your average progress across all enrolled courses. Keep up the great work!
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="flex items-center gap-4">
+                                <Progress value={totalProgress} className="h-3 flex-grow" />
+                                <span className="text-xl font-bold text-primary">{totalProgress}%</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+                
                 <h2 className="text-3xl font-bold font-headline mb-6">My Courses</h2>
                 {userHasCourses ? (
                     <>

@@ -12,16 +12,19 @@ const features = [
     icon: <FileScan className="h-10 w-10 text-primary" />,
     title: "Instant Resume Analysis",
     description: "Upload your resume and a job description to see your match score and get AI-powered improvement tips in seconds.",
+    href: "/resume",
   },
   {
     icon: <BrainCircuit className="h-10 w-10 text-primary" />,
     title: "AI-Powered Skill Matching",
     description: "Our AI identifies critical skill gaps based on your career goals and suggests the precise courses to fill them.",
+    href: "/resume",
   },
   {
     icon: <ListChecks className="h-10 w-10 text-primary" />,
     title: "Personalized Learning Paths",
     description: "Receive a custom-curated course bundle designed to bridge your skill gaps and accelerate your career growth.",
+    href: "/courses",
   },
 ];
 
@@ -103,13 +106,13 @@ export function HomePage() {
               </p>
             </div>
           </div>
-          <div className="mx-auto grid max-w-5xl items-start gap-12 py-12 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-5xl items-start gap-8 py-12 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <div key={index} className="grid gap-4 text-center">
-                  <div className="flex justify-center items-center">{feature.icon}</div>
-                  <h3 className="text-xl font-bold font-headline">{feature.title}</h3>
+              <Link key={index} href={feature.href} className="grid gap-4 text-center group p-6 rounded-lg transition-all hover:bg-secondary/50">
+                  <div className="flex justify-center items-center transition-transform duration-300 group-hover:scale-110">{feature.icon}</div>
+                  <h3 className="text-xl font-bold font-headline transition-colors group-hover:text-primary">{feature.title}</h3>
                   <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
