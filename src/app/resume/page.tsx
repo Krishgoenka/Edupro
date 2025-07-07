@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useTransition, useEffect } from "react";
@@ -130,9 +131,25 @@ const ResumePreview = ({ initialData }: { initialData: GeneratedResume }) => {
   const resumeRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
+  const sanitizedInitialData: GeneratedResume = {
+    ...initialData,
+    personalDetails: {
+      name: initialData.personalDetails.name ?? '',
+      email: initialData.personalDetails.email ?? '',
+      phone: initialData.personalDetails.phone ?? '',
+      linkedin: initialData.personalDetails.linkedin ?? '',
+      github: initialData.personalDetails.github ?? '',
+      location: initialData.personalDetails.location ?? '',
+    },
+    summary: initialData.summary ?? '',
+    experience: initialData.experience ?? [],
+    education: initialData.education ?? [],
+    skills: initialData.skills ?? [],
+  };
+  
   const form = useForm<GeneratedResume>({
     resolver: zodResolver(GeneratedResumeSchema),
-    defaultValues: initialData,
+    defaultValues: sanitizedInitialData,
   });
 
   const { fields: expFields, append: appendExp, remove: removeExp } = useFieldArray({ control: form.control, name: "experience" });
