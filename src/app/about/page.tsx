@@ -22,14 +22,16 @@ export default function AboutPage() {
   return (
     <div className="container py-12 md:py-20">
       <section id="about-intro" className="mb-20">
-        <div className="grid items-center justify-center gap-4 px-4 text-center md:px-6">
-          <div className="space-y-3">
-            <h1 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline text-primary">About EduPro</h1>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline text-primary">About EduPro</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mx-auto max-w-[700px] text-center text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               EduPro was founded on the belief that everyone deserves access to a fulfilling career. In a fast-changing job market, it's hard to know which skills to learn. We leverage the power of AI to provide clear, personalized, and actionable guidance, helping you invest in your education wisely and achieve your professional dreams.
             </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
 
       <section id="team">
