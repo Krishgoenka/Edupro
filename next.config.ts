@@ -1,3 +1,7 @@
+
+import {config} from 'dotenv';
+config();
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -24,7 +28,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['pdf-parse'],
+  serverExternalPackages: ['pdf-parse', '@opentelemetry/exporter-jaeger'],
 };
 
 export default nextConfig;
