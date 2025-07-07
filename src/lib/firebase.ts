@@ -16,7 +16,7 @@ const firebaseConfig = {
 // Validate that all Firebase config keys are present. This will guide the user
 // if they have not set up their .env file correctly.
 if (!firebaseConfig.apiKey) {
-    throw new Error("CRITICAL: Missing Firebase API Key. Please set NEXT_PUBLIC_FIREBASE_API_KEY in your .env file and restart the development server.");
+    throw new Error("CRITICAL: Missing Firebase API Key. For local development, set NEXT_PUBLIC_FIREBASE_API_KEY in your .env.local file. For Vercel deployment, add it to your project's Environment Variables in the Vercel dashboard and redeploy.");
 }
 
 // Initialize Firebase

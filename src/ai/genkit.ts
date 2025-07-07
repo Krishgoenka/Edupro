@@ -6,7 +6,7 @@ import {googleAI} from '@genkit-ai/googleai';
 // is missing, which is a common source of problems.
 if (!process.env.GOOGLE_API_KEY) {
   throw new Error(
-    'CRITICAL: The GOOGLE_API_KEY environment variable is not set. AI features will not work. Please get a key from Google AI Studio, add it to your .env.local file, and restart the development server.'
+    'CRITICAL: The GOOGLE_API_KEY environment variable is not set. For local development, add it to your .env.local file. For Vercel deployment, add it to your project\'s Environment Variables and redeploy.'
   );
 }
 
