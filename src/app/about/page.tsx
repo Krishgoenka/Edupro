@@ -43,7 +43,7 @@ export default function AboutPage() {
           {teamMembers.map((member) => (
             <div key={member.name} className="text-center flex flex-col items-center">
                 <Avatar className="h-32 w-32 mb-4">
-                    <AvatarImage src={member.image} alt={member.name} />
+                    <AvatarImage src={member.image} alt={member.name} className="object-cover" />
                     <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                 </Avatar>
                 <h3 className="text-xl font-bold font-headline">{member.name}</h3>
