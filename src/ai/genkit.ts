@@ -1,4 +1,3 @@
-'use server';
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
@@ -6,7 +5,7 @@ import {googleAI} from '@genkit-ai/googleai';
 // is missing, which is a common source of problems.
 if (!process.env.GOOGLE_API_KEY) {
   throw new Error(
-    'CRITICAL: The GOOGLE_API_KEY environment variable is not set. For local development, add it to your .env.local file. For Vercel deployment, add it to your project\'s Environment Variables and redeploy.'
+    "CRITICAL: The GOOGLE_API_KEY environment variable is not set. For local development, add it to your .env.local file. For Vercel deployment, add it to your project's Environment Variables and redeploy."
   );
 }
 
