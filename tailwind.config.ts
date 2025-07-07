@@ -94,10 +94,21 @@ export default {
             height: '0',
           },
         },
+        'logo-fade-in-scale': {
+          'from': { opacity: '0', transform: 'scale(0.8)' },
+          'to': { opacity: '1', transform: 'scale(1)' },
+        },
+        'bright-light-flash': {
+            '0%': { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.7)' },
+            '70%': { boxShadow: '0 0 20px 40px rgba(255, 255, 255, 0)' },
+            '100%': { boxShadow: '0 0 0 0 rgba(255, 255, 255, 0)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'logo-fade-in-scale': 'logo-fade-in-scale 1s ease-out forwards',
+        'bright-light-flash': 'bright-light-flash 1.2s ease-out forwards',
       },
     },
   },

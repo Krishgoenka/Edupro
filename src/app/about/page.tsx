@@ -20,9 +20,9 @@ const teamMembers = [
 
 export default function AboutPage() {
   return (
-    <div className="container py-12 md:py-20">
+    <div className="container py-12 md:py-20 animate-in fade-in duration-500">
       <section id="about-intro" className="mb-20">
-        <Card>
+        <Card className="animate-in fade-in zoom-in-95 duration-500">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline text-primary">About EduPro</CardTitle>
           </CardHeader>
@@ -35,15 +35,19 @@ export default function AboutPage() {
       </section>
 
       <section id="team">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-in fade-in-up duration-500" style={{ animationDelay: `200ms` }}>
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">Meet Our Team</h2>
             <p className="max-w-[700px] mx-auto text-muted-foreground md:text-xl mt-2">
                 The passionate individuals leading EduPro to revolutionize personalized education.
             </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {teamMembers.map((member) => (
-            <div key={member.name} className="text-center flex flex-col items-center">
+          {teamMembers.map((member, index) => (
+            <div 
+              key={member.name} 
+              className="text-center flex flex-col items-center animate-in fade-in-up duration-500"
+              style={{ animationDelay: `${300 + 100 * index}ms` }}
+            >
                 <Avatar className="h-32 w-32 mb-4">
                     <AvatarImage src={member.image} alt={member.name} className={`object-cover ${member.name === 'Samrat Ghosh' ? 'object-top' : ''}`} />
                     <AvatarFallback>{member.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
