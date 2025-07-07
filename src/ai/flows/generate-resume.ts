@@ -27,10 +27,12 @@ const prompt = ai.definePrompt({
   output: {schema: GeneratedResumeSchema},
   prompt: `You are a professional resume writer and career coach. Your task is to create or modify a well-structured, professional resume in JSON format based on the text provided by the user.
 
-The user's input might contain instructions and/or the raw content of a resume.
+The user's input might contain instructions and/or the raw content of a resume (from a PDF or DOCX file).
+
+If an image is provided separately, use it as the primary source for the resume content, and use the text input for modification instructions.
 
 First, analyze the user's input to see if they have provided specific instructions for changes.
-- If the user provides instructions (e.g., "update my last job title", "add this project", "rewrite my summary to be more focused on AI"), you MUST apply those changes to the provided resume content.
+- If the user provides instructions (e.g., "update my last job title", "add this project", "rewrite my summary to be more focused on AI"), you MUST apply those changes to the provided resume content (from text or image).
 - If the user provides only raw text about themselves or a resume to be parsed without specific instructions, your job is to simply parse it, clean it up, and organize it into the specified JSON structure.
 
 Your goal is to produce a single, coherent, and professional resume based on all the information given.
@@ -41,8 +43,13 @@ Your goal is to produce a single, coherent, and professional resume based on all
 - List education history clearly.
 - Organize skills into a clean list.
 
-User Input:
+User Input / Resume Text / Instructions:
 {{{userInput}}}
+
+{{#if resumeDataUri}}
+Resume Content to Parse/Modify (Image):
+{{media url=resumeDataUri}}
+{{/if}}
 `,
 });
 

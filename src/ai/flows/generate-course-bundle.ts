@@ -13,7 +13,8 @@ import {z} from 'genkit';
 
 const AnalyzeResumeInputSchema = z.object({
   jobDescription: z.string().describe('The job description text.'),
-  resumeText: z.string().describe('The text extracted from the resume.'),
+  resumeText: z.string().optional().describe('The text extracted from the resume if it was a text-based file (PDF, DOCX).'),
+  resumeDataUri: z.string().optional().describe("An image of the resume, as a data URI if it was an image file.")
 });
 export type AnalyzeResumeInput = z.infer<typeof AnalyzeResumeInputSchema>;
 
@@ -40,6 +41,7 @@ const prompt = ai.definePrompt({
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
   prompt: `You are an experienced technical HR manager. Your task is to review the provided resume against the job description.
+The resume is provided either as text or as an image. Use the available information to perform your analysis.
 
 Analyze the resume and job description to generate the following:
 1.  A match percentage (0-100) indicating how well the resume aligns with the job description.
@@ -52,8 +54,15 @@ Analyze the resume and job description to generate the following:
 Job Description:
 {{{jobDescription}}}
 
+{{#if resumeText}}
 Resume Text:
 {{{resumeText}}}
+{{/if}}
+
+{{#if resumeDataUri}}
+Resume Content (Image):
+{{media url=resumeDataUri}}
+{{/if}}
 `,
 });
 

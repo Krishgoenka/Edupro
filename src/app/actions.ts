@@ -15,6 +15,8 @@ import {
   GeneratedResume
 } from "@/ai/flows/generate-resume";
 import pdf from "pdf-parse";
+import mammoth from "mammoth";
+
 
 export async function analyzeResumeAction(
   formData: FormData
@@ -34,17 +36,31 @@ export async function analyzeResumeAction(
     }
 
     const fileBuffer = Buffer.from(await resumeFile.arrayBuffer());
-    
-    const pdfData = await pdf(fileBuffer);
-    const resumeText = pdfData.text;
+    const fileType = resumeFile.type;
 
-    if (!resumeText) {
-        return { data: null, error: "Could not extract text from the PDF." };
+    let resumeText: string | undefined = undefined;
+    let resumeDataUri: string | undefined = undefined;
+
+    if (fileType === 'application/pdf') {
+      const pdfData = await pdf(fileBuffer);
+      resumeText = pdfData.text;
+    } else if (fileType.startsWith('image/')) {
+      resumeDataUri = `data:${fileType};base64,${fileBuffer.toString('base64')}`;
+    } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') { // .docx
+      const mammothResult = await mammoth.extractRawText({ buffer: fileBuffer });
+      resumeText = mammothResult.value;
+    } else {
+      return { data: null, error: "Unsupported file type. Please upload a PDF, DOCX, or image file." };
+    }
+
+    if (!resumeText && !resumeDataUri) {
+        return { data: null, error: "Could not extract content from the file." };
     }
 
     const input: AnalyzeResumeInput = {
       jobDescription,
       resumeText,
+      resumeDataUri
     };
     
     const result = await analyzeResume(input);
@@ -94,24 +110,38 @@ export async function generateResumeAction(
     const userInput = formData.get('userInput') as string;
     const resumeFile = formData.get('resumeFile') as File | null;
 
-    let resumeText = userInput;
+    let resumeDataUri: string | undefined = undefined;
+    let combinedUserInput = userInput;
 
     if (resumeFile && resumeFile.size > 0) {
-        if (resumeFile.type !== "application/pdf") {
-            return { data: null, error: "Only PDF files are accepted for upload." };
-        }
         const fileBuffer = Buffer.from(await resumeFile.arrayBuffer());
-        const pdfData = await pdf(fileBuffer);
-        // If there was user input text, prepend it to the PDF text.
-        resumeText = userInput ? `${userInput}\n\n---RESUME CONTENT---\n\n${pdfData.text}` : pdfData.text;
+        const fileType = resumeFile.type;
+
+        if (fileType.startsWith('image/')) {
+            resumeDataUri = `data:${fileType};base64,${fileBuffer.toString('base64')}`;
+        } else {
+            let extractedText = '';
+            if (fileType === "application/pdf") {
+                const pdfData = await pdf(fileBuffer);
+                extractedText = pdfData.text;
+            } else if (fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') { // .docx
+                const mammothResult = await mammoth.extractRawText({ buffer: fileBuffer });
+                extractedText = mammothResult.value;
+            } else {
+                return { data: null, error: "Unsupported file type. Please upload a PDF, DOCX, or image file." };
+            }
+            
+            combinedUserInput = userInput ? `${userInput}\n\n---RESUME CONTENT---\n\n${extractedText}` : extractedText;
+        }
     }
 
-    if (!resumeText) {
+    if (!combinedUserInput && !resumeDataUri) {
       return { data: null, error: "No input provided. Please type your details or upload a file." };
     }
 
     const input: GenerateResumeInput = {
-      userInput: resumeText,
+      userInput: combinedUserInput,
+      resumeDataUri,
     };
     
     const result = await generateResume(input);

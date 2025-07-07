@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 export const GenerateResumeInputSchema = z.object({
-  userInput: z.string().describe('The raw text input from the user, which could be a description of their skills and experience, or the content of an existing resume or LinkedIn profile.'),
+  userInput: z.string().describe('The raw text input from the user, which could be a description of their skills and experience, or the content of an existing resume (from PDF/DOCX) or LinkedIn profile, or modification instructions for an uploaded file.'),
+  resumeDataUri: z.string().optional().describe("An image of the resume to be parsed, as a data URI. This is used if the resume is an image file."),
 });
 export type GenerateResumeInput = z.infer<typeof GenerateResumeInputSchema>;
 

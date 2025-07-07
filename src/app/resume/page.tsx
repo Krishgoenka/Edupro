@@ -27,7 +27,10 @@ const analyzerFormSchema = z.object({
   resume: z
     .instanceof(File, { message: "A resume file is required." })
     .refine((file) => file.size > 0, "Resume file cannot be empty.")
-    .refine((file) => file.type === "application/pdf", "Only PDF files are accepted.")
+    .refine(
+        (file) => file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.type.startsWith("image/"),
+        "Only PDF, DOCX, and image files are accepted."
+    )
     .refine((file) => file.size < 5 * 1024 * 1024, "File size must be less than 5MB."),
 });
 
@@ -69,7 +72,7 @@ function ResumeAnalyzer() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Get Your Personalized Analysis</CardTitle>
-        <CardDescription>Upload your PDF resume and the job description below.</CardDescription>
+        <CardDescription>Upload your resume and the job description below.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -83,8 +86,8 @@ function ResumeAnalyzer() {
             )} />
             <FormField control={form.control} name="resume" render={({ field: { onChange, ...rest } }) => (
               <FormItem>
-                <FormLabel>Upload Resume (PDF only, max 5MB)</FormLabel>
-                <FormControl><Input type="file" accept="application/pdf" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
+                <FormLabel>Upload Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
+                <FormControl><Input type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
@@ -120,7 +123,10 @@ const creatorFormSchema = z.object({
   userInput: z.string().optional(),
   resumeFile: z.instanceof(File).optional()
     .refine((file) => !file || file.size < 5 * 1024 * 1024, "File size must be less than 5MB.")
-    .refine((file) => !file || file.type === "application/pdf", "Only PDF files are accepted."),
+    .refine(
+        (file) => !file || file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || file.type.startsWith("image/"),
+        "Only PDF, DOCX, and image files are accepted."
+    ),
 }).refine(data => data.userInput || data.resumeFile, {
     message: "Please provide some input, either by typing or uploading a file.",
     path: ["userInput"],
@@ -270,7 +276,7 @@ function ResumeCreator() {
     <Card className="w-full">
       <CardHeader>
         <CardTitle>AI-Powered Resume Builder</CardTitle>
-        <CardDescription>Describe yourself, your experience, or upload an existing resume/LinkedIn PDF to get started.</CardDescription>
+        <CardDescription>Describe yourself, your experience, or upload an existing resume (PDF, DOCX, Image) to get started.</CardDescription>
       </CardHeader>
       <CardContent>
         {!result && (
@@ -286,8 +292,8 @@ function ResumeCreator() {
               <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or</span></div>
               <FormField control={form.control} name="resumeFile" render={({ field: { onChange, ...rest } }) => (
                 <FormItem>
-                  <FormLabel>Upload Existing Resume or LinkedIn PDF (max 5MB)</FormLabel>
-                  <FormControl><Input type="file" accept="application/pdf" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
+                  <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
+                  <FormControl><Input type="file" accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" onChange={(e) => e.target.files && onChange(e.target.files[0])} {...rest} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
