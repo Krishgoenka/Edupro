@@ -1,3 +1,4 @@
+
 "use server";
 
 import { 
@@ -71,8 +72,13 @@ export async function analyzeResumeAction(
     return { data: result, error: null };
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-    return { data: null, error: `Failed to analyze resume. ${errorMessage}` };
+    let errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    if (typeof errorMessage === 'string' && (errorMessage.includes('limit') || errorMessage.includes('quota')) && errorMessage.includes('per minute')) {
+        errorMessage = "You've made too many requests. Please wait a minute and try again.";
+    } else {
+        errorMessage = `Failed to analyze resume. ${errorMessage}`;
+    }
+    return { data: null, error: errorMessage };
   }
 }
 
@@ -95,8 +101,13 @@ export async function getPersonalizedBundleAction(
     return { data: result, error: null };
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-    return { data: null, error: `Failed to generate bundle. ${errorMessage}` };
+    let errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    if (typeof errorMessage === 'string' && (errorMessage.includes('limit') || errorMessage.includes('quota')) && errorMessage.includes('per minute')) {
+        errorMessage = "You've made too many requests. Please wait a minute and try again.";
+    } else {
+        errorMessage = `Failed to generate bundle. ${errorMessage}`;
+    }
+    return { data: null, error: errorMessage };
   }
 }
 
@@ -149,7 +160,12 @@ export async function generateResumeAction(
     return { data: result, error: null };
   } catch (error) {
     console.error(error);
-    const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-    return { data: null, error: `Failed to generate resume. ${errorMessage}` };
+    let errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+    if (typeof errorMessage === 'string' && (errorMessage.includes('limit') || errorMessage.includes('quota')) && errorMessage.includes('per minute')) {
+        errorMessage = "You've made too many requests. Please wait a minute and try again.";
+    } else {
+        errorMessage = `Failed to generate resume. ${errorMessage}`;
+    }
+    return { data: null, error: errorMessage };
   }
 }
