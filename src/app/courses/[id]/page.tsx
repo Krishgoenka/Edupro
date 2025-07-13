@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/context/cart-context';
 import { courses } from '@/lib/courses-data';
 import type { Course } from '@/lib/courses-data';
-import { IndianRupee, Clock, BarChart2, CheckCircle, Video, FileText, Infinity as InfinityIcon } from 'lucide-react';
+import { IndianRupee, Clock, BarChart2, CheckCircle, Video, FileText, Infinity as InfinityIcon, BookOpen } from 'lucide-react';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -82,17 +82,27 @@ export default function CourseDetailPage() {
 
             <div className="space-y-4">
                 <h2 className="text-2xl font-bold font-headline">Course curriculum</h2>
-                <Accordion type="single" collapsible className="w-full">
+                <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
                     {course.curriculum.map((item, index) => (
                          <AccordionItem key={index} value={`item-${index}`} className="bg-background">
-                            <AccordionTrigger className="px-6">
+                            <AccordionTrigger className="px-6 text-lg">
                                <div className="flex items-center justify-between w-full">
-                                    <span>{item.title}</span>
-                                    <span className="text-sm text-muted-foreground">{item.duration}</span>
+                                    <span className='font-bold'>{item.title}</span>
+                                    <span className="text-sm text-muted-foreground font-normal">{item.duration}</span>
                                </div>
                             </AccordionTrigger>
-                            <AccordionContent className="px-6">
-                                (Placeholder for module content)
+                            <AccordionContent className="px-6 pb-0">
+                                <ul className="space-y-4">
+                                  {item.subTopics.map((subTopic, subIndex) => (
+                                    <li key={subIndex} className="flex items-start gap-3 pb-4 border-b last:border-none">
+                                      <BookOpen className="h-5 w-5 text-primary/70 mt-1 flex-shrink-0" />
+                                      <div>
+                                        <h4 className="font-semibold">{subTopic.title}</h4>
+                                        <p className="text-sm text-muted-foreground">{subTopic.description}</p>
+                                      </div>
+                                    </li>
+                                  ))}
+                                </ul>
                             </AccordionContent>
                         </AccordionItem>
                     ))}

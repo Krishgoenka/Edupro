@@ -10,60 +10,51 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { courses } from '@/lib/courses-data';
-import { Lock, PlayCircle, IndianRupee } from 'lucide-react';
+import { Lock, PlayCircle, IndianRupee, BookOpen } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { CourseSegment } from '@/lib/courses-data';
+import type { CourseSegment, SubTopic } from '@/lib/courses-data';
 
 
-// This should be replaced with real user course data fetching
 const useUserCourseData = (courseId: string) => {
     const { user } = useAuth();
     const [enrolledSegments, setEnrolledSegments] = React.useState<Set<string>>(new Set());
     const [loading, setLoading] = React.useState(true);
+    const course = courses.find(c => c.id === courseId);
 
     React.useEffect(() => {
         const fetchUserCourseData = async () => {
             if (user) {
-                // Mock: In a real app, fetch from Firestore
                 const userCoursesRef = doc(db, "userCourses", user.uid);
                 const docSnap = await getDoc(userCoursesRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const userCourse = data.courses.find((c: any) => c.id === courseId);
-                    if (userCourse && userCourse.segmentIds) {
-                        setEnrolledSegments(new Set(userCourse.segmentIds));
-                    } else if (userCourse) {
-                        // For backwards compatibility, assume full course if segmentIds is missing
-                        const fullCourse = courses.find(c => c.id === courseId);
-                        setEnrolledSegments(new Set(fullCourse?.curriculum.map(s => s.segmentId)));
+                    if (userCourse?.segmentIds) {
+                        const allSegmentIds = userCourse.segmentIds.includes('full') 
+                            ? new Set(course?.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId)))
+                            : new Set(userCourse.segmentIds);
+                        setEnrolledSegments(allSegmentIds);
                     }
                 }
             } else {
-                // Mock: In a real app, check localStorage
-                 setEnrolledSegments(new Set());
+                setEnrolledSegments(new Set());
             }
             setLoading(false);
         };
         fetchUserCourseData();
-    }, [user, courseId]);
+    }, [user, courseId, course]);
 
-    // For demo purposes, we'll mock that the user owns some segments
+    // For demo purposes, mock ownership of the first sub-topic of the first module
     React.useEffect(() => {
-        const course = courses.find(c => c.id === courseId);
-        if (course) {
-             const mockEnrolled = new Set<string>();
-             // Let's say user owns the first segment of every course by default for demo
-             if(course.curriculum.length > 0) {
-                 mockEnrolled.add(course.curriculum[0].segmentId);
-             }
-             setEnrolledSegments(mockEnrolled);
+        if (course?.curriculum[0]?.subTopics[0]) {
+            const mockEnrolled = new Set<string>([course.curriculum[0].subTopics[0].segmentId]);
+            setEnrolledSegments(prev => new Set([...prev, ...mockEnrolled]));
         }
-    }, [courseId]);
-
+    }, [courseId, course]);
 
     return { enrolledSegments, loading };
 }
@@ -79,7 +70,6 @@ export default function CourseVideoPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
-  const { toast } = useToast();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const course = courses.find(c => c.id === id);
 
@@ -94,7 +84,7 @@ export default function CourseVideoPage() {
     )
   }
 
-  const handleUnlockSegment = (segment: CourseSegment) => {
+  const handleUnlockSegment = (segment: SubTopic) => {
     addToCart(course.id, segment.segmentId);
     router.push('/cart');
   }
@@ -103,6 +93,8 @@ export default function CourseVideoPage() {
     addToCart(course.id);
     router.push('/cart');
   }
+
+  const totalSubTopics = course.curriculum.reduce((acc, curr) => acc + curr.subTopics.length, 0);
 
   return (
     <div className="container py-12">
@@ -127,7 +119,6 @@ export default function CourseVideoPage() {
                     <Separator className="my-6" />
                     <h3 className="text-2xl font-bold font-headline mb-4">Comments</h3>
                     <div className="space-y-6">
-                        {/* TODO: Implement form handling and save comments to Firestore */}
                         <div className="space-y-2">
                             <Textarea placeholder="Add your comment..."/>
                             <Button>Post Comment</Button>
@@ -155,40 +146,45 @@ export default function CourseVideoPage() {
             <CardHeader>
               <CardTitle>Course Content</CardTitle>
                <CardDescription>
-                  You have unlocked {enrolledSegments.size} of {course.curriculum.length} modules.
+                  You have unlocked {enrolledSegments.size} of {totalSubTopics} topics.
               </CardDescription>
             </CardHeader>
             <CardContent>
-                <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-                    {course.curriculum.map((item, index) => {
-                        const isUnlocked = enrolledSegments.has(item.segmentId);
-                        return (
-                         <AccordionItem key={index} value={`item-${index}`} disabled={!isUnlocked}>
-                            <AccordionTrigger className="text-left" disabled={!isUnlocked}>
-                               <div className="flex items-center justify-between w-full gap-4">
-                                    <div className="flex items-center gap-2">
-                                        {isUnlocked ? <PlayCircle className="h-5 w-5 text-green-500" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
-                                        <span className={`flex-1 ${!isUnlocked ? 'text-muted-foreground' : ''}`}>{item.title}</span>
-                                    </div>
-                                    <span className="text-sm text-muted-foreground flex-shrink-0">{item.duration}</span>
+                <Accordion type="multiple" className="w-full" defaultValue={['item-0']}>
+                    {course.curriculum.map((item, index) => (
+                         <AccordionItem key={index} value={`item-${index}`} className="bg-background">
+                            <AccordionTrigger className="px-4 text-left">
+                               <div className="flex items-center justify-between w-full">
+                                    <span className="font-semibold">{item.title}</span>
+                                    <span className="text-sm text-muted-foreground">{item.duration}</span>
                                </div>
                             </AccordionTrigger>
-                            <AccordionContent>
-                                {isUnlocked ? (
-                                    <p className="text-sm text-muted-foreground">{item.description}</p>
-                                ) : (
-                                    <div className="flex flex-col items-start gap-2 p-2 bg-muted rounded-md">
-                                        <p className="text-sm font-semibold">This topic is locked.</p>
-                                        <Button size="sm" onClick={() => handleUnlockSegment(item)}>
-                                            <IndianRupee className="mr-2 h-4 w-4" /> Unlock for ₹{item.price}
-                                        </Button>
-                                    </div>
-                                )}
+                            <AccordionContent className="px-4 pb-0">
+                                <ul className="space-y-1">
+                                    {item.subTopics.map((subTopic, subIndex) => {
+                                        const isUnlocked = enrolledSegments.has(subTopic.segmentId);
+                                        return (
+                                            <li key={subIndex} className={`flex items-center justify-between p-2 rounded-md ${isUnlocked ? 'hover:bg-muted/50 cursor-pointer' : ''}`}>
+                                                <div className="flex items-start gap-3">
+                                                    {isUnlocked ? <PlayCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /> : <Lock className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />}
+                                                    <div>
+                                                        <h4 className={`font-medium ${!isUnlocked ? 'text-muted-foreground' : ''}`}>{subTopic.title}</h4>
+                                                    </div>
+                                                </div>
+                                                {!isUnlocked && (
+                                                    <Button size="sm" variant="ghost" className="h-auto px-2 py-1" onClick={() => handleUnlockSegment(subTopic)}>
+                                                        <IndianRupee className="mr-1 h-3 w-3" /> {subTopic.price}
+                                                    </Button>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
                             </AccordionContent>
                         </AccordionItem>
-                    )})}
+                    ))}
                 </Accordion>
-                {enrolledSegments.size < course.curriculum.length && (
+                {enrolledSegments.size < totalSubTopics && (
                     <div className="mt-4 p-4 border-t">
                         <Button className="w-full" onClick={handleUnlockFullCourse}>Unlock Full Course for ₹{course.price}</Button>
                     </div>
