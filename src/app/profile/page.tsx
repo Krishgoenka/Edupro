@@ -116,15 +116,20 @@ export default function ProfilePage() {
         if (file) {
             setAvatarFile(file);
             startTransition(async () => {
-                const idToken = await user?.getIdToken();
+                if (!user) {
+                    toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to upload an avatar." });
+                    return;
+                }
+                const idToken = await user.getIdToken();
                 const formData = new FormData();
-                formData.append('idToken', idToken || '');
+                formData.append('idToken', idToken);
                 formData.append('avatar', file);
 
                 const { success, error, photoURL } = await updateUserAvatarAction(formData);
 
-                if (success && photoURL && user) {
-                    await updateAuthProfile(user, { photoURL }); // Update client-side auth state
+                if (success && photoURL) {
+                    // This is the key change: update the client-side user object
+                    await updateAuthProfile(user, { photoURL });
                     toast({ title: "Avatar Updated!", description: "Your new picture has been saved." });
                 } else {
                      toast({ variant: "destructive", title: "Upload Failed", description: error });
