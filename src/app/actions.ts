@@ -25,9 +25,11 @@ import { getStorage } from 'firebase-admin/storage';
 // --- Firebase Admin Initialization ---
 // This ensures the server-side actions can securely communicate with your Firebase project.
 if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(
-      process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
-    );
+    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+    if (!serviceAccountKey) {
+        throw new Error("CRITICAL: The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. This is required for server-side actions. Please add it to your .env file and restart the server.");
+    }
+    const serviceAccount = JSON.parse(serviceAccountKey);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
