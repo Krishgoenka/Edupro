@@ -10,13 +10,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCart } from '@/context/cart-context';
 import { courses } from '@/lib/courses-data';
-import type { Course } from '@/lib/courses-data';
+import type { Course, SubTopic } from '@/lib/courses-data';
 import { IndianRupee, Clock, BarChart2, CheckCircle, Video, FileText, Infinity as InfinityIcon, BookOpen } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CourseDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { addToCart } = useCart();
+  const { toast } = useToast();
   
   const course = courses.find(c => c.id === id);
 
@@ -27,6 +29,14 @@ export default function CourseDetailPage() {
             <p>Sorry, we couldn't find the course you were looking for.</p>
         </div>
     )
+  }
+
+  const handleAddToCart = (course: Course) => {
+    addToCart(course.id, undefined, true);
+    toast({
+        title: "Added to Cart!",
+        description: `${course.title} has been added to your cart.`
+    });
   }
 
   return (
@@ -93,7 +103,7 @@ export default function CourseDetailPage() {
                             </AccordionTrigger>
                             <AccordionContent className="px-6 pb-0">
                                 <ul className="space-y-4">
-                                  {item.subTopics.map((subTopic, subIndex) => (
+                                  {item.subTopics && item.subTopics.map((subTopic, subIndex) => (
                                     <li key={subIndex} className="flex items-start gap-3 pb-4 border-b last:border-none">
                                       <BookOpen className="h-5 w-5 text-primary/70 mt-1 flex-shrink-0" />
                                       <div>
@@ -122,7 +132,7 @@ export default function CourseDetailPage() {
                 />
                 <CardContent className="p-6 space-y-4">
                     <p className="text-4xl font-bold font-headline flex items-center"><IndianRupee className="h-9 w-9" />{course.price}</p>
-                    <Button size="lg" className="w-full" onClick={() => addToCart(course as Course)}>
+                    <Button size="lg" className="w-full" onClick={() => handleAddToCart(course as Course)}>
                         Add to Cart
                     </Button>
                     <Button size="lg" variant="outline" className="w-full">
