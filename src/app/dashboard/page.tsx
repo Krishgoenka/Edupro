@@ -14,7 +14,7 @@ import { courses as allCourses, domains, Course } from '@/lib/courses-data';
 import type { GeneratedResume } from '@/ai/schemas/resume';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { Activity, Loader2, FileText } from 'lucide-react';
 
 type EnrolledCourseInfo = {
@@ -86,11 +86,16 @@ export default function DashboardPage() {
 
             // Fetch Saved Resumes
             try {
-                const q = query(collection(db, "resumes"), where("userId", "==", user.uid));
+                const q = query(collection(db, "resumes"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
                 const resumes: GeneratedResume[] = [];
                 querySnapshot.forEach((doc) => {
-                    resumes.push(doc.data() as GeneratedResume);
+                    const data = doc.data();
+                    resumes.push({
+                        ...data,
+                        // Ensure createdAt is a JS Date object for formatting
+                        createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+                    } as GeneratedResume);
                 });
                 setSavedResumes(resumes);
             } catch (error) {
@@ -292,7 +297,7 @@ export default function DashboardPage() {
                                         <span>{resume.personalDetails.name}'s Resume</span>
                                     </CardTitle>
                                     <CardDescription>
-                                        Generated on {new Date(resume.createdAt.seconds * 1000).toLocaleDateString()}
+                                        {resume.createdAt ? `Generated on ${new Date(resume.createdAt).toLocaleDateString()}` : ''}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-grow">

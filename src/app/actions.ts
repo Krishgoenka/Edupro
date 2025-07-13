@@ -17,19 +17,29 @@ import {
 } from "@/ai/flows/generate-resume";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
-import { auth } from "firebase-admin";
+import * as admin from 'firebase-admin';
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from 'firebase-admin/storage';
 
 
+// --- Firebase Admin Initialization ---
+// This ensures the server-side actions can securely communicate with your Firebase project.
+if (!admin.apps.length) {
+    const serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+    );
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    });
+}
+// --- End of Initialization ---
+
 const getUserId = async (idToken: string | null) => {
   if (!idToken) return null;
   try {
-    // Check if the admin app is initialized
-    if (auth().app.name === '[DEFAULT]') {
-        const decodedToken = await auth().verifyIdToken(idToken);
-        return decodedToken.uid;
-    }
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    return decodedToken.uid;
   } catch (error) {
     console.error("Error verifying ID token:", error);
   }
@@ -83,9 +93,6 @@ export async function analyzeResumeAction(
     
     const result = await analyzeResume(input);
     
-    // TODO: Save the result to Firestore
-    // e.g., await saveToFirestore({ jobDescription, resumeFileName: resumeFile.name, result });
-
     return { data: result, error: null };
   } catch (error) {
     console.error(error);
@@ -110,10 +117,7 @@ export async function getPersonalizedBundleAction(
       return { data: null, error: "User input is missing." };
     }
 
-    // TODO: Add check for Firebase Auth. If not logged in, return error.
     const result = await generatePersonalizedBundle({ userInput });
-
-    // TODO: Save the generated bundle and user input to Firestore under the user's ID.
 
     return { data: result, error: null };
   } catch (error) {
@@ -181,12 +185,15 @@ export async function generateResumeAction(
     if (userId) {
       const db = getFirestore();
       const resumeRef = db.collection('resumes').doc();
-      await resumeRef.set({
+      const resumeWithMeta = {
         ...result,
         userId: userId,
-        createdAt: new Date(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
         resumeId: resumeRef.id,
-      });
+      };
+      await resumeRef.set(resumeWithMeta);
+      // Return the data with server-generated fields
+      return { data: { ...resumeWithMeta, createdAt: new Date() }, error: null };
     }
 
     return { data: result, error: null };
@@ -256,7 +263,7 @@ export async function updateUserAvatarAction(formData: FormData): Promise<{ succ
         await file.makePublic();
         const publicUrl = file.publicUrl();
 
-        await auth().updateUser(userId, {
+        await admin.auth().updateUser(userId, {
             photoURL: publicUrl
         });
 
