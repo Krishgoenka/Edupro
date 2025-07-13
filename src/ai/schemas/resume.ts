@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const GenerateResumeInputSchema = z.object({
@@ -32,5 +33,8 @@ export const GeneratedResumeSchema = z.object({
   experience: z.array(ExperienceSchema).describe("A list of professional experiences."),
   education: z.array(EducationSchema).describe("A list of educational qualifications."),
   skills: z.array(z.string()).describe("A list of key skills, categorized if possible (e.g., Languages, Frameworks, Tools)."),
+  userId: z.string().optional(),
+  createdAt: z.any().optional(),
+  resumeId: z.string().optional(),
 });
 export type GeneratedResume = z.infer<typeof GeneratedResumeSchema>;

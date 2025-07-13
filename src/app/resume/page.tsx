@@ -17,8 +17,13 @@ import { useToast } from "@/hooks/use-toast";
 import { analyzeResumeAction, generateResumeAction } from "@/app/actions";
 import type { AnalyzeResumeOutput } from "@/ai/flows/generate-course-bundle";
 import { GeneratedResumeSchema, type GeneratedResume } from "@/ai/schemas/resume";
+import { useAuth } from "@/context/auth-context";
 import { Loader2, ListChecks, FileText, CheckCircle, Target, PenSquare, Copy, Wand2, Download, Trash2, PlusCircle, User, Briefcase, GraduationCap, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from 'lucide-react';
+import Link from "next/link";
+
 
 // --- Resume Analyzer Component ---
 
@@ -335,6 +340,7 @@ function ResumeCreator() {
   const [result, setResult] = useState<GeneratedResume | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const { user } = useAuth();
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<CreatorFormValues>({
@@ -345,9 +351,12 @@ function ResumeCreator() {
   const onSubmit = (data: CreatorFormValues) => {
     startTransition(async () => {
       setResult(null);
+      const idToken = await user?.getIdToken();
+
       const formData = new FormData();
       if(data.userInput) formData.append('userInput', data.userInput);
       if(data.resumeFile) formData.append('resumeFile', data.resumeFile);
+      if(idToken) formData.append('idToken', idToken);
       
       const { data: resultData, error } = await generateResumeAction(formData);
       if (error) {
@@ -356,6 +365,11 @@ function ResumeCreator() {
         const validatedResult = GeneratedResumeSchema.safeParse(resultData);
         if (validatedResult.success) {
             setResult(validatedResult.data);
+            if (user) {
+              toast({ title: "Resume Generated & Saved!", description: "Your new resume has been saved to your dashboard." });
+            } else {
+              toast({ title: "Resume Generated!" });
+            }
         } else {
             toast({
                 variant: "destructive",
@@ -377,41 +391,52 @@ function ResumeCreator() {
       </CardHeader>
       <CardContent>
         {!result && (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField control={form.control} name="userInput" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Your Professional Story / Modification Instructions</FormLabel>
-                  <FormControl><Textarea placeholder="Describe your experience, or if uploading a file, tell the AI what changes you'd like to make. For example: 'Make my summary more punchy and add a project about a Next.js e-commerce site.'" className="min-h-[200px] resize-y" {...field} /></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or</span></div>
-              <FormField
-                control={form.control}
-                name="resumeFile"
-                render={({ field: { onChange, ...rest } }) => (
+          <>
+            {!user && (
+                <Alert variant="destructive" className="mb-6">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>You are not logged in!</AlertTitle>
+                    <AlertDescription>
+                        Generated resumes will not be saved to an account. <Link href="/login" className="font-bold underline">Log in</Link> or <Link href="/signup" className="font-bold underline">Sign up</Link> to save your work.
+                    </AlertDescription>
+                </Alert>
+            )}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField control={form.control} name="userInput" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
-                        onChange={(e) => {
-                          onChange(e.target.files ? e.target.files[0] : null);
-                        }}
-                      />
-                    </FormControl>
+                    <FormLabel>Your Professional Story / Modification Instructions</FormLabel>
+                    <FormControl><Textarea placeholder="Describe your experience, or if uploading a file, tell the AI what changes you'd like to make. For example: 'Make my summary more punchy and add a project about a Next.js e-commerce site.'" className="min-h-[200px] resize-y" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" size="lg" disabled={isPending}>
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Generate Resume
-              </Button>
-            </form>
-          </Form>
+                )} />
+                <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or</span></div>
+                <FormField
+                  control={form.control}
+                  name="resumeFile"
+                  render={({ field: { onChange, ...rest } }) => (
+                    <FormItem>
+                      <FormLabel>Upload Existing Resume (PDF, DOCX, Image - max 5MB)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                          onChange={(e) => {
+                            onChange(e.target.files ? e.target.files[0] : null);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Generate Resume
+                </Button>
+              </form>
+            </Form>
+          </>
         )}
         {isPending && (
           <div className="w-full text-center py-16"><div className="flex justify-center items-center space-x-4"><Loader2 className="h-12 w-12 animate-spin text-primary" /><p className="text-xl font-headline">Generating your new resume...</p></div></div>

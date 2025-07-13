@@ -10,11 +10,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Progress } from '@/components/ui/progress';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courses as allCourses, domains, categoriesByDomain, Domain, Course, CourseSegment, SubTopic } from '@/lib/courses-data';
+import { courses as allCourses, domains, Course } from '@/lib/courses-data';
+import type { GeneratedResume } from '@/ai/schemas/resume';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { Activity, Loader2 } from 'lucide-react';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { Activity, Loader2, FileText } from 'lucide-react';
 
 type EnrolledCourseInfo = {
     course: Course;
@@ -27,6 +28,7 @@ export default function DashboardPage() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseInfo[]>([]);
+    const [savedResumes, setSavedResumes] = useState<GeneratedResume[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
@@ -40,15 +42,16 @@ export default function DashboardPage() {
     }, [user, authLoading, router]);
 
     useEffect(() => {
-        const fetchEnrolledCourses = async () => {
+        const fetchData = async () => {
             if (!user) {
                 setLoading(false);
                 return;
             };
 
             setLoading(true);
-            let userCourseData: { courseId: string; segmentIds: string[]; }[] = [];
             
+            // Fetch Enrolled Courses
+            let userCourseData: { courseId: string; segmentIds: string[]; }[] = [];
             const userCoursesRef = doc(db, 'userCourses', user.uid);
             try {
                 const docSnap = await getDoc(userCoursesRef);
@@ -58,8 +61,6 @@ export default function DashboardPage() {
             } catch (error) {
                 console.error("Error fetching user courses from Firestore:", error);
             }
-            
-            // For demo: add some default courses if user has none
             if (userCourseData.length === 0) {
                  userCourseData = [
                     { courseId: 'web-development-bootcamp', segmentIds: ['wd-html-structure', 'wd-css-basics'] },
@@ -67,48 +68,44 @@ export default function DashboardPage() {
                     { courseId: 'public-speaking-mastery', segmentIds: ['full'] },
                 ];
             }
-
-
-            const coursesToDisplay: EnrolledCourseInfo[] = [];
-
-            for (const item of userCourseData) {
+            const coursesToDisplay: EnrolledCourseInfo[] = userCourseData.map(item => {
                 const courseData = allCourses.find(c => c.id === item.courseId);
-                if (!courseData) continue;
+                if (!courseData) return null;
 
                 const segmentIds = new Set(item.segmentIds);
-                let progress = 0;
                 const isFull = segmentIds.has('full');
                 const totalTopics = courseData.curriculum.flatMap(c => c.subTopics).length;
-
-                const ownedSegmentCount = isFull 
-                    ? totalTopics 
-                    : segmentIds.size;
+                const ownedSegmentCount = isFull ? totalTopics : segmentIds.size;
+                const progress = totalTopics > 0 ? Math.round((ownedSegmentCount / totalTopics) * 100) : 0;
                 
-                if (totalTopics > 0) {
-                    progress = Math.round((ownedSegmentCount / totalTopics) * 100);
-                }
-
                 let status = "Not Started";
                 if (progress === 100) status = "Completed";
                 else if (progress > 0) status = "In Progress";
 
-                coursesToDisplay.push({
-                    course: courseData,
-                    enrolledSegments: segmentIds,
-                    progress,
-                    status,
+                return { course: courseData, enrolledSegments: segmentIds, progress, status };
+            }).filter(Boolean) as EnrolledCourseInfo[];
+            setEnrolledCourses(coursesToDisplay);
+
+            // Fetch Saved Resumes
+            try {
+                const q = query(collection(db, "resumes"), where("userId", "==", user.uid));
+                const querySnapshot = await getDocs(q);
+                const resumes: GeneratedResume[] = [];
+                querySnapshot.forEach((doc) => {
+                    resumes.push(doc.data() as GeneratedResume);
                 });
+                setSavedResumes(resumes);
+            } catch (error) {
+                 console.error("Error fetching user resumes from Firestore:", error);
             }
             
-            setEnrolledCourses(coursesToDisplay);
             setLoading(false);
         };
 
         if(user) {
-            fetchEnrolledCourses();
+            fetchData();
         }
     }, [user]);
-
 
     const handleDomainChange = (value: Domain | "All") => {
         const newDomain = value === "All" ? "" : value;
@@ -162,9 +159,9 @@ export default function DashboardPage() {
                 <p className="text-muted-foreground md:text-xl mt-2">Let's continue your learning journey.</p>
             </div>
 
-            <section>
+            <section className="mb-12">
                  {enrolledCourses.length > 0 && (
-                    <Card className="mb-12">
+                    <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-3 text-2xl font-headline">
                                 <Activity className="h-6 w-6 text-primary" />
@@ -182,7 +179,9 @@ export default function DashboardPage() {
                         </CardContent>
                     </Card>
                 )}
+            </section>
                 
+            <section className="mb-12">
                 <h2 className="text-3xl font-bold font-headline mb-6">My Courses</h2>
                 {enrolledCourses.length > 0 ? (
                     <>
@@ -282,6 +281,42 @@ export default function DashboardPage() {
                         </CardContent>
                     </Card>
                 )}
+            </section>
+            <section>
+                <h2 className="text-3xl font-bold font-headline mb-6">My Saved Resumes</h2>
+                 {savedResumes.length > 0 ? (
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {savedResumes.map((resume, index) => (
+                            <Card key={index} className="flex flex-col">
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-3">
+                                        <FileText className="h-6 w-6 text-primary" />
+                                        <span>{resume.personalDetails.name}'s Resume</span>
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Generated on {new Date(resume.createdAt.seconds * 1000).toLocaleDateString()}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <p className="text-sm text-muted-foreground line-clamp-3">{resume.summary}</p>
+                                </CardContent>
+                                <CardFooter>
+                                    {/* TODO: Link to a page to view/edit the full resume */}
+                                    <Button variant="outline" className="w-full" disabled>View/Edit (Coming Soon)</Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
+                 ) : (
+                    <Card className="flex items-center justify-center py-20">
+                        <CardContent className="text-center">
+                            <p className="text-muted-foreground text-lg">You haven’t generated any resumes yet.</p>
+                            <Button asChild className="mt-4">
+                                <Link href="/resume">Create a Resume</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                 )}
             </section>
         </div>
     );

@@ -47,14 +47,12 @@ export default function SignupPage() {
     }
 
     // Call the Cloud Function to handle any backend tasks like role assignment.
-    // This is a secure way to manage roles without exposing logic to the client.
     try {
         const setAdminRole = httpsCallable(functions, 'setAdminRole');
         await setAdminRole({ email: user.email });
+        console.log("Cloud function 'setAdminRole' was called for", user.email);
     } catch(err) {
         console.error("Error calling post-signup function:", err);
-        // This is not a critical error for the user, so we don't show a toast.
-        // It might be a permissions issue or the function may not be deployed.
     }
 
     // Save user details to Firestore
@@ -68,9 +66,9 @@ export default function SignupPage() {
 
     toast({
         title: "Account Created!",
-        description: "You have been successfully signed up.",
+        description: "You've been successfully signed up. Please log in to continue.",
     });
-    router.push("/dashboard");
+    router.push("/login");
   }
 
   function onSubmit(values: z.infer<typeof formSchema>) {

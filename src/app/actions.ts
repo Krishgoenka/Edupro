@@ -17,7 +17,23 @@ import {
 } from "@/ai/flows/generate-resume";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
+import { auth } from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 
+
+const getUserId = async (idToken: string | null) => {
+  if (!idToken) return null;
+  try {
+    // Check if the admin app is initialized
+    if (auth().app.name === '[DEFAULT]') {
+        const decodedToken = await auth().verifyIdToken(idToken);
+        return decodedToken.uid;
+    }
+  } catch (error) {
+    console.error("Error verifying ID token:", error);
+  }
+  return null;
+}
 
 export async function analyzeResumeAction(
   formData: FormData
@@ -122,6 +138,7 @@ export async function generateResumeAction(
   try {
     const userInput = formData.get('userInput') as string;
     const resumeFile = formData.get('resumeFile') as File | null;
+    const idToken = formData.get('idToken') as string | null;
 
     let resumeDataUri: string | undefined = undefined;
     let combinedUserInput = userInput;
@@ -158,6 +175,18 @@ export async function generateResumeAction(
     };
     
     const result = await generateResume(input);
+
+    const userId = await getUserId(idToken);
+    if (userId) {
+      const db = getFirestore();
+      const resumeRef = db.collection('resumes').doc();
+      await resumeRef.set({
+        ...result,
+        userId: userId,
+        createdAt: new Date(),
+        resumeId: resumeRef.id,
+      });
+    }
 
     return { data: result, error: null };
   } catch (error) {
