@@ -11,8 +11,9 @@ import { useCart } from '@/context/cart-context';
 import { useSplash } from '@/context/splash-context';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut, ShoppingCart } from 'lucide-react';
+import { Menu, LogOut, ShoppingCart, User as UserIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export function Header() {
   const { user } = useAuth();
@@ -84,10 +85,14 @@ export function Header() {
               </Link>
             </Button>
             {user ? (
-              <Button onClick={handleLogout} variant="ghost">
-                <LogOut className="mr-2 h-4 w-4" />
-                Log Out
-              </Button>
+               <Link href="/profile">
+                  <Avatar className="h-9 w-9 cursor-pointer">
+                      <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
+                      <AvatarFallback>
+                          {user.displayName ? user.displayName.charAt(0).toUpperCase() : <UserIcon className="h-5 w-5" />}
+                      </AvatarFallback>
+                  </Avatar>
+                </Link>
             ) : (
               <>
                 <Button asChild variant="ghost">
@@ -110,6 +115,15 @@ export function Header() {
               <SheetContent side="right">
                 <div className="p-4">
                   <nav className="flex flex-col gap-4">
+                     {user && (
+                      <Link href="/profile" className="text-lg font-medium flex items-center gap-3">
+                         <Avatar className="h-8 w-8">
+                            <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
+                            <AvatarFallback>{user.displayName?.charAt(0).toUpperCase()}</AvatarFallback>
+                         </Avatar>
+                         Profile
+                      </Link>
+                     )}
                     {navLinks.map(link => (
                       <Link
                         key={link.href}
