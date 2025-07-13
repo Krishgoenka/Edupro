@@ -78,10 +78,16 @@ export default function SignupPage() {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         await handleUserCreation(userCredential.user, values.fullName);
       } catch (error: any) {
+        let description = "An unknown error occurred. Please try again.";
+        if (error.code === 'auth/operation-not-allowed') {
+            description = "Email/Password sign-up is not enabled. Please enable it in your Firebase console's Authentication section.";
+        } else if (error.message) {
+            description = error.message;
+        }
         toast({
           variant: "destructive",
           title: "Sign Up Failed",
-          description: error.message,
+          description: description,
         });
       }
     });
@@ -93,10 +99,16 @@ export default function SignupPage() {
       const userCredential = await signInWithPopup(auth, googleProvider);
       await handleUserCreation(userCredential.user, userCredential.user.displayName);
     } catch (error: any) {
+      let description = "An unknown error occurred. Please try again.";
+      if (error.code === 'auth/operation-not-allowed') {
+          description = "Google sign-in is not enabled. Please enable it in your Firebase console's Authentication section.";
+      } else if (error.message) {
+          description = error.message;
+      }
       toast({
         variant: "destructive",
         title: "Sign Up Failed",
-        description: error.message,
+        description: description,
       });
     } finally {
       setIsGoogleLoading(false);

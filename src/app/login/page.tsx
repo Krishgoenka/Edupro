@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -45,10 +46,16 @@ export default function LoginPage() {
         });
         router.push("/dashboard");
       } catch (error: any) {
+        let description = "An unknown error occurred. Please try again.";
+        if (error.code === 'auth/operation-not-allowed') {
+            description = "Email/Password sign-in is not enabled. Please enable it in your Firebase console's Authentication section.";
+        } else if (error.message) {
+            description = error.message;
+        }
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: error.message,
+          description: description,
         });
       }
     });
@@ -64,10 +71,16 @@ export default function LoginPage() {
       });
       router.push("/dashboard");
     } catch (error: any) {
+      let description = "An unknown error occurred. Please try again.";
+      if (error.code === 'auth/operation-not-allowed') {
+          description = "Google sign-in is not enabled. Please enable it in your Firebase console's Authentication section.";
+      } else if (error.message) {
+          description = error.message;
+      }
       toast({
         variant: "destructive",
         title: "Login Failed",
-        description: error.message,
+        description: description,
       });
     } finally {
       setIsGoogleLoading(false);
