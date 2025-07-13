@@ -50,17 +50,27 @@ export default function DashboardPage() {
 
             setLoading(true);
             
-            // Fetch Enrolled Courses
             let userCourseData: { courseId: string; segmentIds: string[]; }[] = [];
-            const userCoursesRef = doc(db, 'userCourses', user.uid);
-            try {
-                const docSnap = await getDoc(userCoursesRef);
-                if (docSnap.exists()) {
-                   userCourseData = docSnap.data().courses || [];
+
+            // Special handling for the admin user to show default courses
+            if (user.email === 'goenkakrish02@gmail.com') {
+                userCourseData = allCourses.slice(0, 5).map(course => ({
+                    courseId: course.id,
+                    segmentIds: course.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId)).slice(0, Math.ceil(course.curriculum.flatMap(c => c.subTopics).length / 2))
+                }));
+            } else {
+                 // Fetch Enrolled Courses for regular users
+                const userCoursesRef = doc(db, 'userCourses', user.uid);
+                try {
+                    const docSnap = await getDoc(userCoursesRef);
+                    if (docSnap.exists()) {
+                       userCourseData = docSnap.data().courses || [];
+                    }
+                } catch (error) {
+                    console.error("Error fetching user courses from Firestore:", error);
                 }
-            } catch (error) {
-                console.error("Error fetching user courses from Firestore:", error);
             }
+
 
             const coursesToDisplay: EnrolledCourseInfo[] = userCourseData.map(item => {
                 const courseData = allCourses.find(c => c.id === item.courseId);

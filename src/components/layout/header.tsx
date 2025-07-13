@@ -73,27 +73,29 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="hidden md:flex items-center space-x-2">
-            {profile?.role === 'admin' && (
-                <Button asChild variant="ghost" size="icon" title="Admin Panel">
-                    <Link href="/admin">
-                        <ShieldCheck className="h-5 w-5 text-primary" />
-                        <span className="sr-only">Admin Panel</span>
-                    </Link>
-                </Button>
-            )}
-            <Button asChild variant="ghost" size="icon" className="relative">
-              <Link href="/cart">
-                <ShoppingCart className="h-5 w-5" />
-                {cart.length > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
-                    {cart.length}
-                  </span>
+            
+            {user && (
+              <>
+                {profile?.role === 'admin' && (
+                    <Button asChild variant="ghost" size="icon" title="Admin Panel">
+                        <Link href="/admin">
+                            <ShieldCheck className="h-5 w-5 text-primary" />
+                            <span className="sr-only">Admin Panel</span>
+                        </Link>
+                    </Button>
                 )}
-                <span className="sr-only">Shopping Cart</span>
-              </Link>
-            </Button>
-            {user ? (
-               <Link href="/profile">
+                <Button asChild variant="ghost" size="icon" className="relative">
+                  <Link href="/cart">
+                    <ShoppingCart className="h-5 w-5" />
+                    {cart.length > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">
+                        {cart.length}
+                      </span>
+                    )}
+                    <span className="sr-only">Shopping Cart</span>
+                  </Link>
+                </Button>
+                <Link href="/profile">
                   <Avatar className="h-9 w-9 cursor-pointer">
                       <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
                       <AvatarFallback>
@@ -101,7 +103,10 @@ export function Header() {
                       </AvatarFallback>
                   </Avatar>
                 </Link>
-            ) : (
+              </>
+            )}
+
+            {!user && (
               <>
                 <Button asChild variant="ghost">
                   <Link href="/login">Log In</Link>
