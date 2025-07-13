@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 type CartContextType = {
   cart: Course[];
   addToCart: (course: Course) => void;
+  addMultipleToCart: (courses: Course[]) => void;
   removeFromCart: (courseId: string) => void;
   clearCart: () => void;
   loading: boolean;
@@ -19,6 +20,7 @@ type CartContextType = {
 const CartContext = createContext<CartContextType>({
   cart: [],
   addToCart: () => {},
+  addMultipleToCart: () => {},
   removeFromCart: () => {},
   clearCart: () => {},
   loading: true,
@@ -79,6 +81,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       });
   };
 
+  const addMultipleToCart = (coursesToAdd: Course[]) => {
+    setCart(prevCart => {
+      const newItems = coursesToAdd.filter(
+        newItem => !prevCart.some(cartItem => cartItem.id === newItem.id)
+      );
+      const newCart = [...prevCart, ...newItems];
+      updateCartInFirestore(newCart);
+      return newCart;
+    });
+  };
+
   const removeFromCart = (courseId: string) => {
     const newCart = cart.filter(item => item.id !== courseId);
     setCart(newCart);
@@ -96,7 +109,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, loading }}>
+    <CartContext.Provider value={{ cart, addToCart, addMultipleToCart, removeFromCart, clearCart, loading }}>
       {children}
     </CartContext.Provider>
   );

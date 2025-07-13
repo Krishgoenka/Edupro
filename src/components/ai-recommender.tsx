@@ -23,7 +23,7 @@ export function AiRecommender() {
     const [userInput, setUserInput] = useState('');
     const [result, setResult] = useState<PersonalizedBundleOutput | null>(null);
     const { toast } = useToast();
-    const { addToCart } = useCart();
+    const { addMultipleToCart } = useCart();
     const router = useRouter();
 
     const handleSubmit = () => {
@@ -53,38 +53,42 @@ export function AiRecommender() {
 
     const handleAddBundleToCart = () => {
         if (!result) return;
+        
+        const itemsToAdd: Course[] = [];
 
-        // Add full courses to cart
-        (result.recommendedCourses || []).forEach(course => {
-            const fullCourse = courses.find(c => c.id === course.id);
+        // Prepare full courses
+        (result.recommendedCourses || []).forEach(courseRec => {
+            const fullCourse = courses.find(c => c.id === courseRec.id);
             if(fullCourse) {
-                 addToCart(fullCourse as Course);
+                 itemsToAdd.push(fullCourse as Course);
             }
         });
         
-        // Add individual segments to the cart as custom course objects
-        (result.recommendedSegments || []).forEach(segment => {
-            const sourceCourse = courses.find(c => c.id === segment.sourceCourse.id);
+        // Prepare individual segments as custom course objects
+        (result.recommendedSegments || []).forEach(segmentRec => {
+            const sourceCourse = courses.find(c => c.id === segmentRec.sourceCourse.id);
             if (sourceCourse) {
                 const segmentCourse: Course = {
-                    id: segment.segmentId, // Use segmentId as the unique ID for the cart item
-                    title: `Unlocked Segment: ${segment.title}`,
-                    description: `This segment was unlocked from the full course: "${segment.sourceCourse.title}".`,
-                    price: segment.price,
+                    id: segmentRec.segmentId, // Use segmentId as the unique ID for the cart item
+                    title: `Unlocked Segment: ${segmentRec.title}`,
+                    description: `This segment was unlocked from the full course: "${segmentRec.sourceCourse.title}".`,
+                    price: segmentRec.price,
                     image: sourceCourse.image,
                     dataAiHint: sourceCourse.dataAiHint,
                     domain: sourceCourse.domain,
                     category: `Unlocked from ${sourceCourse.category}`,
-                    videoUrl: sourceCourse.videoUrl, // In a real app, you might link to a specific timestamp
+                    videoUrl: sourceCourse.videoUrl, 
                     tutor: sourceCourse.tutor,
-                    features: [segment.reason],
-                    duration: sourceCourse.curriculum.find(c => c.segmentId === segment.segmentId)?.duration || 'Varies',
+                    features: [segmentRec.reason],
+                    duration: sourceCourse.curriculum.find(c => c.segmentId === segmentRec.segmentId)?.duration || 'Varies',
                     level: sourceCourse.level,
-                    curriculum: [sourceCourse.curriculum.find(c => c.segmentId === segment.segmentId)!],
+                    curriculum: [sourceCourse.curriculum.find(c => c.segmentId === segmentRec.segmentId)!],
                 };
-                addToCart(segmentCourse);
+                itemsToAdd.push(segmentCourse);
             }
         });
+
+        addMultipleToCart(itemsToAdd);
         
         toast({
             title: "Bundle Added!",
