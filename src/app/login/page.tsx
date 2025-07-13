@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, sendPasswordResetEmail } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,21 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
 import React from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(1, { message: "Password is required." }),
 });
 
 export default function LoginPage() {
@@ -36,6 +47,31 @@ export default function LoginPage() {
     },
   });
 
+  const handlePasswordReset = async () => {
+    const email = form.getValues("email");
+    if (!email) {
+      toast({
+        variant: "destructive",
+        title: "Email Required",
+        description: "Please enter your email address in the form to reset your password.",
+      });
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: `If an account exists for ${email}, you will receive a password reset link.`,
+      });
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not send password reset email. Please try again later.",
+      });
+    }
+  }
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       try {
@@ -48,7 +84,7 @@ export default function LoginPage() {
       } catch (error: any) {
         let description = "An unknown error occurred. Please try again.";
         if (error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-credentials') {
-            description = "The email or password you entered is incorrect. Please try again.";
+            description = "The email or password you entered is incorrect. Please check your credentials and try again.";
         } else if (error.code === 'auth/operation-not-allowed') {
             description = "Email/Password sign-in is not enabled. Please enable it in your Firebase console's Authentication section.";
         } else if (error.message) {
@@ -117,7 +153,28 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                       <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <button type="button" className="text-sm font-medium text-primary hover:underline underline-offset-4">
+                              Forgot Password?
+                            </button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Reset Password?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                We will send a password reset link to the email address you entered. Make sure it's correct.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={handlePasswordReset}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                     <FormControl>
                       <Input type="password" {...field} disabled={isPending || isGoogleLoading}/>
                     </FormControl>
