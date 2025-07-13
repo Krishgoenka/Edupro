@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, User as UserIcon, LogOut, KeyRound, HelpCircle, Briefcase, Target, Edit, Check, Upload } from 'lucide-react';
+import { Loader2, User as UserIcon, LogOut, KeyRound, HelpCircle, Briefcase, Target, Edit, Check, Upload, ShieldCheck } from 'lucide-react';
 import { signOut, sendPasswordResetEmail, updateProfile as updateAuthProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useForm } from 'react-hook-form';
@@ -128,13 +128,12 @@ export default function ProfilePage() {
                 const { success, error, photoURL } = await updateUserAvatarAction(formData);
 
                 if (success && photoURL) {
-                    // This is the key change: update the client-side user object
                     await updateAuthProfile(user, { photoURL });
                     toast({ title: "Avatar Updated!", description: "Your new picture has been saved." });
                 } else {
                      toast({ variant: "destructive", title: "Upload Failed", description: error });
                 }
-                setAvatarFile(null); // Reset file input state
+                setAvatarFile(null);
             });
         }
     }
@@ -180,6 +179,21 @@ export default function ProfilePage() {
                     <form onSubmit={form.handleSubmit(onProfileSubmit)}>
                         <CardContent className="space-y-8">
                             <Separator />
+
+                            {profile?.role === 'admin' && (
+                                <>
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold text-lg flex items-center gap-2">
+                                           <ShieldCheck className="h-5 w-5 text-primary" />
+                                           Admin
+                                        </h3>
+                                        <Button className="w-full" onClick={() => router.push('/admin')}>
+                                            Go to Admin Panel
+                                        </Button>
+                                    </div>
+                                    <Separator />
+                                </>
+                            )}
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">

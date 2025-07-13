@@ -23,7 +23,6 @@ import { getStorage } from 'firebase-admin/storage';
 
 
 // --- Firebase Admin Initialization ---
-// This ensures the server-side actions can securely communicate with your Firebase project.
 if (!admin.apps.length) {
     const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
     if (!serviceAccountKey) {
@@ -37,16 +36,28 @@ if (!admin.apps.length) {
 }
 // --- End of Initialization ---
 
-const getUserId = async (idToken: string | null) => {
+const getUserId = async (idToken: string | null): Promise<string | null> => {
   if (!idToken) return null;
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     return decodedToken.uid;
   } catch (error) {
     console.error("Error verifying ID token:", error);
+    return null;
   }
-  return null;
 }
+
+const checkAdmin = async (idToken: string | null): Promise<boolean> => {
+    if (!idToken) return false;
+    try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        return decodedToken.admin === true;
+    } catch (error) {
+        console.error("Error verifying admin token:", error);
+        return false;
+    }
+}
+
 
 export async function analyzeResumeAction(
   formData: FormData
@@ -273,5 +284,29 @@ export async function updateUserAvatarAction(formData: FormData): Promise<{ succ
     } catch (error) {
         console.error("Error updating user avatar:", error);
         return { success: false, error: 'Failed to update avatar. Please try again.' };
+    }
+}
+
+export async function getUsersAction(idToken: string | null): Promise<{ users?: any[], error?: string }> {
+    const isAdmin = await checkAdmin(idToken);
+    if (!isAdmin) {
+        return { error: "Permission denied. You must be an admin to perform this action." };
+    }
+
+    try {
+        const listUsersResult = await admin.auth().listUsers(1000);
+        const users = listUsersResult.users.map(userRecord => ({
+            uid: userRecord.uid,
+            email: userRecord.email,
+            displayName: userRecord.displayName,
+            photoURL: userRecord.photoURL,
+            creationTime: userRecord.metadata.creationTime,
+            lastSignInTime: userRecord.metadata.lastSignInTime,
+            role: userRecord.customClaims?.admin ? 'admin' : 'user'
+        }));
+        return { users };
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return { error: 'Failed to fetch users. Please try again.' };
     }
 }
