@@ -1,17 +1,25 @@
-import {genkit} from 'genkit';
+
+import {genkit, GenkitPlugin} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
 // Validate the Google AI API key. This provides a clear error if the key
 // is missing, which is a common source of problems.
-if (!process.env.GOOGLE_API_KEY) {
+if (process.env.NODE_ENV === 'production' && !process.env.GOOGLE_API_KEY) {
   throw new Error(
     "CRITICAL: The GOOGLE_API_KEY environment variable is not set. For local development, add it to your .env.local file. For Vercel deployment, add it to your project's Environment Variables and redeploy."
   );
 }
 
+const plugins: GenkitPlugin[] = [];
+
+if (process.env.GOOGLE_API_KEY) {
+    plugins.push(googleAI({
+        apiKey: process.env.GOOGLE_API_KEY
+    }));
+}
+
+
 export const ai = genkit({
-  plugins: [googleAI({
-    apiKey: process.env.GOOGLE_API_KEY
-  })],
+  plugins: plugins,
   model: 'googleai/gemini-2.0-flash',
 });
