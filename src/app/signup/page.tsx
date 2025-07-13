@@ -76,7 +76,8 @@ export default function SignupPage() {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
         await handleUserCreation(userCredential.user, values.fullName);
-      } catch (error: any) {
+      } catch (error: any)
+{
         let description = "An unknown error occurred. Please try again.";
         if (error.code === 'auth/operation-not-allowed') {
             description = "Email/Password sign-up is not enabled. Please enable it in your Firebase console's Authentication section.";
