@@ -67,7 +67,9 @@ export function AiRecommender() {
         // Prepare individual segments as custom course objects
         (result.recommendedSegments || []).forEach(segmentRec => {
             const sourceCourse = courses.find(c => c.id === segmentRec.sourceCourse.id);
-            if (sourceCourse) {
+            const sourceSegment = sourceCourse?.curriculum.find(s => s.segmentId === segmentRec.segmentId);
+            
+            if (sourceCourse && sourceSegment) {
                 const segmentCourse: Course = {
                     id: segmentRec.segmentId, // Use segmentId as the unique ID for the cart item
                     title: `Unlocked Segment: ${segmentRec.title}`,
@@ -80,9 +82,9 @@ export function AiRecommender() {
                     videoUrl: sourceCourse.videoUrl, 
                     tutor: sourceCourse.tutor,
                     features: [segmentRec.reason],
-                    duration: sourceCourse.curriculum.find(c => c.segmentId === segmentRec.segmentId)?.duration || 'Varies',
+                    duration: sourceSegment.duration,
                     level: sourceCourse.level,
-                    curriculum: [sourceCourse.curriculum.find(c => c.segmentId === segmentRec.segmentId)!],
+                    curriculum: [sourceSegment],
                 };
                 itemsToAdd.push(segmentCourse);
             }
