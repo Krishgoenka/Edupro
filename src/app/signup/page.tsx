@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile, User } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, googleProvider, db, functions } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -40,28 +40,30 @@ export default function SignupPage() {
     },
   });
 
-  const handleUserCreation = async (user: any, fullName: string | null) => {
-    // Set display name
+  const handleUserCreation = async (user: User, fullName?: string | null) => {
+    // Set display name if it's not already set (e.g., from email/password signup)
     if (fullName && !user.displayName) {
         await updateProfile(user, { displayName: fullName });
     }
 
-    // Call the Cloud Function to log the new user event.
-    // This is not critical for the user flow, so we don't await it or block on it.
+    // Call the Cloud Function to handle any backend tasks like role assignment.
+    // This is a secure way to manage roles without exposing logic to the client.
     try {
-        const logUserCreation = httpsCallable(functions, 'setAdminRole');
-        logUserCreation({ email: user.email });
+        const setAdminRole = httpsCallable(functions, 'setAdminRole');
+        await setAdminRole({ email: user.email });
     } catch(err) {
-        console.error("Could not log user creation event:", err);
+        console.error("Error calling post-signup function:", err);
+        // This is not a critical error for the user, so we don't show a toast.
+        // It might be a permissions issue or the function may not be deployed.
     }
-    
-    // Create user document in Firestore
+
+    // Save user details to Firestore
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName || fullName,
-        role: 'user'
+        role: 'user' // Default role is 'user', the function will elevate if needed.
     }, { merge: true });
 
     toast({
@@ -80,6 +82,8 @@ export default function SignupPage() {
         let description = "An unknown error occurred. Please try again.";
         if (error.code === 'auth/operation-not-allowed') {
             description = "Email/Password sign-up is not enabled. Please enable it in your Firebase console's Authentication section.";
+        } else if (error.code === 'auth/email-already-in-use') {
+            description = "This email address is already in use. Please log in or use a different email.";
         } else if (error.message) {
             description = error.message;
         }
