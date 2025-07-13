@@ -62,13 +62,27 @@ export function AiRecommender() {
             }
         });
         
-        // Note: For this demo, we're adding the FULL course to the cart 
-        // even if only a segment was recommended. A real implementation
-        // would require a more complex cart/product system.
+        // Add individual segments to the cart as custom course objects
         (result.recommendedSegments || []).forEach(segment => {
-            const fullCourse = courses.find(c => c.id === segment.sourceCourse.id);
-            if(fullCourse) {
-                 addToCart(fullCourse as Course);
+            const sourceCourse = courses.find(c => c.id === segment.sourceCourse.id);
+            if (sourceCourse) {
+                const segmentCourse: Course = {
+                    id: segment.segmentId, // Use segmentId as the unique ID for the cart item
+                    title: `Unlocked Segment: ${segment.title}`,
+                    description: `This segment was unlocked from the full course: "${segment.sourceCourse.title}".`,
+                    price: segment.price,
+                    image: sourceCourse.image,
+                    dataAiHint: sourceCourse.dataAiHint,
+                    domain: sourceCourse.domain,
+                    category: `Unlocked from ${sourceCourse.category}`,
+                    videoUrl: sourceCourse.videoUrl, // In a real app, you might link to a specific timestamp
+                    tutor: sourceCourse.tutor,
+                    features: [segment.reason],
+                    duration: sourceCourse.curriculum.find(c => c.segmentId === segment.segmentId)?.duration || 'Varies',
+                    level: sourceCourse.level,
+                    curriculum: [sourceCourse.curriculum.find(c => c.segmentId === segment.segmentId)!],
+                };
+                addToCart(segmentCourse);
             }
         });
         

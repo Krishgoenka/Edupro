@@ -68,26 +68,59 @@ export default function DashboardPage() {
             
             const enrolledCourseMap = new Map(enrolledCourseData.map(c => [c.id, c.progress]));
             const allCourseIdsToShow = new Set([...defaultCourseIds, ...enrolledCourseMap.keys()]);
-
-            const coursesToDisplay = allCourses
-                .filter(c => allCourseIdsToShow.has(c.id))
-                .map((course) => {
-                    let progress: number;
-                    let status: string;
-
-                    if (enrolledCourseMap.has(course.id)) {
-                        progress = enrolledCourseMap.get(course.id)!;
-                    } else {
-                        // This is a default course not yet enrolled in, give it some mock progress
-                        progress = (course.id.charCodeAt(0) * course.id.length) % 75 + 10;
+            
+            const getCourseDataById = (id: string): Course | null => {
+                // First, check the main course list
+                const mainCourse = allCourses.find(c => c.id === id);
+                if (mainCourse) return mainCourse;
+                
+                // If not found, check if it's a segment ID within any course
+                for (const course of allCourses) {
+                    const segment = course.curriculum.find(s => s.segmentId === id);
+                    if (segment) {
+                        // It's a segment, return a custom Course-like object for it
+                         return {
+                            id: segment.segmentId,
+                            title: `Unlocked Segment: ${segment.title}`,
+                            description: `From the course: "${course.title}".`,
+                            price: segment.price,
+                            image: course.image,
+                            dataAiHint: course.dataAiHint,
+                            domain: course.domain,
+                            category: `Unlocked from ${course.category}`,
+                            videoUrl: course.videoUrl,
+                            tutor: course.tutor,
+                            features: [],
+                            duration: segment.duration,
+                            level: course.level,
+                            curriculum: [segment],
+                        };
                     }
+                }
+                return null; // Not found
+            };
 
-                    if (progress === 100) status = "Completed";
-                    else if (progress > 0) status = "In Progress";
-                    else status = "Not Started";
-                    
-                    return { ...course, progress, status };
-                });
+
+            const coursesToDisplay = Array.from(allCourseIdsToShow).map(id => {
+                const courseData = getCourseDataById(id);
+                if (!courseData) return null;
+
+                let progress: number;
+                let status: string;
+
+                if (enrolledCourseMap.has(id)) {
+                    progress = enrolledCourseMap.get(id)!;
+                } else {
+                    // This is a default course not yet enrolled in, give it some mock progress
+                    progress = (id.charCodeAt(0) * id.length) % 75 + 10;
+                }
+
+                if (progress === 100) status = "Completed";
+                else if (progress > 0) status = "In Progress";
+                else status = "Not Started";
+                
+                return { ...courseData, progress, status };
+            }).filter((c): c is CourseWithProgress => c !== null);
             
             setEnrolledCourses(coursesToDisplay);
             setLoading(false);
@@ -108,8 +141,16 @@ export default function DashboardPage() {
     };
 
     const availableCategories = useMemo(() => {
-        return selectedDomain ? categoriesByDomain[selectedDomain] : [];
-    }, [selectedDomain]);
+        const categories = new Set<string>();
+        if (selectedDomain) {
+            enrolledCourses.forEach(course => {
+                if (course.domain === selectedDomain) {
+                    categories.add(course.category);
+                }
+            });
+        }
+        return Array.from(categories);
+    }, [selectedDomain, enrolledCourses]);
 
     const filteredCourses = useMemo(() => {
         return enrolledCourses.filter(course => {
@@ -266,5 +307,3 @@ export default function DashboardPage() {
         </div>
     );
 }
-
-    
