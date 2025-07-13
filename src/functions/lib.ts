@@ -31,4 +31,3 @@ export const setAdminRole = onCall(async (request) => {
         return { message: 'Email not provided.' };
     }
 });
-

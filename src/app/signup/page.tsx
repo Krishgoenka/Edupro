@@ -46,23 +46,22 @@ export default function SignupPage() {
         await updateProfile(user, { displayName: fullName });
     }
 
-    // Call the Cloud Function to set the custom claim
-    const setAdminRole = httpsCallable(functions, 'setAdminRole');
+    // Call the Cloud Function to log the new user event.
+    // This is not critical for the user flow, so we don't await it or block on it.
     try {
-        await setAdminRole({ email: user.email });
+        const logUserCreation = httpsCallable(functions, 'setAdminRole');
+        logUserCreation({ email: user.email });
     } catch(err) {
-        console.error("Could not set admin role", err);
+        console.error("Could not log user creation event:", err);
     }
     
-    // Refresh token to get the new claim
-    await user.getIdToken(true); 
-
+    // Create user document in Firestore
     const userRef = doc(db, 'users', user.uid);
     await setDoc(userRef, {
         uid: user.uid,
         email: user.email,
         displayName: user.displayName || fullName,
-        role: user.email === 'goenkakrish02@gmail.com' ? 'admin' : 'user'
+        role: 'user'
     }, { merge: true });
 
     toast({
