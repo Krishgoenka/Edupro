@@ -5,20 +5,21 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useAuth } from './auth-context';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
-import { courses as allCourses, Course, CourseSegment } from '@/lib/courses-data';
+import { courses as allCourses } from '@/lib/courses-data';
 import { useToast } from '@/hooks/use-toast';
 
 export type CartItem = {
     courseId: string;
-    segmentIds: Set<string>; // Set of segment IDs, 'full' if the whole course is added
+    segmentIds: Set<string>; // 'full' indicates the entire course
 };
 
 type CartContextType = {
   cart: CartItem[];
-  addToCart: (courseId: string, segmentId?: string) => void;
+  addToCart: (courseId: string, segmentId?: string, isFullCourse?: boolean) => void;
   addBundleToCart: (bundle: { courseId: string; segmentIds: string[] }[]) => void;
   removeFromCart: (courseId: string) => void;
   clearCart: () => void;
+  addMultipleToCart: (items: { courseId: string, segmentIds: string[] }[]) => void;
   loading: boolean;
 };
 
@@ -28,6 +29,7 @@ const CartContext = createContext<CartContextType>({
   addBundleToCart: () => {},
   removeFromCart: () => {},
   clearCart: () => {},
+  addMultipleToCart: () => {},
   loading: true,
 });
 
@@ -73,10 +75,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } else {
       localStorage.setItem('guestCart', JSON.stringify({ cartItems: serializableCart }));
     }
-    setCart(newCart); // Update state after storage operation
+    setCart(newCart);
   };
 
-  const addToCart = (courseId: string, segmentId?: string) => {
+  const addToCart = (courseId: string, segmentId?: string, isFullCourse = false) => {
     const course = allCourses.find(c => c.id === courseId);
     if (!course) return;
 
@@ -87,30 +89,63 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       // Course is already in the cart, update its segments
       const existingItem = newCart[existingCartItemIndex];
       const updatedSegments = new Set(existingItem.segmentIds);
-
-      if (segmentId) {
+      
+      if (isFullCourse || updatedSegments.has('full')) {
+         updatedSegments.add('full');
+      } else if (segmentId) {
         if (updatedSegments.has(segmentId)) {
           toast({ variant: "destructive", title: "Already in Cart", description: `This topic is already in your cart.` });
           return;
         }
         updatedSegments.add(segmentId);
-      } else { // Adding full course
-        course.curriculum.forEach(seg => updatedSegments.add(seg.segmentId));
+      } else { // Default to full course if no segment specified
+        updatedSegments.add('full');
       }
+      
       newCart[existingCartItemIndex] = { ...existingItem, segmentIds: updatedSegments };
+
     } else {
       // Course is not in the cart, add it
       const segmentIds = new Set<string>();
-      if (segmentId) {
+      if (isFullCourse) {
+        segmentIds.add('full');
+      } else if (segmentId) {
         segmentIds.add(segmentId);
-      } else {
-        course.curriculum.forEach(seg => segmentIds.add(seg.segmentId));
+      } else { // Default to full course
+        segmentIds.add('full');
       }
       newCart.push({ courseId, segmentIds });
     }
     updateCartInStorage(newCart);
-    toast({ title: "Added to Cart!", description: `${course.title} has been updated in your cart.` });
+    toast({ title: "Added to Cart!", description: `${course.title} has been added to your cart.` });
   };
+  
+  const addMultipleToCart = (items: { courseId: string; segmentIds: string[] }[]) => {
+      let newCart = [...cart];
+      let itemsAdded = false;
+
+      items.forEach(itemToAdd => {
+          const course = allCourses.find(c => c.id === itemToAdd.courseId);
+          if (!course) return;
+
+          const existingCartItemIndex = newCart.findIndex(item => item.courseId === itemToAdd.courseId);
+
+          if (existingCartItemIndex > -1) {
+              const existingItem = newCart[existingCartItemIndex];
+              const updatedSegments = new Set(existingItem.segmentIds);
+              itemToAdd.segmentIds.forEach(segId => updatedSegments.add(segId));
+              newCart[existingCartItemIndex] = { ...existingItem, segmentIds: updatedSegments };
+          } else {
+              newCart.push({ courseId: itemToAdd.courseId, segmentIds: new Set(itemToAdd.segmentIds) });
+          }
+          itemsAdded = true;
+      });
+      
+      if(itemsAdded) {
+          updateCartInStorage(newCart);
+      }
+  }
+
 
   const addBundleToCart = (bundle: { courseId: string; segmentIds: string[] }[]) => {
     let newCart = [...cart];
@@ -147,7 +182,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, addBundleToCart, removeFromCart, clearCart, loading }}>
+    <CartContext.Provider value={{ cart, addToCart, addBundleToCart, removeFromCart, clearCart, addMultipleToCart, loading }}>
       {children}
     </CartContext.Provider>
   );

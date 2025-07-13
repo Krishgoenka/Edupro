@@ -46,24 +46,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
+    let unsubscribeProfile: () => void = () => {};
     if (user) {
-      const userRef = doc(db, 'users', user.uid);
-      const unsubscribeProfile = onSnapshot(userRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const profileData = docSnap.data() as UserProfile;
-          setProfile(profileData);
-          if (!profileData.onboardingComplete) {
-            setShowOnboarding(true);
-          }
-        } else {
-            // Document might not exist yet right after signup
-            setProfile({}); 
-        }
+        setLoading(true);
+        const userRef = doc(db, 'users', user.uid);
+        unsubscribeProfile = onSnapshot(userRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const profileData = docSnap.data() as UserProfile;
+                setProfile(profileData);
+                if (!profileData.onboardingComplete) {
+                    setShowOnboarding(true);
+                } else {
+                    setShowOnboarding(false);
+                }
+            } else {
+                setProfile(null); 
+            }
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching user profile:", error);
+            setProfile(null);
+            setLoading(false);
+        });
+    } else {
         setLoading(false);
-      });
-      return () => unsubscribeProfile();
     }
-  }, [user]);
+    return () => unsubscribeProfile();
+}, [user]);
 
   if (loading) {
     return (

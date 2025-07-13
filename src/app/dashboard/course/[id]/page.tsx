@@ -27,15 +27,15 @@ const useUserCourseData = (courseId: string) => {
 
     React.useEffect(() => {
         const fetchUserCourseData = async () => {
-            if (user) {
+            if (user && course) {
                 const userCoursesRef = doc(db, "userCourses", user.uid);
                 const docSnap = await getDoc(userCoursesRef);
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    const userCourse = data.courses.find((c: any) => c.id === courseId);
+                    const userCourse = data.courses.find((c: any) => c.courseId === courseId);
                     if (userCourse?.segmentIds) {
                         const allSegmentIds = userCourse.segmentIds.includes('full') 
-                            ? new Set(course?.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId)))
+                            ? new Set(course.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId)))
                             : new Set(userCourse.segmentIds);
                         setEnrolledSegments(allSegmentIds);
                     }
@@ -48,13 +48,13 @@ const useUserCourseData = (courseId: string) => {
         fetchUserCourseData();
     }, [user, courseId, course]);
 
-    // For demo purposes, mock ownership of the first sub-topic of the first module
+    // For demo purposes, mock ownership of the first sub-topic of the first module if not logged in
     React.useEffect(() => {
-        if (course?.curriculum[0]?.subTopics[0]) {
+        if (!user && course?.curriculum[0]?.subTopics[0]) {
             const mockEnrolled = new Set<string>([course.curriculum[0].subTopics[0].segmentId]);
             setEnrolledSegments(prev => new Set([...prev, ...mockEnrolled]));
         }
-    }, [courseId, course]);
+    }, [user, courseId, course]);
 
     return { enrolledSegments, loading };
 }
@@ -90,7 +90,7 @@ export default function CourseVideoPage() {
   }
   
   const handleUnlockFullCourse = () => {
-    addToCart(course.id, undefined, true);
+    addToCart(course.id, undefined);
     router.push('/cart');
   }
 
