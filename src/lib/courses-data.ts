@@ -84,8 +84,7 @@ export const courses: Course[] = [
                 title: 'HTML & CSS Foundations',
                 duration: '4 hours',
                 subTopics: [
-                    { segmentId: 'wd-html-intro', title: 'HTML5 Fundamentals', description: 'Learn the foundational building blocks of all websites, from tags to semantic elements.', duration: '2 hours', keywords: ['html', 'html5', 'web structure'], price: 50 },
-                    { segmentId: 'wd-css-intro', title: 'CSS3 Essentials', description: 'Style your web pages with selectors, the box model, and essential properties.', duration: '2 hours', keywords: ['css', 'css3', 'styling'], price: 50 }
+                    { segmentId: 'wd-html-css', title: 'HTML & CSS Combined', description: 'Learn the foundational building blocks of all websites, from tags to semantic elements, and style them with CSS.', duration: '4 hours', keywords: ['html', 'css', 'web structure', 'styling'], price: 50 },
                 ]
             },
             {
@@ -93,16 +92,14 @@ export const courses: Course[] = [
                 duration: '10 hours',
                 subTopics: [
                      { segmentId: 'wd-adv-css', title: 'Advanced CSS & Responsive Design', description: 'Create complex and responsive layouts with Flexbox, Grid, and Media Queries.', duration: '4 hours', keywords: ['flexbox', 'grid', 'responsive design'], price: 75 },
-                    { segmentId: 'wd-js-basics', title: 'JavaScript Basics', description: 'Learn variables, data types, functions, and control flow to add logic to your sites.', duration: '3 hours', keywords: ['javascript', 'es6', 'programming basics'], price: 75 },
-                    { segmentId: 'wd-js-dom', title: 'JavaScript DOM Manipulation', description: 'Bring your websites to life by interacting with HTML elements using JavaScript.', duration: '3 hours', keywords: ['dom manipulation', 'events', 'interactive web'], price: 75 }
+                    { segmentId: 'wd-js-basics', title: 'JavaScript Basics & DOM Manipulation', description: 'Learn variables, data types, functions, control flow, and bring your websites to life by interacting with HTML elements using JavaScript.', duration: '6 hours', keywords: ['javascript', 'es6', 'dom manipulation'], price: 75 }
                 ]
             },
             {
                 title: 'React & Backend Development',
                 duration: '10 hours',
                 subTopics: [
-                    { segmentId: 'wd-react-intro', title: 'Introduction to React', description: 'Build powerful single-page applications with components, JSX, and props.', duration: '3 hours', keywords: ['react', 'jsx', 'components'], price: 75 },
-                    { segmentId: 'wd-react-hooks', title: 'React Hooks & State Management', description: 'Master state management and side effects using Hooks like useState and useEffect.', duration: '3 hours', keywords: ['react hooks', 'usestate', 'useeffect', 'state management'], price: 75 },
+                    { segmentId: 'wd-react-intro', title: 'Introduction to React & Hooks', description: 'Build powerful single-page applications with components, JSX, props, and master state with Hooks.', duration: '6 hours', keywords: ['react', 'jsx', 'components', 'hooks'], price: 75 },
                     { segmentId: 'wd-node-express', title: 'Backend with Node.js & Express', description: 'Create servers, routes, and RESTful APIs to support your applications.', duration: '4 hours', keywords: ['node.js', 'express', 'api', 'backend'], price: 100 }
                 ]
             }
@@ -855,3 +852,5 @@ export const courses: Course[] = [
         ]
     }
 ];
+
+    
