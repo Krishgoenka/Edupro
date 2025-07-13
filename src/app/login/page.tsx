@@ -47,7 +47,9 @@ export default function LoginPage() {
         router.push("/dashboard");
       } catch (error: any) {
         let description = "An unknown error occurred. Please try again.";
-        if (error.code === 'auth/operation-not-allowed') {
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-credentials') {
+            description = "The email or password you entered is incorrect. Please try again.";
+        } else if (error.code === 'auth/operation-not-allowed') {
             description = "Email/Password sign-in is not enabled. Please enable it in your Firebase console's Authentication section.";
         } else if (error.message) {
             description = error.message;
