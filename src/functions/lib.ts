@@ -20,19 +20,19 @@ export const setAdminRole = onCall(async (request) => {
         throw new Error('Authentication required.');
     }
 
-    const email = request.data.email;
+    const callingUserEmail = request.auth.token.email;
     const adminEmail = 'goenkakrish02@gmail.com'; // The designated admin email.
 
     // If the email is not provided, we can't do anything.
-    if (!email) {
+    if (!callingUserEmail) {
         logger.warn('setAdminRole called without an email.');
         throw new Error('Email not provided in the request.');
     }
 
     // Only set the claim if the email matches the admin email.
-    if (email === adminEmail) {
+    if (callingUserEmail === adminEmail) {
         try {
-            const user = await admin.auth().getUserByEmail(email);
+            const user = await admin.auth().getUserByEmail(callingUserEmail);
             // Set custom claim for admin role. This can be used for security rules.
             await admin.auth().setCustomUserClaims(user.uid, { admin: true });
             
@@ -40,16 +40,16 @@ export const setAdminRole = onCall(async (request) => {
             const userRef = admin.firestore().collection('users').doc(user.uid);
             await userRef.update({ role: 'admin' });
 
-            logger.info(`Successfully set admin claim and role for ${email}`);
-            return { message: `Success! ${email} has been made an admin.` };
+            logger.info(`Successfully set admin claim and role for ${callingUserEmail}`);
+            return { message: `Success! ${callingUserEmail} has been made an admin.` };
         } catch (error) {
-            logger.error(`Error setting admin claim for ${email}:`, error);
+            logger.error(`Error setting admin claim for ${callingUserEmail}:`, error);
             // Throw an error to let the client know something went wrong.
             throw new Error('An error occurred while setting the admin role.');
         }
     } else {
         // For any other user, just log their signup.
-        logger.info(`Non-admin user signed up: ${email}`);
+        logger.info(`Non-admin user signed up: ${callingUserEmail}`);
         return { message: 'No admin privileges assigned.' };
     }
 });
