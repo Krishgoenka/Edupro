@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -5,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, googleProvider, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Loader2 } from "lucide-react";
 import React from "react";
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/lib/functions';
 
 const formSchema = z.object({
   fullName: z.string().min(2, { message: "Full name must be at least 2 characters." }),
@@ -37,15 +41,43 @@ export default function SignupPage() {
     },
   });
 
+  const handleUserCreation = async (user: any, fullName: string | null) => {
+    // Set display name
+    if (fullName && !user.displayName) {
+        await updateProfile(user, { displayName: fullName });
+    }
+
+    // Call the Cloud Function to set the custom claim
+    const setAdminRole = httpsCallable(functions, 'setAdminRole');
+    try {
+        await setAdminRole({ email: user.email });
+    } catch(err) {
+        console.error("Could not set admin role", err);
+    }
+    
+    // Refresh token to get the new claim
+    await user.getIdToken(true); 
+
+    const userRef = doc(db, 'users', user.uid);
+    await setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || fullName,
+        role: user.email === 'goenkakrish02@gmail.com' ? 'admin' : 'user'
+    }, { merge: true });
+
+    toast({
+        title: "Account Created!",
+        description: "You have been successfully signed up.",
+    });
+    router.push("/dashboard");
+  }
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     startTransition(async () => {
       try {
-        await createUserWithEmailAndPassword(auth, values.email, values.password);
-        toast({
-          title: "Account Created!",
-          description: "You have been successfully signed up.",
-        });
-        router.push("/dashboard");
+        const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+        await handleUserCreation(userCredential.user, values.fullName);
       } catch (error: any) {
         toast({
           variant: "destructive",
@@ -59,12 +91,8 @@ export default function SignupPage() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      toast({
-        title: "Account Created!",
-        description: "You have been successfully signed up.",
-      });
-      router.push("/dashboard");
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      await handleUserCreation(userCredential.user, userCredential.user.displayName);
     } catch (error: any) {
       toast({
         variant: "destructive",

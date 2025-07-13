@@ -4,12 +4,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courses as allCourses, domains, categoriesByDomain, Domain, Course, CourseSegment } from '@/lib/courses-data';
+import { courses as allCourses, domains, categoriesByDomain, Domain, Course, CourseSegment, SubTopic } from '@/lib/courses-data';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -17,13 +18,14 @@ import { Activity, Loader2 } from 'lucide-react';
 
 type EnrolledCourseInfo = {
     course: Course;
-    enrolledSegments: Set<string>; // Set of segment IDs. If it contains 'full', user owns the entire course.
+    enrolledSegments: Set<string>; 
     progress: number;
     status: string;
 }
 
 export default function DashboardPage() {
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
+    const router = useRouter();
     const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseInfo[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -32,54 +34,58 @@ export default function DashboardPage() {
     const [searchTerm, setSearchTerm] = useState<string>("");
 
     useEffect(() => {
+        if (!authLoading && !user) {
+            router.push('/login');
+        }
+    }, [user, authLoading, router]);
+
+    useEffect(() => {
         const fetchEnrolledCourses = async () => {
+            if (!user) {
+                setLoading(false);
+                return;
+            };
+
             setLoading(true);
             let userCourseData: { courseId: string; segmentIds: string[]; }[] = [];
             
-            // For demo: add some default courses to every user's dashboard
-            const defaultCourses = [
-                { courseId: 'web-development-bootcamp', segmentIds: ['wd-html-css', 'wd-adv-css'] },
-                { courseId: 'ai-a-z', segmentIds: ['ai-intro'] },
-                { courseId: 'public-speaking-mastery', segmentIds: ['full'] },
-            ];
-
-            if (user) {
-                const userCoursesRef = doc(db, 'userCourses', user.uid);
-                try {
-                    const docSnap = await getDoc(userCoursesRef);
-                    if (docSnap.exists()) {
-                       userCourseData = docSnap.data().courses || [];
-                    }
-                } catch (error) {
-                    console.error("Error fetching user courses from Firestore:", error);
+            const userCoursesRef = doc(db, 'userCourses', user.uid);
+            try {
+                const docSnap = await getDoc(userCoursesRef);
+                if (docSnap.exists()) {
+                   userCourseData = docSnap.data().courses || [];
                 }
-            } else {
-                 const localEnrolled = localStorage.getItem('guestEnrolledCourses');
-                 if(localEnrolled) userCourseData = JSON.parse(localEnrolled);
+            } catch (error) {
+                console.error("Error fetching user courses from Firestore:", error);
+            }
+            
+            // For demo: add some default courses if user has none
+            if (userCourseData.length === 0) {
+                 userCourseData = [
+                    { courseId: 'web-development-bootcamp', segmentIds: ['wd-html-structure', 'wd-css-basics'] },
+                    { courseId: 'ai-a-z', segmentIds: ['ai-intro'] },
+                    { courseId: 'public-speaking-mastery', segmentIds: ['full'] },
+                ];
             }
 
-            // Merge default and user-specific data, ensuring no duplicates
-            const combinedCourseMap = new Map<string, Set<string>>();
-            [...defaultCourses, ...userCourseData].forEach(item => {
-                if (!combinedCourseMap.has(item.courseId)) {
-                    combinedCourseMap.set(item.courseId, new Set());
-                }
-                const segmentSet = combinedCourseMap.get(item.courseId)!;
-                item.segmentIds.forEach(segId => segmentSet.add(segId));
-            });
 
             const coursesToDisplay: EnrolledCourseInfo[] = [];
 
-            for (const [courseId, segmentIds] of combinedCourseMap.entries()) {
-                const courseData = allCourses.find(c => c.id === courseId);
+            for (const item of userCourseData) {
+                const courseData = allCourses.find(c => c.id === item.courseId);
                 if (!courseData) continue;
 
+                const segmentIds = new Set(item.segmentIds);
                 let progress = 0;
                 const isFull = segmentIds.has('full');
-                const ownedSegmentCount = isFull ? courseData.curriculum.length : segmentIds.size;
+                const totalTopics = courseData.curriculum.flatMap(c => c.subTopics).length;
+
+                const ownedSegmentCount = isFull 
+                    ? totalTopics 
+                    : segmentIds.size;
                 
-                if (courseData.curriculum.length > 0) {
-                    progress = Math.round((ownedSegmentCount / courseData.curriculum.length) * 100);
+                if (totalTopics > 0) {
+                    progress = Math.round((ownedSegmentCount / totalTopics) * 100);
                 }
 
                 let status = "Not Started";
@@ -98,7 +104,9 @@ export default function DashboardPage() {
             setLoading(false);
         };
 
-        fetchEnrolledCourses();
+        if(user) {
+            fetchEnrolledCourses();
+        }
     }, [user]);
 
 
@@ -139,7 +147,7 @@ export default function DashboardPage() {
         return Math.round(sum / enrolledCourses.length);
     }, [enrolledCourses]);
     
-    if (loading) {
+    if (loading || authLoading) {
         return (
            <div className="flex justify-center items-center h-[calc(100vh-200px)]">
                <Loader2 className="h-12 w-12 animate-spin text-primary" />

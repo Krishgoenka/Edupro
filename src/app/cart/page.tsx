@@ -9,7 +9,7 @@ import { useCart, CartItem } from '@/context/cart-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { IndianRupee, Trash2, ShoppingCart, Tag, CheckCircle, Unlock, Info } from 'lucide-react';
+import { IndianRupee, Trash2, ShoppingCart, Tag, CheckCircle, Unlock, Info, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { AiRecommender } from '@/components/ai-recommender';
@@ -19,7 +19,7 @@ import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { courses as allCourses, Course } from '@/lib/courses-data';
 
 export default function CartPage() {
-  const { cart, removeFromCart, clearCart, addToCart } = useCart();
+  const { cart, removeFromCart, clearCart, addMultipleToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
@@ -31,14 +31,14 @@ export default function CartPage() {
     const course = allCourses.find(c => c.id === cartItem.courseId);
     if (!course) return null;
 
-    const isFullCourse = cartItem.segmentIds.has('full') || cartItem.segmentIds.size === course.curriculum.length;
-    const price = isFullCourse 
-        ? course.price 
-        : course.curriculum.reduce((acc, seg) => cartItem.segmentIds.has(seg.segmentId) ? acc + seg.price : acc, 0);
+    const isFullCourse = cartItem.segmentIds.has('full') || cartItem.segmentIds.size === course.curriculum.flatMap(c => c.subTopics).length;
+    const price = isFullCourse
+        ? course.price
+        : course.curriculum.flatMap(c => c.subTopics).reduce((acc, seg) => cartItem.segmentIds.has(seg.segmentId) ? acc + seg.price : acc, 0);
 
     const includedSegments = isFullCourse
-        ? course.curriculum
-        : course.curriculum.filter(seg => cartItem.segmentIds.has(seg.segmentId));
+        ? course.curriculum.flatMap(c => c.subTopics)
+        : course.curriculum.flatMap(c => c.subTopics).filter(seg => cartItem.segmentIds.has(seg.segmentId));
 
     return { ...course, cartPrice: price, isFullCourse, includedSegments };
   };
@@ -54,16 +54,52 @@ export default function CartPage() {
   const total = isCouponApplied ? 0 : subtotal;
 
   const handleCheckout = async () => {
+    if (!user) {
+        toast({
+            variant: "destructive",
+            title: "Authentication Required",
+            description: "You must be logged in to complete a purchase.",
+        });
+        router.push('/login');
+        return;
+    }
+
     if (total === 0 && cart.length > 0 && isCouponApplied) {
-        // ... (Purchase logic needs to be updated for partial ownership)
-        // This is a complex step involving merging existing user course data with new partial data
-        
-        clearCart();
-        setShowSuccessOverlay(true);
-        setTimeout(() => {
-            setShowSuccessOverlay(false);
-            router.push("/dashboard");
-        }, 2000);
+        const userCoursesRef = doc(db, 'userCourses', user.uid);
+
+        try {
+            const docSnap = await getDoc(userCoursesRef);
+            const existingCourses = docSnap.exists() ? docSnap.data().courses : [];
+            const existingCourseMap = new Map(existingCourses.map((c: any) => [c.courseId, new Set(c.segmentIds)]));
+
+            cart.forEach(cartItem => {
+                const currentSegments = existingCourseMap.get(cartItem.courseId) || new Set();
+                cartItem.segmentIds.forEach(segId => currentSegments.add(segId));
+                existingCourseMap.set(cartItem.courseId, currentSegments);
+            });
+            
+            const updatedCourses = Array.from(existingCourseMap.entries()).map(([courseId, segmentIdsSet]) => ({
+                courseId,
+                segmentIds: Array.from(segmentIdsSet),
+            }));
+
+            await setDoc(userCoursesRef, { courses: updatedCourses });
+            
+            clearCart();
+            setShowSuccessOverlay(true);
+            setTimeout(() => {
+                setShowSuccessOverlay(false);
+                router.push("/dashboard");
+            }, 2000);
+
+        } catch (error) {
+             console.error("Error during checkout:", error);
+             toast({
+                variant: "destructive",
+                title: "Purchase Failed",
+                description: "Could not save your course progress. Please try again.",
+             });
+        }
 
     } else {
         toast({
@@ -85,6 +121,14 @@ export default function CartPage() {
       toast({ title: "Please enter a coupon code." });
     }
   };
+  
+  const handleUnlockFullCourse = (courseId: string) => {
+    const course = allCourses.find(c => c.id === courseId);
+    if (!course) return;
+
+    const fullCourseSegments = course.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId));
+    addMultipleToCart([{ courseId, segmentIds: fullCourseSegments }]);
+  }
 
   return (
     <div className="container py-12">
@@ -128,11 +172,11 @@ export default function CartPage() {
                         <p className="text-sm text-muted-foreground">{course.category}</p>
                         {!course.isFullCourse && (
                             <div className="mt-2 text-xs bg-primary/10 p-2 rounded-md">
-                               <p className="font-bold text-primary flex items-center gap-1.5"><Info className="h-4 w-4" /> Purchasing {course.includedSegments.length} of {course.curriculum.length} topics:</p>
+                               <p className="font-bold text-primary flex items-center gap-1.5"><Info className="h-4 w-4" /> Purchasing {course.includedSegments.length} of {course.curriculum.flatMap(c => c.subTopics).length} topics:</p>
                                <ul className="list-disc list-inside pl-4 mt-1 text-muted-foreground">
                                    {course.includedSegments.map(seg => <li key={seg.segmentId}>{seg.title}</li>)}
                                </ul>
-                               <Button size="sm" variant="link" className="p-0 h-auto mt-2" onClick={() => addToCart(course.id)}>
+                               <Button size="sm" variant="link" className="p-0 h-auto mt-2" onClick={() => handleUnlockFullCourse(course.id)}>
                                  <Unlock className="mr-2 h-3 w-3" /> Unlock full course for ₹{course.price}?
                                </Button>
                            </div>
@@ -176,6 +220,15 @@ export default function CartPage() {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                 {!user && (
+                    <div className="flex items-center gap-3 bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-md border border-yellow-300 dark:border-yellow-700">
+                        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                        <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                            Please <Link href="/login" className="font-bold underline">log in</Link> to checkout.
+                        </p>
+                    </div>
+                 )}
+
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className='flex items-center'><IndianRupee className="h-4 w-4" />{subtotal}</span>
@@ -201,8 +254,9 @@ export default function CartPage() {
                                 setCoupon(e.target.value)
                                 if (isCouponApplied) setIsCouponApplied(false);
                             }}
+                            disabled={!user}
                         />
-                        <Button variant="secondary" onClick={handleApplyCoupon}>Apply</Button>
+                        <Button variant="secondary" onClick={handleApplyCoupon} disabled={!user}>Apply</Button>
                     </div>
                     {isCouponApplied && (
                         <p className="text-sm text-green-600 font-medium pt-1">"TESTFREE" applied! Your order is free.</p>
@@ -215,7 +269,7 @@ export default function CartPage() {
                   <span>Total</span>
                   <span className='flex items-center'><IndianRupee className="h-5 w-5" />{total}</span>
                 </div>
-                <Button className="w-full" size="lg" onClick={handleCheckout}>
+                <Button className="w-full" size="lg" onClick={handleCheckout} disabled={!user}>
                   {total === 0 && cart.length > 0 ? 'Get for Free' : 'Proceed to Checkout'}
                 </Button>
               </CardContent>
