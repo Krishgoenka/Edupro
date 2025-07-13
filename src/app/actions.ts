@@ -102,7 +102,9 @@ export async function getPersonalizedBundleAction(
   } catch (error) {
     console.error(error);
     let errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
-    if (typeof errorMessage === 'string' && (errorMessage.includes('limit') || errorMessage.includes('quota')) && errorMessage.includes('per minute')) {
+    if (typeof errorMessage === 'string' && (errorMessage.includes('API key not valid') || errorMessage.includes('GOOGLE_API_KEY'))) {
+        errorMessage = "The AI service is not configured correctly. Please check your GOOGLE_API_KEY in the .env.local file and restart the server.";
+    } else if (typeof errorMessage === 'string' && (errorMessage.includes('limit') || errorMessage.includes('quota')) && errorMessage.includes('per minute')) {
         errorMessage = "You've made too many requests. Please wait a minute and try again.";
     } else {
         errorMessage = `Failed to generate bundle. ${errorMessage}`;

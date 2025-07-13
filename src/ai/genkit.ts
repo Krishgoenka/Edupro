@@ -12,11 +12,10 @@ if (process.env.NODE_ENV === 'production' && !process.env.GOOGLE_API_KEY) {
 
 const plugins: GenkitPlugin[] = [];
 
-if (process.env.GOOGLE_API_KEY) {
-    plugins.push(googleAI({
-        apiKey: process.env.GOOGLE_API_KEY
-    }));
-}
+// Always try to initialize the googleAI plugin.
+// This ensures that Genkit is aware of it. We will handle errors
+// in the actions if the key is missing or invalid.
+plugins.push(googleAI());
 
 
 export const ai = genkit({
