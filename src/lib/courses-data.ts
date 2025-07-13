@@ -74,11 +74,14 @@ export const courses: Course[] = [
         duration: '24 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'wd-html-css', title: 'Module 1: HTML & CSS Basics', description: 'Learn the foundational building blocks of all websites.', duration: '4 hours', keywords: ['html', 'css', 'frontend basics'], price: 100 },
-            { segmentId: 'wd-adv-css', title: 'Module 2: Advanced CSS & Flexbox', description: 'Create complex and responsive layouts with modern CSS.', duration: '4 hours', keywords: ['flexbox', 'grid', 'responsive design'], price: 100 },
-            { segmentId: 'wd-js', title: 'Module 3: JavaScript Fundamentals', description: 'Bring your websites to life with programming logic.', duration: '6 hours', keywords: ['javascript', 'es6', 'dom manipulation'], price: 150 },
-            { segmentId: 'wd-react', title: 'Module 4: React Deep Dive', description: 'Build powerful single-page applications with the most popular UI library.', duration: '6 hours', keywords: ['react', 'hooks', 'state management'], price: 150 },
-            { segmentId: 'wd-node', title: 'Module 5: Backend with Node.js', description: 'Create servers and APIs to support your applications.', duration: '4 hours', keywords: ['node.js', 'express', 'api'], price: 100 },
+            { segmentId: 'wd-html-intro', title: 'HTML5 Fundamentals', description: 'Learn the foundational building blocks of all websites, from tags to semantic elements.', duration: '2 hours', keywords: ['html', 'html5', 'web structure'], price: 50 },
+            { segmentId: 'wd-css-intro', title: 'CSS3 Essentials', description: 'Style your web pages with selectors, the box model, and essential properties.', duration: '2 hours', keywords: ['css', 'css3', 'styling'], price: 50 },
+            { segmentId: 'wd-adv-css', title: 'Advanced CSS & Responsive Design', description: 'Create complex and responsive layouts with Flexbox, Grid, and Media Queries.', duration: '4 hours', keywords: ['flexbox', 'grid', 'responsive design'], price: 75 },
+            { segmentId: 'wd-js-basics', title: 'JavaScript Basics', description: 'Learn variables, data types, functions, and control flow to add logic to your sites.', duration: '3 hours', keywords: ['javascript', 'es6', 'programming basics'], price: 75 },
+            { segmentId: 'wd-js-dom', title: 'JavaScript DOM Manipulation', description: 'Bring your websites to life by interacting with HTML elements using JavaScript.', duration: '3 hours', keywords: ['dom manipulation', 'events', 'interactive web'], price: 75 },
+            { segmentId: 'wd-react-intro', title: 'Introduction to React', description: 'Build powerful single-page applications with components, JSX, and props.', duration: '3 hours', keywords: ['react', 'jsx', 'components'], price: 75 },
+            { segmentId: 'wd-react-hooks', title: 'React Hooks & State Management', description: 'Master state management and side effects using Hooks like useState and useEffect.', duration: '3 hours', keywords: ['react hooks', 'usestate', 'useeffect', 'state management'], price: 75 },
+            { segmentId: 'wd-node-express', title: 'Backend with Node.js & Express', description: 'Create servers, routes, and RESTful APIs to support your applications.', duration: '4 hours', keywords: ['node.js', 'express', 'api', 'backend'], price: 100 },
         ]
     },
     {
@@ -101,10 +104,12 @@ export const courses: Course[] = [
         duration: '30 hours',
         level: 'Intermediate',
         curriculum: [
-            { segmentId: 'ai-intro', title: 'Module 1: Introduction to AI', description: 'Grasp the core concepts and history of Artificial Intelligence.', duration: '5 hours', keywords: ['ai concepts', 'machine learning overview'], price: 100 },
-            { segmentId: 'ai-ml-models', title: 'Module 2: Machine Learning Models', description: 'Explore various supervised and unsupervised learning models.', duration: '10 hours', keywords: ['regression', 'classification', 'supervised learning'], price: 200 },
-            { segmentId: 'ai-deep-learning', title: 'Module 3: Deep Learning & Neural Networks', description: 'Dive into the architecture of neural networks.', duration: '10 hours', keywords: ['neural networks', 'tensorflow', 'pytorch'], price: 250 },
-            { segmentId: 'ai-chatbot-project', title: 'Module 4: Project - AI Chatbot', description: 'Apply your knowledge to build a real-world AI application.', duration: '5 hours', keywords: ['nlp', 'chatbot', 'project'], price: 150 },
+            { segmentId: 'ai-intro', title: 'The Intuition Behind AI', description: 'Grasp the core concepts, history, and different types of Artificial Intelligence.', duration: '5 hours', keywords: ['ai concepts', 'machine learning overview', 'types of ai'], price: 100 },
+            { segmentId: 'ai-regression', title: 'Regression Models', description: 'Explore various supervised learning models for predicting continuous values.', duration: '5 hours', keywords: ['linear regression', 'polynomial regression', 'supervised learning'], price: 125 },
+            { segmentId: 'ai-classification', title: 'Classification Models', description: 'Learn models like Logistic Regression, K-NN, and SVM for predicting categories.', duration: '5 hours', keywords: ['classification', 'logistic regression', 'svm'], price: 125 },
+            { segmentId: 'ai-deep-learning-intro', title: 'Introduction to Neural Networks', description: 'Dive into the architecture of Artificial Neural Networks (ANNs).', duration: '5 hours', keywords: ['ann', 'neural networks', 'neurons'], price: 125 },
+            { segmentId: 'ai-cnn', title: 'Convolutional Neural Networks (CNNs)', description: 'Understand CNNs for image recognition and computer vision tasks.', duration: '5 hours', keywords: ['cnn', 'computer vision', 'image recognition'], price: 125 },
+            { segmentId: 'ai-chatbot-project', title: 'Project - AI Chatbot', description: 'Apply your knowledge to build a real-world AI application using Natural Language Processing.', duration: '5 hours', keywords: ['nlp', 'chatbot', 'project'], price: 150 },
         ]
     },
     {
@@ -127,10 +132,10 @@ export const courses: Course[] = [
         duration: '20 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'cysec-intro', title: 'Module 1: Introduction to Cyber Security', description: 'Get an overview of the cyber security landscape and common threats.', duration: '4 hours', keywords: ['cyber security basics', 'threats'], price: 150 },
-            { segmentId: 'cysec-network', title: 'Module 2: Network Security', description: 'Learn how to secure networks with firewalls, VPNs, and more.', duration: '6 hours', keywords: ['firewalls', 'vpn', 'network protocols'], price: 200 },
-            { segmentId: 'cysec-hacking', title: 'Module 3: Ethical Hacking', description: 'Discover vulnerabilities and how to perform penetration testing.', duration: '6 hours', keywords: ['penetration testing', 'ethical hacking'], price: 200 },
-            { segmentId: 'cysec-crypto', title: 'Module 4: Cryptography', description: 'Understand encryption and data protection techniques.', duration: '4 hours', keywords: ['encryption', 'cryptography'], price: 150 },
+            { segmentId: 'cysec-intro', title: 'Foundations of Cyber Security', description: 'Get an overview of the cyber security landscape, common threats, and attack vectors.', duration: '4 hours', keywords: ['cyber security basics', 'threats', 'malware'], price: 150 },
+            { segmentId: 'cysec-network', title: 'Network Security Principles', description: 'Learn to secure networks with firewalls, VPNs, IDS/IPS, and secure protocols.', duration: '6 hours', keywords: ['firewalls', 'vpn', 'network protocols', 'ids'], price: 200 },
+            { segmentId: 'cysec-hacking', title: 'Ethical Hacking & Pen Testing', description: 'Discover vulnerabilities and how to perform penetration testing on systems and networks.', duration: '6 hours', keywords: ['penetration testing', 'ethical hacking', 'vulnerability assessment'], price: 200 },
+            { segmentId: 'cysec-crypto', title: 'Cryptography and Data Protection', description: 'Understand encryption algorithms, digital signatures, and data protection techniques.', duration: '4 hours', keywords: ['encryption', 'cryptography', 'public key infrastructure'], price: 150 },
         ]
     },
     {
@@ -153,10 +158,12 @@ export const courses: Course[] = [
         duration: '35 hours',
         level: 'Intermediate',
         curriculum: [
-            { segmentId: 'dsa-arrays', title: 'Module 1: Arrays & Strings', description: 'Master the fundamentals of contiguous data structures.', duration: '5 hours', keywords: ['arrays', 'strings', 'pointers'], price: 100 },
-            { segmentId: 'dsa-linear', title: 'Module 2: Linked Lists, Stacks & Queues', description: 'Understand linear data structures and their applications.', duration: '10 hours', keywords: ['linked lists', 'stacks', 'queues'], price: 150 },
-            { segmentId: 'dsa-nonlinear', title: 'Module 3: Trees & Graphs', description: 'Dive deep into non-linear data structures for complex problem-solving.', duration: '15 hours', keywords: ['trees', 'graphs', 'bst'], price: 200 },
-            { segmentId: 'dsa-adv-algo', title: 'Module 4: Advanced Algorithms', description: 'Learn advanced techniques like dynamic programming.', duration: '5 hours', keywords: ['dynamic programming', 'greedy algorithms'], price: 150 },
+            { segmentId: 'dsa-complexity', title: 'Complexity Analysis', description: 'Understand Big O, Big Omega, and Big Theta notations.', duration: '3 hours', keywords: ['big o', 'time complexity', 'space complexity'], price: 75 },
+            { segmentId: 'dsa-arrays', title: 'Arrays, Strings & Pointers', description: 'Master the fundamentals of contiguous data structures and memory management.', duration: '5 hours', keywords: ['arrays', 'strings', 'pointers'], price: 100 },
+            { segmentId: 'dsa-sorting-searching', title: 'Sorting & Searching Algorithms', description: 'Learn Bubble Sort, Merge Sort, Quick Sort, Binary Search, and more.', duration: '7 hours', keywords: ['sorting', 'searching', 'binary search', 'quick sort'], price: 125 },
+            { segmentId: 'dsa-linear', title: 'Linked Lists, Stacks & Queues', description: 'Understand linear data structures and their practical applications.', duration: '7 hours', keywords: ['linked lists', 'stacks', 'queues'], price: 125 },
+            { segmentId: 'dsa-nonlinear', title: 'Trees, Heaps & Graphs', description: 'Dive deep into non-linear data structures like BST, Heaps, and Graph traversals.', duration: '8 hours', keywords: ['trees', 'graphs', 'bst', 'heaps'], price: 150 },
+            { segmentId: 'dsa-adv-algo', title: 'Dynamic Programming', description: 'Learn advanced techniques like DP and Greedy Algorithms to solve complex problems.', duration: '5 hours', keywords: ['dynamic programming', 'greedy algorithms'], price: 150 },
         ]
     },
     {
@@ -179,10 +186,10 @@ export const courses: Course[] = [
         duration: '15 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'sql-basics', title: 'Module 1: SQL Basics', description: 'Learn the foundational queries like SELECT, WHERE, and FROM.', duration: '3 hours', keywords: ['select', 'where', 'from'], price: 100 },
-            { segmentId: 'sql-advanced', title: 'Module 2: Advanced Queries', description: 'Master complex queries with JOINs, subqueries, and more.', duration: '5 hours', keywords: ['joins', 'subqueries', 'group by'], price: 150 },
-            { segmentId: 'sql-design', title: 'Module 3: Database Design', description: 'Understand database normalization and schema design.', duration: '4 hours', keywords: ['normalization', 'schemas'], price: 100 },
-            { segmentId: 'sql-perf', title: 'Module 4: Performance Tuning', description: 'Learn how to optimize your queries for speed.', duration: '3 hours', keywords: ['indexing', 'query optimization'], price: 100 },
+            { segmentId: 'sql-basics', title: 'SQL Fundamentals', description: 'Learn foundational queries like SELECT, WHERE, FROM, and basic operators.', duration: '3 hours', keywords: ['select', 'where', 'from', 'sql basics'], price: 100 },
+            { segmentId: 'sql-joins', title: 'Joining Tables', description: 'Master various types of JOINs (INNER, LEFT, RIGHT, FULL) to combine data.', duration: '4 hours', keywords: ['joins', 'inner join', 'left join'], price: 125 },
+            { segmentId: 'sql-advanced-query', title: 'Advanced Queries & Subqueries', description: 'Utilize GROUP BY, HAVING, subqueries, and common table expressions (CTEs).', duration: '4 hours', keywords: ['group by', 'subqueries', 'cte'], price: 125 },
+            { segmentId: 'sql-window', title: 'Window Functions', description: 'Learn powerful window functions for complex analytical queries.', duration: '4 hours', keywords: ['window functions', 'rank', 'lead', 'lag'], price: 125 },
         ]
     },
      {
@@ -205,17 +212,17 @@ export const courses: Course[] = [
         duration: '18 hours',
         level: 'Intermediate',
         curriculum: [
-            { segmentId: 'os-intro', title: 'Module 1: Introduction to OS', description: 'Learn the basic components and function of an OS.', duration: '3 hours', keywords: ['os basics', 'kernel'], price: 100 },
-            { segmentId: 'os-process', title: 'Module 2: Process Management', description: 'Dive into processes, threads, and CPU scheduling.', duration: '6 hours', keywords: ['processes', 'threads', 'scheduling'], price: 150 },
-            { segmentId: 'os-memory', title: 'Module 3: Memory Management', description: 'Understand virtual memory, paging, and segmentation.', duration: '5 hours', keywords: ['virtual memory', 'paging'], price: 150 },
-            { segmentId: 'os-files', title: 'Module 4: File Systems', description: 'Explore how data is stored and retrieved from storage.', duration: '4 hours', keywords: ['file systems', 'storage'], price: 100 },
+            { segmentId: 'os-intro', title: 'Introduction to Operating Systems', description: 'Learn the basic components, structure, and function of an OS.', duration: '3 hours', keywords: ['os basics', 'kernel', 'system calls'], price: 100 },
+            { segmentId: 'os-process', title: 'Process & Thread Management', description: 'Dive into processes, threads, CPU scheduling algorithms (FCFS, SJF, Round Robin).', duration: '6 hours', keywords: ['processes', 'threads', 'scheduling', 'cpu scheduling'], price: 150 },
+            { segmentId: 'os-sync', title: 'Process Synchronization', description: 'Understand concurrency issues and solve them using semaphores and mutexes.', duration: '4 hours', keywords: ['synchronization', 'deadlock', 'semaphores'], price: 150 },
+            { segmentId: 'os-memory', title: 'Memory Management', description: 'Understand virtual memory, paging, segmentation, and page replacement algorithms.', duration: '5 hours', keywords: ['virtual memory', 'paging', 'segmentation'], price: 150 },
         ]
     },
 
     // Commerce
     {
         id: 'accounting-basics',
-        title: 'Accounting Basics',
+        title: 'Financial Accounting Fundamentals',
         description: 'Learn the fundamentals of accounting, including debits, credits, and financial statements.',
         image: 'https://img.youtube.com/vi/FYFOKjYMXVw/hqdefault.jpg',
         price: 299,
@@ -233,14 +240,14 @@ export const courses: Course[] = [
         duration: '12 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'acc-intro', title: 'Module 1: Introduction to Accounting', description: 'Learn the basic principles and the accounting equation.', duration: '3 hours', keywords: ['accounting principles', 'debits', 'credits'], price: 100 },
-            { segmentId: 'acc-journal', title: 'Module 2: Journal & Ledger', description: 'Master the art of recording transactions.', duration: '4 hours', keywords: ['journal entries', 't-accounts'], price: 100 },
-            { segmentId: 'acc-statements', title: 'Module 3: Financial Statements', description: 'Learn to prepare and interpret key financial reports like the balance sheet.', duration: '5 hours', keywords: ['balance sheet', 'income statement', 'financial statement'], price: 150 },
+            { segmentId: 'acc-intro', title: 'Introduction to Accounting', description: 'Learn the basic principles, the accounting equation, and types of accounts.', duration: '3 hours', keywords: ['accounting principles', 'debits', 'credits'], price: 100 },
+            { segmentId: 'acc-journal', title: 'Recording Transactions', description: 'Master the process of creating journal entries and posting to ledger accounts.', duration: '4 hours', keywords: ['journal entries', 't-accounts', 'ledger'], price: 100 },
+            { segmentId: 'acc-statements', title: 'Preparing Financial Statements', description: 'Learn to prepare the Income Statement, Balance Sheet, and Cash Flow Statement.', duration: '5 hours', keywords: ['balance sheet', 'income statement', 'financial statement', 'cash flow'], price: 150 },
         ]
     },
     {
         id: 'taxation-simplified',
-        title: 'Taxation Simplified',
+        title: 'Indian Taxation Simplified',
         description: 'Understand the basics of Indian taxation, including income tax and GST for individuals and businesses.',
         image: 'https://img.youtube.com/vi/Cox8rLXYAGQ/hqdefault.jpg',
         price: 399,
@@ -258,14 +265,14 @@ export const courses: Course[] = [
         duration: '16 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'tax-income', title: 'Module 1: Income Tax Basics', description: 'Learn about tax slabs, deductions, and different heads of income.', duration: '6 hours', keywords: ['income tax', 'slabs', 'deductions'], price: 150 },
-            { segmentId: 'tax-itr', title: 'Module 2: Filing ITR', description: 'A step-by-step guide to filing your income tax return.', duration: '4 hours', keywords: ['itr filing', 'tax forms'], price: 100 },
-            { segmentId: 'tax-gst', title: 'Module 3: Introduction to GST', description: 'Understand the Goods and Services Tax framework in India.', duration: '6 hours', keywords: ['gst', 'goods and services tax'], price: 150 },
+            { segmentId: 'tax-income-heads', title: 'Heads of Income', description: 'Learn about the 5 heads of income: Salary, House Property, PGBP, Capital Gains, and Other Sources.', duration: '6 hours', keywords: ['heads of income', 'salary tax', 'capital gains'], price: 150 },
+            { segmentId: 'tax-deductions-itr', title: 'Deductions & ITR Filing', description: 'A guide to deductions under Chapter VI-A and filing your income tax return (ITR).', duration: '4 hours', keywords: ['itr filing', 'tax forms', '80c deductions'], price: 100 },
+            { segmentId: 'tax-gst-intro', title: 'Introduction to GST', description: 'Understand the Goods and Services Tax framework, registration, and input tax credit in India.', duration: '6 hours', keywords: ['gst', 'goods and services tax', 'input tax credit'], price: 150 },
         ]
     },
     {
         id: 'excel-for-finance',
-        title: 'Excel for Finance',
+        title: 'Advanced Excel for Finance Professionals',
         description: 'Master financial modeling and data analysis in Excel. Essential skills for any commerce professional.',
         image: 'https://img.youtube.com/vi/hkybRW7Z3Yk/hqdefault.jpg',
         price: 499,
@@ -283,15 +290,15 @@ export const courses: Course[] = [
         duration: '20 hours',
         level: 'Intermediate',
         curriculum: [
-            { segmentId: 'excel-adv', title: 'Module 1: Advanced Excel Functions', description: 'Master functions like VLOOKUP, INDEX-MATCH, and Pivot Tables.', duration: '5 hours', keywords: ['vlookup', 'pivot tables', 'index match'], price: 150 },
-            { segmentId: 'excel-fm', title: 'Module 2: Financial Modeling', description: 'Learn to build robust financial models for forecasting and valuation.', duration: '8 hours', keywords: ['financial modeling', 'forecasting'], price: 200 },
-            { segmentId: 'excel-viz', title: 'Module 3: Data Visualization', description: 'Create compelling charts and interactive dashboards.', duration: '4 hours', keywords: ['charts', 'dashboards'], price: 100 },
-            { segmentId: 'excel-vba', title: 'Module 4: VBA for Finance', description: 'Automate repetitive financial tasks using VBA macros.', duration: '3 hours', keywords: ['vba', 'macros'], price: 100 },
+            { segmentId: 'excel-adv-functions', title: 'Advanced Excel Functions', description: 'Master functions like VLOOKUP, INDEX-MATCH, SUMIFS, and Pivot Tables.', duration: '5 hours', keywords: ['vlookup', 'pivot tables', 'index match', 'sumifs'], price: 150 },
+            { segmentId: 'excel-fm', title: 'Financial Modeling & Valuation', description: 'Learn to build a 3-statement financial model and perform DCF valuation.', duration: '8 hours', keywords: ['financial modeling', 'forecasting', 'dcf valuation'], price: 200 },
+            { segmentId: 'excel-viz', title: 'Data Visualization & Dashboards', description: 'Create compelling charts and interactive dashboards to present financial data.', duration: '4 hours', keywords: ['charts', 'dashboards', 'data visualization'], price: 100 },
+            { segmentId: 'excel-vba-intro', title: 'Introduction to VBA for Finance', description: 'Automate repetitive financial tasks and build custom functions using VBA macros.', duration: '3 hours', keywords: ['vba', 'macros', 'automation'], price: 100 },
         ]
     },
     {
         id: 'business-law-101',
-        title: 'Business Law 101',
+        title: 'Fundamentals of Business Law',
         description: 'Get introduced to the legal aspects of business, including contracts, company law, and intellectual property.',
         image: 'https://img.youtube.com/vi/O8_7Fiu-OKI/hqdefault.jpg',
         price: 299,
@@ -309,16 +316,16 @@ export const courses: Course[] = [
         duration: '10 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'law-contract', title: 'Module 1: Contract Law', description: 'Learn the essentials of forming a valid contract.', duration: '4 hours', keywords: ['contracts', 'indian contract act'], price: 100 },
-            { segmentId: 'law-company', title: 'Module 2: Company Law', description: 'Understand the legal framework for starting and running a company.', duration: '4 hours', keywords: ['company law', 'incorporation'], price: 100 },
-            { segmentId: 'law-ip', title: 'Module 3: Intellectual Property', description: 'Learn how to protect your ideas with patents, trademarks, and copyright.', duration: '2 hours', keywords: ['patents', 'trademarks', 'copyright'], price: 100 },
+            { segmentId: 'law-contract', title: 'The Indian Contract Act, 1872', description: 'Learn the essentials of forming a valid contract, breach of contract, and remedies.', duration: '4 hours', keywords: ['contracts', 'indian contract act', 'valid contract'], price: 100 },
+            { segmentId: 'law-company', title: 'The Companies Act, 2013', description: 'Understand the legal framework for starting and running a company, including incorporation and types of companies.', duration: '4 hours', keywords: ['company law', 'incorporation', 'companies act'], price: 100 },
+            { segmentId: 'law-ip', title: 'Intellectual Property Law', description: 'Learn how to protect your ideas and brand with patents, trademarks, and copyright.', duration: '2 hours', keywords: ['patents', 'trademarks', 'copyright', 'intellectual property'], price: 100 },
         ]
     },
     
     // Arts & Humanities / Soft Skills
     {
         id: 'public-speaking-mastery',
-        title: 'Public Speaking Mastery',
+        title: 'Public Speaking Mastery: From Fear to Pro',
         description: 'Boost your confidence and communication skills. Learn to deliver powerful presentations.',
         image: 'https://img.youtube.com/vi/dHAbmoFHqgA/hqdefault.jpg',
         price: 499,
@@ -336,14 +343,14 @@ export const courses: Course[] = [
         duration: '8 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'psm-confidence', title: 'Module 1: Building Confidence', description: 'Techniques to overcome anxiety and project confidence.', duration: '2 hours', keywords: ['public speaking confidence', 'stage fright'], price: 200 },
-            { segmentId: 'psm-structure', title: 'Module 2: Structuring Your Speech', description: 'Learn how to create a compelling narrative for your talk.', duration: '3 hours', keywords: ['speech writing', 'presentation structure'], price: 150 },
-            { segmentId: 'psm-delivery', title: 'Module 3: Delivery Techniques', description: 'Master voice modulation, pacing, and body language.', duration: '3 hours', keywords: ['body language', 'voice modulation'], price: 150 },
+            { segmentId: 'psm-confidence', title: 'Building Unshakable Confidence', description: 'Psychological techniques to overcome anxiety, stage fright, and project confidence.', duration: '2 hours', keywords: ['public speaking confidence', 'stage fright', 'anxiety management'], price: 200 },
+            { segmentId: 'psm-structure', title: 'Structuring a Memorable Speech', description: 'Learn storytelling, the rule of three, and how to create a compelling narrative for your talk.', duration: '3 hours', keywords: ['speech writing', 'presentation structure', 'storytelling'], price: 150 },
+            { segmentId: 'psm-delivery', title: 'Mastering Your Delivery', description: 'Master voice modulation, pacing, powerful pauses, and effective body language.', duration: '3 hours', keywords: ['body language', 'voice modulation', 'delivery skills'], price: 150 },
         ]
     },
      {
         id: 'english-confidence-booster',
-        title: 'English Confidence Booster',
+        title: 'Spoken English & Confidence Booster',
         description: 'Improve your spoken English and build confidence for interviews and professional settings.',
         image: 'https://img.youtube.com/vi/qlqsh5cmt1I/hqdefault.jpg',
         price: 299,
@@ -361,14 +368,14 @@ export const courses: Course[] = [
         duration: '10 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'eng-pronunciation', title: 'Module 1: Pronunciation & Fluency', description: 'Work on common pronunciation errors and improve your speaking flow.', duration: '4 hours', keywords: ['english pronunciation', 'fluency'], price: 100 },
-            { segmentId: 'eng-vocab', title: 'Module 2: Vocabulary for Professionals', description: 'Learn essential business English vocabulary.', duration: '3 hours', keywords: ['business english', 'vocabulary'], price: 100 },
-            { segmentId: 'eng-convo', title: 'Module 3: Conversational Practice', description: 'Engage in guided conversations to build real-world confidence.', duration: '3 hours', keywords: ['spoken english', 'english speaking', 'english confidence'], price: 100 },
+            { segmentId: 'eng-pronunciation', title: 'Clear Pronunciation & Fluency', description: 'Work on common Indian pronunciation errors and improve your speaking flow.', duration: '4 hours', keywords: ['english pronunciation', 'fluency', 'accent reduction'], price: 100 },
+            { segmentId: 'eng-vocab', title: 'Vocabulary for Professionals', description: 'Learn essential business English vocabulary for meetings, emails, and presentations.', duration: '3 hours', keywords: ['business english', 'vocabulary', 'professional communication'], price: 100 },
+            { segmentId: 'eng-convo', title: 'Real-World Conversational Practice', description: 'Engage in guided conversations on topics like interviews and group discussions to build confidence.', duration: '3 hours', keywords: ['spoken english', 'english speaking', 'english confidence'], price: 100 },
         ]
     },
     {
         id: 'interview-essentials',
-        title: 'Interview Essentials',
+        title: 'The Ultimate Job Interview Guide',
         description: 'Learn the strategies to crack any job interview, from preparation to follow-up.',
         image: 'https://img.youtube.com/vi/Ji46s5BHdr0/hqdefault.jpg',
         price: 199,
@@ -386,14 +393,14 @@ export const courses: Course[] = [
         duration: '6 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'int-prep', title: 'Module 1: Pre-interview Preparation', description: 'Learn how to research a company and prepare for common questions.', duration: '2 hours', keywords: ['interview prep', 'researching company'], price: 70 },
-            { segmentId: 'int-during', title: 'Module 2: During the Interview', description: 'Master the STAR method for behavioral questions.', duration: '3 hours', keywords: ['answering questions', 'star method'], price: 100 },
-            { segmentId: 'int-post', title: 'Module 3: Post-interview Strategy', description: 'Learn how to write effective thank-you notes and negotiate salary.', duration: '1 hour', keywords: ['follow up', 'salary negotiation'], price: 50 },
+            { segmentId: 'int-prep', title: 'Pre-interview Preparation', description: 'Learn how to research a company, analyze the job description, and prepare for common questions.', duration: '2 hours', keywords: ['interview prep', 'researching company', 'job description analysis'], price: 70 },
+            { segmentId: 'int-during', title: 'Acing the Interview', description: 'Master the STAR method for behavioral questions and learn how to ask insightful questions.', duration: '3 hours', keywords: ['answering questions', 'star method', 'behavioral questions'], price: 100 },
+            { segmentId: 'int-post', title: 'Post-interview Strategy', description: 'Learn how to write effective thank-you notes, handle job offers, and negotiate salary.', duration: '1 hour', keywords: ['follow up', 'salary negotiation', 'job offer'], price: 50 },
         ]
     },
     {
         id: 'resume-writing-for-devs',
-        title: 'Resume Writing for Developers',
+        title: 'The Tech Resume: Writing for Developers',
         description: 'Craft a compelling resume that stands out to tech recruiters and lands you interviews.',
         image: 'https://img.youtube.com/vi/RYMTn-V_LV8/hqdefault.jpg',
         price: 99,
@@ -411,17 +418,17 @@ export const courses: Course[] = [
         duration: '4 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'res-format', title: 'Module 1: Resume Formatting', description: 'Create a clean, professional, and ATS-friendly resume format.', duration: '1 hour', keywords: ['resume format', 'ats'], price: 40 },
-            { segmentId: 'res-content', title: 'Module 2: Content that Sells', description: 'Learn to write compelling descriptions of your projects and experience.', duration: '2 hours', keywords: ['resume writing', 'projects section'], price: 40 },
-            { segmentId: 'res-tailor', title: 'Module 3: Tailoring and Review', description: 'Customize your resume for each job application for maximum impact.', duration: '1 hour', keywords: ['customizing resume', 'resume review'], price: 20 },
+            { segmentId: 'res-format', title: 'ATS-Friendly Formatting', description: 'Create a clean, professional, and Applicant Tracking System (ATS) friendly resume format.', duration: '1 hour', keywords: ['resume format', 'ats', 'resume template'], price: 40 },
+            { segmentId: 'res-content', title: 'Content that Sells: Projects & Experience', description: 'Learn to write compelling, action-oriented descriptions of your projects and experience.', duration: '2 hours', keywords: ['resume writing', 'projects section', 'work experience'], price: 40 },
+            { segmentId: 'res-tailor', title: 'Tailoring and Keyword Optimization', description: 'Customize your resume for each job application using keywords from the job description for maximum impact.', duration: '1 hour', keywords: ['customizing resume', 'resume review', 'keywords'], price: 20 },
         ]
     },
 
     // UPSC
     {
         id: 'indian-polity-upsc',
-        title: 'Indian Polity for UPSC',
-        description: 'A comprehensive course on the Indian Constitution and political system for UPSC aspirants.',
+        title: 'Indian Polity for UPSC by M. Laxmikanth',
+        description: 'A comprehensive course on the Indian Constitution and political system for UPSC aspirants, based on the popular book.',
         image: 'https://img.youtube.com/vi/oIN7FBZjqGI/hqdefault.jpg',
         price: 599,
         dataAiHint: "indian constitution",
@@ -438,16 +445,16 @@ export const courses: Course[] = [
         duration: '50 hours',
         level: 'Advanced',
         curriculum: [
-            { segmentId: 'pol-framework', title: 'Module 1: Constitutional Framework', description: 'Covering the Preamble, Fundamental Rights, DPSP, and more.', duration: '15 hours', keywords: ['constitution', 'preamble', 'fundamental rights'], price: 200 },
-            { segmentId: 'pol-gov', title: 'Module 2: System of Government', description: 'An in-depth look at the Legislature, Executive, and Judiciary.', duration: '15 hours', keywords: ['parliament', 'judiciary', 'executive'], price: 200 },
-            { segmentId: 'pol-bodies', title: 'Module 3: Constitutional & Non-Constitutional Bodies', description: 'Understand the roles of the ECI, CAG, NITI Aayog, etc.', duration: '10 hours', keywords: ['election commission', 'cag', 'attorney general'], price: 150 },
-            { segmentId: 'pol-local', title: 'Module 4: Local Government & Special Provisions', description: 'Covering Panchayati Raj, Municipalities, and special status states.', duration: '10 hours', keywords: ['panchayati raj', 'municipalities'], price: 150 },
+            { segmentId: 'pol-framework', title: 'Constitutional Framework', description: 'Covering the Preamble, Fundamental Rights & Duties, DPSP, and Amendment Procedures.', duration: '15 hours', keywords: ['constitution', 'preamble', 'fundamental rights', 'dpsp'], price: 200 },
+            { segmentId: 'pol-gov', title: 'System of Government', description: 'An in-depth look at the Union & State Legislature, Executive, and Judiciary.', duration: '15 hours', keywords: ['parliament', 'judiciary', 'executive', 'federalism'], price: 200 },
+            { segmentId: 'pol-bodies', title: 'Constitutional & Non-Constitutional Bodies', description: 'Understand the roles of the ECI, UPSC, CAG, NITI Aayog, etc.', duration: '10 hours', keywords: ['election commission', 'cag', 'attorney general', 'constitutional bodies'], price: 150 },
+            { segmentId: 'pol-local', title: 'Local Government & Special Provisions', description: 'Covering Panchayati Raj, Municipalities, and special status for states like J&K.', duration: '10 hours', keywords: ['panchayati raj', 'municipalities', 'article 370'], price: 150 },
         ]
     },
     {
         id: 'geography-for-upsc',
-        title: 'Geography for UPSC',
-        description: 'Covers physical, Indian, and world geography as per the UPSC syllabus.',
+        title: 'Geography for UPSC (GC Leong)',
+        description: 'Covers physical, Indian, and world geography as per the UPSC syllabus, with a focus on core concepts.',
         image: 'https://img.youtube.com/vi/e_ichQiWMQs/hqdefault.jpg',
         price: 599,
         dataAiHint: "topography map",
@@ -464,17 +471,17 @@ export const courses: Course[] = [
         duration: '45 hours',
         level: 'Advanced',
         curriculum: [
-            { segmentId: 'geo-physical', title: 'Module 1: Physical Geography', description: 'Covers Geomorphology, Climatology, and Oceanography.', duration: '15 hours', keywords: ['geomorphology', 'climatology', 'oceanography'], price: 200 },
-            { segmentId: 'geo-indian', title: 'Module 2: Indian Geography', description: 'A detailed study of the physical and human geography of India.', duration: '15 hours', keywords: ['indian geography', 'monsoon', 'rivers'], price: 200 },
-            { segmentId: 'geo-world', title: 'Module 3: World Geography', description: 'Explore the geography of continents and important regions.', duration: '10 hours', keywords: ['world geography', 'continents'], price: 150 },
-            { segmentId: 'geo-map', title: 'Module 4: Map Work and Current Affairs', description: 'Practice map-based questions and link geography to current events.', duration: '5 hours', keywords: ['map work', 'current events geography'], price: 100 },
+            { segmentId: 'geo-physical', title: 'Physical Geography', description: 'Covers Geomorphology (Landforms), Climatology, and Oceanography.', duration: '15 hours', keywords: ['geomorphology', 'climatology', 'oceanography', 'gc leong'], price: 200 },
+            { segmentId: 'geo-indian', title: 'Indian Geography', description: 'A detailed study of the physical and human geography of India, including climate, rivers, and resources.', duration: '15 hours', keywords: ['indian geography', 'monsoon', 'rivers', 'natural resources'], price: 200 },
+            { segmentId: 'geo-world', title: 'World Geography & Mapping', description: 'Explore the geography of continents and practice important map locations for prelims.', duration: '10 hours', keywords: ['world geography', 'continents', 'mapping'], price: 150 },
+            { segmentId: 'geo-human', title: 'Human & Economic Geography', description: 'Study population, migration, agriculture, industries, and transport.', duration: '5 hours', keywords: ['human geography', 'economic geography', 'population'], price: 100 },
         ]
     },
 
     // MBA Prep
     {
         id: 'cat-quant-aptitude',
-        title: 'CAT Quant Aptitude',
+        title: 'CAT Quantitative Aptitude (Arun Sharma)',
         description: 'Master quantitative aptitude for the CAT exam with shortcuts, strategies, and extensive practice.',
         image: 'https://img.youtube.com/vi/5O6ZnVoqwl4/hqdefault.jpg',
         price: 499,
@@ -492,10 +499,10 @@ export const courses: Course[] = [
         duration: '40 hours',
         level: 'Advanced',
         curriculum: [
-            { segmentId: 'cat-arithmetic', title: 'Module 1: Arithmetic', description: 'Deep dive into percentages, profit & loss, time & work, etc.', duration: '15 hours', keywords: ['percentages', 'profit and loss', 'time and work'], price: 200 },
-            { segmentId: 'cat-algebra', title: 'Module 2: Algebra & Geometry', description: 'Master equations, inequalities, and geometric concepts.', duration: '15 hours', keywords: ['algebra', 'geometry', 'mensuration'], price: 200 },
-            { segmentId: 'cat-modern-math', title: 'Module 3: Modern Math', description: 'Tackle permutation, combination, and probability questions.', duration: '5 hours', keywords: ['permutation', 'combination', 'probability'], price: 100 },
-            { segmentId: 'cat-mocks', title: 'Module 4: Mock Tests & Analysis', description: 'Practice with full-length mocks and learn from detailed analysis.', duration: '5 hours', keywords: ['mock tests', 'cat exam strategy'], price: 100 },
+            { segmentId: 'cat-arithmetic', title: 'Arithmetic Deep Dive', description: 'Deep dive into percentages, profit & loss, simple & compound interest, time & work, etc.', duration: '15 hours', keywords: ['percentages', 'profit and loss', 'time and work', 'arithmetic'], price: 200 },
+            { segmentId: 'cat-algebra', title: 'Algebra & Modern Math', description: 'Master equations, inequalities, functions, P&C, and probability.', duration: '15 hours', keywords: ['algebra', 'permutation', 'combination', 'probability'], price: 200 },
+            { segmentId: 'cat-geometry', title: 'Geometry & Mensuration', description: 'Tackle questions on triangles, circles, and 2D/3D shapes.', duration: '5 hours', keywords: ['geometry', 'mensuration', 'triangles', 'circles'], price: 100 },
+            { segmentId: 'cat-mocks', title: 'Mock Tests & Analysis', description: 'Practice with full-length mocks and learn from detailed analysis to build exam temperament.', duration: '5 hours', keywords: ['mock tests', 'cat exam strategy', 'test analysis'], price: 100 },
         ]
     },
 
@@ -520,15 +527,15 @@ export const courses: Course[] = [
         duration: '25 hours',
         level: 'Intermediate',
         curriculum: [
-            { segmentId: 'ds-python', title: 'Module 1: Python for Data Science', description: 'Get up to speed with Python, NumPy, and Pandas.', duration: '5 hours', keywords: ['python basics', 'numpy', 'pandas'], price: 150 },
-            { segmentId: 'ds-analysis', title: 'Module 2: Data Analysis with Pandas', description: 'Learn to clean, transform, and analyze datasets.', duration: '8 hours', keywords: ['data cleaning', 'data manipulation', 'pandas'], price: 200 },
-            { segmentId: 'ds-viz', title: 'Module 3: Data Visualization', description: 'Create beautiful and informative plots with Matplotlib and Seaborn.', duration: '6 hours', keywords: ['matplotlib', 'seaborn', 'plotting'], price: 150 },
-            { segmentId: 'ds-ml', title: 'Module 4: Machine Learning with Scikit-learn', description: 'Build and evaluate predictive models.', duration: '6 hours', keywords: ['scikit-learn', 'machine learning models'], price: 150 },
+            { segmentId: 'ds-python', title: 'Python for Data Science (NumPy & Pandas)', description: 'Get up to speed with Python, and its powerful libraries NumPy and Pandas for data manipulation.', duration: '5 hours', keywords: ['python basics', 'numpy', 'pandas', 'dataframes'], price: 150 },
+            { segmentId: 'ds-analysis', title: 'Exploratory Data Analysis (EDA)', description: 'Learn to clean, transform, handle missing values, and extract insights from datasets.', duration: '8 hours', keywords: ['data cleaning', 'data manipulation', 'pandas', 'eda'], price: 200 },
+            { segmentId: 'ds-viz', title: 'Data Visualization with Matplotlib & Seaborn', description: 'Create beautiful and informative plots to communicate your findings.', duration: '6 hours', keywords: ['matplotlib', 'seaborn', 'plotting', 'data visualization'], price: 150 },
+            { segmentId: 'ds-ml', title: 'Introduction to Machine Learning', description: 'Build and evaluate predictive models using the Scikit-learn library.', duration: '6 hours', keywords: ['scikit-learn', 'machine learning models', 'prediction'], price: 150 },
         ]
     },
     {
         id: 'digital-marketing-masterclass',
-        title: 'Digital Marketing Masterclass with AI',
+        title: 'The Complete Digital Marketing Masterclass',
         description: 'Master SEO, SEM, social media marketing, and content strategy to grow businesses online.',
         image: 'https://img.youtube.com/vi/kunkYTKFNtI/hqdefault.jpg',
         price: 499,
@@ -546,14 +553,14 @@ export const courses: Course[] = [
         duration: '22 hours',
         level: 'All Levels',
         curriculum: [
-            { segmentId: 'dm-seo', title: 'Module 1: SEO & Content Marketing', description: 'Learn how to rank higher on Google and create engaging content.', duration: '8 hours', keywords: ['seo', 'content marketing', 'keywords'], price: 200 },
-            { segmentId: 'dm-smm', title: 'Module 2: Social Media Marketing', description: 'Build and manage successful campaigns on Facebook, Instagram, etc.', duration: '6 hours', keywords: ['social media', 'facebook marketing', 'instagram marketing'], price: 150 },
-            { segmentId: 'dm-sem', title: 'Module 3: Paid Advertising (SEM)', description: 'Master Google Ads to drive targeted traffic.', duration: '8 hours', keywords: ['google ads', 'ppc', 'sem'], price: 200 },
+            { segmentId: 'dm-seo', title: 'SEO & Content Marketing', description: 'Learn on-page, off-page, and technical SEO to rank higher on Google.', duration: '8 hours', keywords: ['seo', 'content marketing', 'keywords', 'link building'], price: 200 },
+            { segmentId: 'dm-smm', title: 'Social Media Marketing (SMM)', description: 'Build and manage successful organic and paid campaigns on Facebook, Instagram, & LinkedIn.', duration: '6 hours', keywords: ['social media', 'facebook marketing', 'instagram marketing', 'smm'], price: 150 },
+            { segmentId: 'dm-sem', title: 'Paid Advertising (SEM/PPC)', description: 'Master Google Ads and search engine marketing (SEM) to drive targeted traffic.', duration: '8 hours', keywords: ['google ads', 'ppc', 'sem', 'paid advertising'], price: 200 },
         ]
     },
     {
         id: 'graphic-design-fundamentals',
-        title: 'Graphic Design Fundamentals',
+        title: 'Graphic Design Fundamentals & Theory',
         description: 'Understand the principles of design, color theory, typography, and create stunning visuals using Adobe tools.',
         image: 'https://img.youtube.com/vi/e_dv7GBHka8/hqdefault.jpg',
         price: 549,
@@ -571,14 +578,14 @@ export const courses: Course[] = [
         duration: '18 hours',
         level: 'Beginner',
         curriculum: [
-            { segmentId: 'gd-principles', title: 'Module 1: Design Principles', description: 'Learn about balance, contrast, hierarchy, and other core principles.', duration: '4 hours', keywords: ['design principles', 'color theory', 'typography'], price: 150 },
-            { segmentId: 'gd-photoshop', title: 'Module 2: Adobe Photoshop for Beginners', description: 'Get started with the industry-standard tool for photo editing.', duration: '7 hours', keywords: ['photoshop', 'photo editing'], price: 200 },
-            { segmentId: 'gd-illustrator', title: 'Module 3: Adobe Illustrator Essentials', description: 'Learn to create vector graphics and illustrations.', duration: '7 hours', keywords: ['illustrator', 'vector graphics'], price: 200 },
+            { segmentId: 'gd-principles', title: 'Core Principles of Design & Color Theory', description: 'Learn about balance, contrast, hierarchy, typography, and how to use color effectively.', duration: '4 hours', keywords: ['design principles', 'color theory', 'typography', 'visual hierarchy'], price: 150 },
+            { segmentId: 'gd-photoshop', title: 'Adobe Photoshop for Beginners', description: 'Get started with layers, selections, and photo editing in the industry-standard tool.', duration: '7 hours', keywords: ['photoshop', 'photo editing', 'layers'], price: 200 },
+            { segmentId: 'gd-illustrator', title: 'Adobe Illustrator for Vector Graphics', description: 'Learn to create logos, icons, and illustrations using the pen tool and shapes.', duration: '7 hours', keywords: ['illustrator', 'vector graphics', 'logos', 'icons'], price: 200 },
         ]
     },
     {
         id: 'project-management-pmp',
-        title: 'Project Management Professional (PMP)',
+        title: 'Project Management Professional (PMP) Prep',
         description: 'Prepare for the PMP certification exam. Learn about project lifecycles, risk management, and Agile methodologies.',
         image: 'https://img.youtube.com/vi/vzqDTSZOTic/hqdefault.jpg',
         price: 599,
@@ -596,9 +603,9 @@ export const courses: Course[] = [
         duration: '35 hours',
         level: 'Advanced',
         curriculum: [
-            { segmentId: 'pmp-framework', title: 'Module 1: Project Management Framework', description: 'Understand the core concepts and lifecycle of a project.', duration: '10 hours', keywords: ['pmp', 'pmbok', 'project lifecycle'], price: 200 },
-            { segmentId: 'pmp-process', title: 'Module 2: Process Groups', description: 'A deep dive into the 5 process groups: Initiating, Planning, Executing, Monitoring & Controlling, and Closing.', duration: '15 hours', keywords: ['initiating', 'planning', 'executing', 'monitoring', 'closing'], price: 250 },
-            { segmentId: 'pmp-agile', title: 'Module 3: Agile Practice Guide', description: 'Learn Agile principles and how they are applied in project management.', duration: '10 hours', keywords: ['agile', 'scrum', 'kanban'], price: 200 },
+            { segmentId: 'pmp-framework', title: 'Project Management Framework & Lifecycle', description: 'Understand the core concepts, process groups, and lifecycle of a project.', duration: '10 hours', keywords: ['pmp', 'pmbok', 'project lifecycle', 'process groups'], price: 200 },
+            { segmentId: 'pmp-knowledge-areas', title: 'Knowledge Areas (Scope, Schedule, Cost)', description: 'A deep dive into the key knowledge areas as per the PMBOK guide.', duration: '15 hours', keywords: ['scope management', 'schedule management', 'cost management', 'risk management'], price: 250 },
+            { segmentId: 'pmp-agile', title: 'Agile & Hybrid Approaches', description: 'Learn Agile principles and how they are integrated into the PMP exam.', duration: '10 hours', keywords: ['agile', 'scrum', 'kanban', 'hybrid project management'], price: 200 },
         ]
     }
 ];
