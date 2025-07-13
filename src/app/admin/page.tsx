@@ -12,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, ShieldCheck, User as UserIcon, ArrowUpDown } from 'lucide-react';
 import { getUsersAction } from '@/app/actions';
 
+const ADMIN_EMAIL = 'goenkakrish02@gmail.com';
+
 type UserData = {
     uid: string;
     email?: string;
@@ -27,7 +29,7 @@ type SortConfig = {
 };
 
 export default function AdminPage() {
-    const { user, profile, loading: authLoading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [users, setUsers] = useState<UserData[]>([]);
@@ -35,17 +37,19 @@ export default function AdminPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
 
+    const isAuthorizedAdmin = useMemo(() => user?.email === ADMIN_EMAIL, [user]);
+
     useEffect(() => {
-        if (!authLoading && (!user || profile?.role !== 'admin')) {
+        if (!authLoading && !isAuthorizedAdmin) {
             router.push('/dashboard');
         }
-    }, [user, profile, authLoading, router]);
+    }, [user, isAuthorizedAdmin, authLoading, router]);
 
     useEffect(() => {
         const fetchUsers = async () => {
-            if (user) {
+            if (user && isAuthorizedAdmin) {
                 startTransition(async () => {
-                    const idToken = await user.getIdToken();
+                    const idToken = await user.getIdToken(true); // Force refresh the token
                     const result = await getUsersAction(idToken);
                     if (result.error) {
                         setError(result.error);
@@ -56,10 +60,10 @@ export default function AdminPage() {
             }
         };
 
-        if (profile?.role === 'admin') {
+        if (isAuthorizedAdmin) {
             fetchUsers();
         }
-    }, [user, profile]);
+    }, [user, isAuthorizedAdmin]);
     
     const requestSort = (key: keyof UserData) => {
         let direction: 'ascending' | 'descending' = 'ascending';
@@ -107,7 +111,7 @@ export default function AdminPage() {
         );
     }
     
-    if (profile?.role !== 'admin') {
+    if (!isAuthorizedAdmin) {
          return (
             <div className="container py-12 text-center">
                 <p>You do not have permission to view this page.</p>

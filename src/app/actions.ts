@@ -20,9 +20,11 @@ import mammoth from "mammoth";
 import * as admin from 'firebase-admin';
 import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from 'firebase-admin/storage';
+import 'dotenv/config';
 
 
 // --- Firebase Admin Initialization ---
+// This ensures the server-side actions can securely communicate with your Firebase project.
 if (!admin.apps.length) {
     const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
     if (!serviceAccountKey) {
@@ -51,6 +53,7 @@ const checkAdmin = async (idToken: string | null): Promise<boolean> => {
     if (!idToken) return false;
     try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
+        // The admin status is checked from the custom claim set by the Cloud Function.
         return decodedToken.admin === true;
     } catch (error) {
         console.error("Error verifying admin token:", error);
@@ -295,15 +298,23 @@ export async function getUsersAction(idToken: string | null): Promise<{ users?: 
 
     try {
         const listUsersResult = await admin.auth().listUsers(1000);
-        const users = listUsersResult.users.map(userRecord => ({
-            uid: userRecord.uid,
-            email: userRecord.email,
-            displayName: userRecord.displayName,
-            photoURL: userRecord.photoURL,
-            creationTime: userRecord.metadata.creationTime,
-            lastSignInTime: userRecord.metadata.lastSignInTime,
-            role: userRecord.customClaims?.admin ? 'admin' : 'user'
+        const users = await Promise.all(listUsersResult.users.map(async (userRecord) => {
+            const userRef = getFirestore().collection('users').doc(userRecord.uid);
+            const docSnap = await userRef.get();
+            const firestoreRole = docSnap.exists() ? docSnap.data()?.role : 'user';
+            
+            return {
+                uid: userRecord.uid,
+                email: userRecord.email,
+                displayName: userRecord.displayName,
+                photoURL: userRecord.photoURL,
+                creationTime: userRecord.metadata.creationTime,
+                lastSignInTime: userRecord.metadata.lastSignInTime,
+                // Use custom claim for backend verification, but Firestore role for display
+                role: firestoreRole
+            };
         }));
+
         return { users };
     } catch (error) {
         console.error("Error fetching users:", error);

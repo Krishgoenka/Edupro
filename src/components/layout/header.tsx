@@ -15,12 +15,16 @@ import { Menu, LogOut, ShoppingCart, User as UserIcon, ShieldCheck } from 'lucid
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
+const ADMIN_EMAIL = 'goenkakrish02@gmail.com';
+
 export function Header() {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const { cart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
   const { triggerSplash } = useSplash();
+  
+  const isAuthorizedAdmin = user?.email === ADMIN_EMAIL;
 
   const handleLogout = async () => {
     try {
@@ -76,7 +80,7 @@ export function Header() {
             
             {user && (
               <>
-                {profile?.role === 'admin' && (
+                {isAuthorizedAdmin && (
                     <Button asChild variant="ghost" size="icon" title="Admin Panel">
                         <Link href="/admin">
                             <ShieldCheck className="h-5 w-5 text-primary" />
@@ -149,7 +153,7 @@ export function Header() {
                      <Link href="/cart" className="text-lg font-medium">
                         Cart ({cart.length})
                      </Link>
-                     {profile?.role === 'admin' && (
+                     {isAuthorizedAdmin && (
                         <Link href="/admin" className="text-lg font-medium flex items-center gap-2">
                             <ShieldCheck className="h-5 w-5 text-primary" />
                             Admin Panel
