@@ -19,6 +19,7 @@ import pdf from "pdf-parse";
 import mammoth from "mammoth";
 import { auth } from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from 'firebase-admin/storage';
 
 
 const getUserId = async (idToken: string | null) => {
@@ -199,4 +200,69 @@ export async function generateResumeAction(
     }
     return { data: null, error: errorMessage };
   }
+}
+
+
+export async function updateUserProfileAction(formData: FormData): Promise<{ success: boolean; error: string | null; }> {
+    const idToken = formData.get('idToken') as string | null;
+    const professionalStatus = formData.get('professionalStatus') as string;
+    const careerGoals = formData.get('careerGoals') as string;
+
+    const userId = await getUserId(idToken);
+    if (!userId) {
+        return { success: false, error: 'Authentication failed. Please log in again.' };
+    }
+
+    try {
+        const db = getFirestore();
+        const userRef = db.collection('users').doc(userId);
+        await userRef.update({
+            professionalStatus,
+            careerGoals
+        });
+        return { success: true, error: null };
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        return { success: false, error: 'Failed to update profile. Please try again.' };
+    }
+}
+
+export async function updateUserAvatarAction(formData: FormData): Promise<{ success: boolean; error: string | null, photoURL?: string }> {
+    const idToken = formData.get('idToken') as string | null;
+    const avatarFile = formData.get('avatar') as File;
+
+    const userId = await getUserId(idToken);
+    if (!userId) {
+        return { success: false, error: 'Authentication failed. Please log in again.' };
+    }
+
+    if (!avatarFile) {
+        return { success: false, error: 'No image file provided.' };
+    }
+
+    try {
+        const bucket = getStorage().bucket();
+        const filePath = `avatars/${userId}/${avatarFile.name}`;
+        const file = bucket.file(filePath);
+
+        const fileBuffer = Buffer.from(await avatarFile.arrayBuffer());
+
+        await file.save(fileBuffer, {
+            metadata: {
+                contentType: avatarFile.type,
+            },
+        });
+        
+        await file.makePublic();
+        const publicUrl = file.publicUrl();
+
+        await auth().updateUser(userId, {
+            photoURL: publicUrl
+        });
+
+        return { success: true, error: null, photoURL: publicUrl };
+    } catch (error) {
+        console.error("Error updating user avatar:", error);
+        return { success: false, error: 'Failed to update avatar. Please try again.' };
+    }
 }

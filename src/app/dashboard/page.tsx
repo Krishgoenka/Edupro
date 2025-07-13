@@ -61,13 +61,7 @@ export default function DashboardPage() {
             } catch (error) {
                 console.error("Error fetching user courses from Firestore:", error);
             }
-            if (userCourseData.length === 0) {
-                 userCourseData = [
-                    { courseId: 'web-development-bootcamp', segmentIds: ['wd-html-structure', 'wd-css-basics'] },
-                    { courseId: 'ai-a-z', segmentIds: ['ai-intro'] },
-                    { courseId: 'public-speaking-mastery', segmentIds: ['full'] },
-                ];
-            }
+
             const coursesToDisplay: EnrolledCourseInfo[] = userCourseData.map(item => {
                 const courseData = allCourses.find(c => c.id === item.courseId);
                 if (!courseData) return null;
@@ -75,14 +69,18 @@ export default function DashboardPage() {
                 const segmentIds = new Set(item.segmentIds);
                 const isFull = segmentIds.has('full');
                 const totalTopics = courseData.curriculum.flatMap(c => c.subTopics).length;
-                const ownedSegmentCount = isFull ? totalTopics : segmentIds.size;
+                const allSegmentIds = isFull 
+                    ? new Set(courseData.curriculum.flatMap(c => c.subTopics.map(s => s.segmentId)))
+                    : segmentIds;
+                const ownedSegmentCount = allSegmentIds.size;
+                
                 const progress = totalTopics > 0 ? Math.round((ownedSegmentCount / totalTopics) * 100) : 0;
                 
                 let status = "Not Started";
-                if (progress === 100) status = "Completed";
+                if (progress >= 100) status = "Completed";
                 else if (progress > 0) status = "In Progress";
 
-                return { course: courseData, enrolledSegments: segmentIds, progress, status };
+                return { course: courseData, enrolledSegments: allSegmentIds, progress, status };
             }).filter(Boolean) as EnrolledCourseInfo[];
             setEnrolledCourses(coursesToDisplay);
 
