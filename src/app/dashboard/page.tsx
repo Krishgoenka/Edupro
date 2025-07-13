@@ -9,18 +9,22 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Progress } from '@/components/ui/progress';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { courses as allCourses, domains, categoriesByDomain, Domain, Course } from '@/lib/courses-data';
+import { courses as allCourses, domains, categoriesByDomain, Domain, Course, CourseSegment } from '@/lib/courses-data';
 import { useAuth } from '@/context/auth-context';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Activity, Loader2 } from 'lucide-react';
 
-type EnrolledCourseData = { id: string; progress: number };
-type CourseWithProgress = Course & { progress: number; status: string; };
+type EnrolledCourseInfo = {
+    course: Course;
+    enrolledSegments: Set<string>; // Set of segment IDs. If it contains 'full', user owns the entire course.
+    progress: number;
+    status: string;
+}
 
 export default function DashboardPage() {
     const { user } = useAuth();
-    const [enrolledCourses, setEnrolledCourses] = useState<CourseWithProgress[]>([]);
+    const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourseInfo[]>([]);
     const [loading, setLoading] = useState(true);
 
     const [selectedDomain, setSelectedDomain] = useState<Domain | "">("");
@@ -30,97 +34,65 @@ export default function DashboardPage() {
     useEffect(() => {
         const fetchEnrolledCourses = async () => {
             setLoading(true);
-            const defaultCourseIds = new Set(['ai-a-z', 'web-development-bootcamp', 'graphic-design-fundamentals', 'data-science-python']);
-            let enrolledCourseData: EnrolledCourseData[] = [];
+            let userCourseData: { courseId: string; segmentIds: string[]; }[] = [];
             
+            // For demo: add some default courses to every user's dashboard
+            const defaultCourses = [
+                { courseId: 'web-development-bootcamp', segmentIds: ['wd-html-css', 'wd-adv-css'] },
+                { courseId: 'ai-a-z', segmentIds: ['ai-intro'] },
+                { courseId: 'public-speaking-mastery', segmentIds: ['full'] },
+            ];
+
             if (user) {
                 const userCoursesRef = doc(db, 'userCourses', user.uid);
                 try {
                     const docSnap = await getDoc(userCoursesRef);
                     if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.courses) {
-                            enrolledCourseData = data.courses;
-                        } else if (data.courseIds) { // Backwards compatibility for old format
-                            enrolledCourseData = data.courseIds.map((id: string) => ({
-                                id,
-                                progress: (id.charCodeAt(0) * id.length) % 101,
-                            }));
-                        }
+                       userCourseData = docSnap.data().courses || [];
                     }
                 } catch (error) {
                     console.error("Error fetching user courses from Firestore:", error);
                 }
             } else {
-                const localEnrolled = localStorage.getItem('guestEnrolledCourses');
-                if (localEnrolled) {
-                    const parsed = JSON.parse(localEnrolled);
-                    if (parsed.length > 0 && typeof parsed[0] === 'object' && parsed[0] !== null && 'id' in parsed[0]) {
-                        enrolledCourseData = parsed; // New format
-                    } else if (parsed.length > 0) { // Old format
-                        enrolledCourseData = parsed.map((id: string) => ({
-                            id,
-                            progress: (id.charCodeAt(0) * id.length) % 101,
-                        }));
-                    }
-                }
+                 const localEnrolled = localStorage.getItem('guestEnrolledCourses');
+                 if(localEnrolled) userCourseData = JSON.parse(localEnrolled);
             }
-            
-            const enrolledCourseMap = new Map(enrolledCourseData.map(c => [c.id, c.progress]));
-            const allCourseIdsToShow = new Set([...defaultCourseIds, ...enrolledCourseMap.keys()]);
-            
-            const getCourseDataById = (id: string): Course | null => {
-                // First, check the main course list
-                const mainCourse = allCourses.find(c => c.id === id);
-                if (mainCourse) return mainCourse;
+
+            // Merge default and user-specific data, ensuring no duplicates
+            const combinedCourseMap = new Map<string, Set<string>>();
+            [...defaultCourses, ...userCourseData].forEach(item => {
+                if (!combinedCourseMap.has(item.courseId)) {
+                    combinedCourseMap.set(item.courseId, new Set());
+                }
+                const segmentSet = combinedCourseMap.get(item.courseId)!;
+                item.segmentIds.forEach(segId => segmentSet.add(segId));
+            });
+
+            const coursesToDisplay: EnrolledCourseInfo[] = [];
+
+            for (const [courseId, segmentIds] of combinedCourseMap.entries()) {
+                const courseData = allCourses.find(c => c.id === courseId);
+                if (!courseData) continue;
+
+                let progress = 0;
+                const isFull = segmentIds.has('full');
+                const ownedSegmentCount = isFull ? courseData.curriculum.length : segmentIds.size;
                 
-                // If not found, check if it's a segment ID within any course
-                for (const course of allCourses) {
-                    const segment = course.curriculum.find(s => s.segmentId === id);
-                    if (segment) {
-                        // It's a segment, return a custom Course-like object for it
-                         return {
-                            id: segment.segmentId,
-                            title: `Unlocked Segment: ${segment.title}`,
-                            description: `From the course: "${course.title}".`,
-                            price: segment.price,
-                            image: course.image,
-                            dataAiHint: course.dataAiHint,
-                            domain: course.domain,
-                            category: `Unlocked from ${course.category}`,
-                            videoUrl: course.videoUrl,
-                            tutor: course.tutor,
-                            features: [],
-                            duration: segment.duration,
-                            level: course.level,
-                            curriculum: [segment],
-                        };
-                    }
-                }
-                return null; // Not found
-            };
-
-
-            const coursesToDisplay = Array.from(allCourseIdsToShow).map(id => {
-                const courseData = getCourseDataById(id);
-                if (!courseData) return null;
-
-                let progress: number;
-                let status: string;
-
-                if (enrolledCourseMap.has(id)) {
-                    progress = enrolledCourseMap.get(id)!;
-                } else {
-                    // This is a default course not yet enrolled in, give it some mock progress
-                    progress = (id.charCodeAt(0) * id.length) % 75 + 10;
+                if (courseData.curriculum.length > 0) {
+                    progress = Math.round((ownedSegmentCount / courseData.curriculum.length) * 100);
                 }
 
+                let status = "Not Started";
                 if (progress === 100) status = "Completed";
                 else if (progress > 0) status = "In Progress";
-                else status = "Not Started";
-                
-                return { ...courseData, progress, status };
-            }).filter((c): c is CourseWithProgress => c !== null);
+
+                coursesToDisplay.push({
+                    course: courseData,
+                    enrolledSegments: segmentIds,
+                    progress,
+                    status,
+                });
+            }
             
             setEnrolledCourses(coursesToDisplay);
             setLoading(false);
@@ -143,9 +115,9 @@ export default function DashboardPage() {
     const availableCategories = useMemo(() => {
         const categories = new Set<string>();
         if (selectedDomain) {
-            enrolledCourses.forEach(course => {
-                if (course.domain === selectedDomain) {
-                    categories.add(course.category);
+            enrolledCourses.forEach(info => {
+                if (info.course.domain === selectedDomain) {
+                    categories.add(info.course.category);
                 }
             });
         }
@@ -153,17 +125,17 @@ export default function DashboardPage() {
     }, [selectedDomain, enrolledCourses]);
 
     const filteredCourses = useMemo(() => {
-        return enrolledCourses.filter(course => {
-            const domainMatch = selectedDomain ? course.domain === selectedDomain : true;
-            const categoryMatch = selectedCategory ? course.category === selectedCategory : true;
-            const searchMatch = searchTerm ? course.title.toLowerCase().includes(searchTerm.toLowerCase()) || course.description.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+        return enrolledCourses.filter(info => {
+            const domainMatch = selectedDomain ? info.course.domain === selectedDomain : true;
+            const categoryMatch = selectedCategory ? info.course.category === selectedCategory : true;
+            const searchMatch = searchTerm ? info.course.title.toLowerCase().includes(searchTerm.toLowerCase()) || info.course.description.toLowerCase().includes(searchTerm.toLowerCase()) : true;
             return domainMatch && categoryMatch && searchMatch;
         });
     }, [enrolledCourses, selectedDomain, selectedCategory, searchTerm]);
 
     const totalProgress = useMemo(() => {
         if (enrolledCourses.length === 0) return 0;
-        const sum = enrolledCourses.reduce((acc, course) => acc + course.progress, 0);
+        const sum = enrolledCourses.reduce((acc, info) => acc + info.progress, 0);
         return Math.round(sum / enrolledCourses.length);
     }, [enrolledCourses]);
     
@@ -249,7 +221,7 @@ export default function DashboardPage() {
                     
                         {filteredCourses.length > 0 ? (
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                {filteredCourses.map(course => (
+                                {filteredCourses.map(({ course, progress, status }) => (
                                     <Card key={course.id} className="overflow-hidden h-full flex flex-col">
                                         <CardHeader className="p-0">
                                             <Link href={`/dashboard/course/${course.id}`}>
@@ -270,15 +242,15 @@ export default function DashboardPage() {
                                             </div>
                                             <CardTitle className="text-lg font-bold font-headline mb-2 leading-tight">{course.title}</CardTitle>
                                             <div className="space-y-2">
-                                                <p className="text-sm text-muted-foreground">Status: <span className="font-medium text-foreground">{course.status}</span></p>
-                                                <Progress value={course.progress} className="h-2" />
-                                                <p className="text-xs text-muted-foreground">{course.progress}% complete</p>
+                                                <p className="text-sm text-muted-foreground">Status: <span className="font-medium text-foreground">{status}</span></p>
+                                                <Progress value={progress} className="h-2" />
+                                                <p className="text-xs text-muted-foreground">{progress}% complete</p>
                                             </div>
                                         </CardContent>
                                         <CardFooter className="p-4 pt-0">
                                             <Button asChild className="w-full">
                                                 <Link href={`/dashboard/course/${course.id}`}>
-                                                    {course.progress === 100 ? 'Review Course' : course.progress > 0 ? 'Continue Learning' : 'Start Course'}
+                                                    {progress === 100 ? 'Review Course' : progress > 0 ? 'Continue Learning' : 'Start Course'}
                                                 </Link>
                                             </Button>
                                         </CardFooter>
@@ -288,7 +260,6 @@ export default function DashboardPage() {
                         ) : (
                              <div className="text-center col-span-full py-16">
                                 <p className="text-lg text-muted-foreground">No courses match your filters.</p>
-
                                 <p className="text-sm text-muted-foreground">Try adjusting your selections.</p>
                             </div>
                         )}

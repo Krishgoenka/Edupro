@@ -13,9 +13,6 @@ import type { PersonalizedBundleOutput } from '@/ai/flows/generate-personalized-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Separator } from './ui/separator';
 import { useCart } from '@/context/cart-context';
-import { courses } from '@/lib/courses-data';
-import type { Course } from '@/lib/courses-data';
-
 
 export function AiRecommender() {
     const [open, setOpen] = useState(false);
@@ -23,7 +20,7 @@ export function AiRecommender() {
     const [userInput, setUserInput] = useState('');
     const [result, setResult] = useState<PersonalizedBundleOutput | null>(null);
     const { toast } = useToast();
-    const { addMultipleToCart } = useCart();
+    const { addBundleToCart } = useCart();
     const router = useRouter();
 
     const handleSubmit = () => {
@@ -54,48 +51,31 @@ export function AiRecommender() {
     const handleAddBundleToCart = () => {
         if (!result) return;
         
-        const itemsToAdd: Course[] = [];
+        const bundleForCart: { courseId: string; segmentIds: string[] }[] = [];
 
         // Prepare full courses
         (result.recommendedCourses || []).forEach(courseRec => {
-            const fullCourse = courses.find(c => c.id === courseRec.id);
-            if(fullCourse) {
-                 itemsToAdd.push(fullCourse as Course);
-            }
+            bundleForCart.push({
+                courseId: courseRec.id,
+                segmentIds: ['full'] // A special key to denote the full course
+            });
         });
         
-        // Prepare individual segments as custom course objects
+        // Prepare partial courses
+        const segmentsByCourse: Record<string, string[]> = {};
         (result.recommendedSegments || []).forEach(segmentRec => {
-            const sourceCourse = courses.find(c => c.id === segmentRec.sourceCourse.id);
-            const sourceSegment = sourceCourse?.curriculum.find(s => s.segmentId === segmentRec.segmentId);
-            
-            if (sourceCourse && sourceSegment) {
-                const segmentCourse: Course = {
-                    id: segmentRec.segmentId, // Use segmentId as the unique ID for the cart item
-                    title: `Unlocked Segment: ${segmentRec.title}`,
-                    description: `This segment was unlocked from the full course: "${segmentRec.sourceCourse.title}".`,
-                    price: segmentRec.price,
-                    image: sourceCourse.image,
-                    dataAiHint: sourceCourse.dataAiHint,
-                    domain: sourceCourse.domain,
-                    category: `Unlocked from ${sourceCourse.category}`,
-                    videoUrl: sourceCourse.videoUrl, 
-                    tutor: sourceCourse.tutor,
-                    features: [segmentRec.reason],
-                    duration: sourceSegment.duration,
-                    level: sourceCourse.level,
-                    curriculum: [sourceSegment],
-                };
-                itemsToAdd.push(segmentCourse);
+            const courseId = segmentRec.sourceCourse.id;
+            if (!segmentsByCourse[courseId]) {
+                segmentsByCourse[courseId] = [];
             }
+            segmentsByCourse[courseId].push(segmentRec.segmentId);
         });
 
-        addMultipleToCart(itemsToAdd);
-        
-        toast({
-            title: "Bundle Added!",
-            description: "Your personalized bundle has been added to your cart.",
+        Object.entries(segmentsByCourse).forEach(([courseId, segmentIds]) => {
+            bundleForCart.push({ courseId, segmentIds });
         });
+
+        addBundleToCart(bundleForCart);
         setOpen(false);
         router.push("/cart");
     }
