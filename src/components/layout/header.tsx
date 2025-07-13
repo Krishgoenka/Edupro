@@ -11,12 +11,12 @@ import { useCart } from '@/context/cart-context';
 import { useSplash } from '@/context/splash-context';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogOut, ShoppingCart, User as UserIcon } from 'lucide-react';
+import { Menu, LogOut, ShoppingCart, User as UserIcon, ShieldCheck } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 export function Header() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { cart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
@@ -73,6 +73,14 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="hidden md:flex items-center space-x-2">
+            {profile?.role === 'admin' && (
+                <Button asChild variant="ghost" size="icon" title="Admin Panel">
+                    <Link href="/admin">
+                        <ShieldCheck className="h-5 w-5 text-primary" />
+                        <span className="sr-only">Admin Panel</span>
+                    </Link>
+                </Button>
+            )}
             <Button asChild variant="ghost" size="icon" className="relative">
               <Link href="/cart">
                 <ShoppingCart className="h-5 w-5" />
@@ -136,6 +144,12 @@ export function Header() {
                      <Link href="/cart" className="text-lg font-medium">
                         Cart ({cart.length})
                      </Link>
+                     {profile?.role === 'admin' && (
+                        <Link href="/admin" className="text-lg font-medium flex items-center gap-2">
+                            <ShieldCheck className="h-5 w-5 text-primary" />
+                            Admin Panel
+                        </Link>
+                     )}
                   </nav>
                   <div className="mt-6 flex flex-col gap-2">
                     {user ? (
