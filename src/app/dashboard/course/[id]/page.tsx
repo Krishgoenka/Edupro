@@ -16,7 +16,7 @@ import { useAuth } from '@/context/auth-context';
 import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import type { CourseSegment, SubTopic } from '@/lib/courses-data';
+import type { SubTopic } from '@/lib/courses-data';
 
 
 const useUserCourseData = (courseId: string) => {
@@ -94,7 +94,7 @@ export default function CourseVideoPage() {
     router.push('/cart');
   }
 
-  const totalSubTopics = course.curriculum.reduce((acc, curr) => acc + curr.subTopics.length, 0);
+  const totalSubTopics = course.curriculum.reduce((acc, module) => acc + module.subTopics.length, 0);
 
   return (
     <div className="container py-12">
