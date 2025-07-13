@@ -1,13 +1,13 @@
 
 "use client";
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Sparkles, Wand2, CheckCircle, Package, IndianRupee } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, CheckCircle, Package, IndianRupee, Book, PackagePlus } from 'lucide-react';
 import { getPersonalizedBundleAction } from '@/app/actions';
 import type { PersonalizedBundleOutput } from '@/ai/flows/generate-personalized-bundle';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
@@ -54,8 +54,19 @@ export function AiRecommender() {
     const handleAddBundleToCart = () => {
         if (!result) return;
 
-        result.recommendedCourses.forEach(course => {
+        // Add full courses to cart
+        (result.recommendedCourses || []).forEach(course => {
             const fullCourse = courses.find(c => c.id === course.id);
+            if(fullCourse) {
+                 addToCart(fullCourse as Course);
+            }
+        });
+        
+        // Note: For this demo, we're adding the FULL course to the cart 
+        // even if only a segment was recommended. A real implementation
+        // would require a more complex cart/product system.
+        (result.recommendedSegments || []).forEach(segment => {
+            const fullCourse = courses.find(c => c.id === segment.sourceCourse.id);
             if(fullCourse) {
                  addToCart(fullCourse as Course);
             }
@@ -74,7 +85,13 @@ export function AiRecommender() {
         setUserInput('');
     }
 
-    const totalBundlePrice = result?.recommendedCourses.reduce((total, course) => total + course.price, 0) || 0;
+    const totalBundlePrice = useMemo(() => {
+        if (!result) return 0;
+        const coursePrice = (result.recommendedCourses || []).reduce((total, course) => total + course.price, 0);
+        const segmentPrice = (result.recommendedSegments || []).reduce((total, segment) => total + segment.price, 0);
+        return coursePrice + segmentPrice;
+    }, [result]);
+
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -120,16 +137,33 @@ export function AiRecommender() {
                                 <CardDescription>{result.bundleSummary}</CardDescription>
                             </CardHeader>
                             <CardContent className='space-y-4'>
-                                {result.recommendedCourses.map(course => (
+                                {(result.recommendedCourses || []).map(course => (
                                     <Card key={course.id} className='bg-background'>
                                         <CardHeader>
                                             <div className='flex justify-between items-start'>
-                                                <CardTitle className='text-lg font-headline'>{course.title}</CardTitle>
+                                                <CardTitle className='text-lg font-headline flex items-center gap-2'><Book className="h-5 w-5 text-primary" />{course.title}</CardTitle>
                                                 <p className='text-lg font-bold text-primary flex items-center'><IndianRupee className="h-5 w-5" />{course.price}</p>
                                             </div>
                                              <CardDescription className='flex items-start gap-2 pt-2'>
                                                 <CheckCircle className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
                                                 <span><span className='font-semibold'>Reason:</span> {course.reason}</span>
+                                            </CardDescription>
+                                        </CardHeader>
+                                    </Card>
+                                ))}
+                                {(result.recommendedSegments || []).map(segment => (
+                                     <Card key={segment.segmentId} className='bg-background'>
+                                        <CardHeader>
+                                            <div className='flex justify-between items-start'>
+                                                <div>
+                                                    <CardTitle className='text-lg font-headline flex items-center gap-2'><PackagePlus className="h-5 w-5 text-primary"/>{segment.title}</CardTitle>
+                                                    <p className='text-xs text-muted-foreground ml-7'>Unlocked from: "{segment.sourceCourse.title}"</p>
+                                                </div>
+                                                <p className='text-lg font-bold text-primary flex items-center'><IndianRupee className="h-5 w-5" />{segment.price}</p>
+                                            </div>
+                                             <CardDescription className='flex items-start gap-2 pt-2'>
+                                                <CheckCircle className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
+                                                <span><span className='font-semibold'>Reason:</span> {segment.reason}</span>
                                             </CardDescription>
                                         </CardHeader>
                                     </Card>

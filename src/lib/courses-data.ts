@@ -1,7 +1,15 @@
 
+export type CourseSegment = {
+  segmentId: string;
+  title: string;
+  duration: string;
+  keywords: string[];
+  price: number;
+};
+
 export type Course = {
   id: string;
-  title: string;
+  title:string;
   description: string;
   image: string;
   price: number;
@@ -17,10 +25,7 @@ export type Course = {
   features: string[];
   duration: string;
   level: "Beginner" | "Intermediate" | "Advanced" | "All Levels";
-  curriculum: {
-    title: string;
-    duration: string;
-  }[];
+  curriculum: CourseSegment[];
 };
 
 export const domains = [
@@ -67,11 +72,11 @@ export const courses: Course[] = [
         duration: '24 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: HTML & CSS Basics', duration: '4 hours' },
-            { title: 'Module 2: Advanced CSS & Flexbox', duration: '4 hours' },
-            { title: 'Module 3: JavaScript Fundamentals', duration: '6 hours' },
-            { title: 'Module 4: React Deep Dive', duration: '6 hours' },
-            { title: 'Module 5: Backend with Node.js', duration: '4 hours' },
+            { segmentId: 'wd-html-css', title: 'Module 1: HTML & CSS Basics', duration: '4 hours', keywords: ['html', 'css', 'frontend basics'], price: 100 },
+            { segmentId: 'wd-adv-css', title: 'Module 2: Advanced CSS & Flexbox', duration: '4 hours', keywords: ['flexbox', 'grid', 'responsive design'], price: 100 },
+            { segmentId: 'wd-js', title: 'Module 3: JavaScript Fundamentals', duration: '6 hours', keywords: ['javascript', 'es6', 'dom manipulation'], price: 150 },
+            { segmentId: 'wd-react', title: 'Module 4: React Deep Dive', duration: '6 hours', keywords: ['react', 'hooks', 'state management'], price: 150 },
+            { segmentId: 'wd-node', title: 'Module 5: Backend with Node.js', duration: '4 hours', keywords: ['node.js', 'express', 'api'], price: 100 },
         ]
     },
     {
@@ -94,10 +99,10 @@ export const courses: Course[] = [
         duration: '30 hours',
         level: 'Intermediate',
         curriculum: [
-            { title: 'Module 1: Introduction to AI', duration: '5 hours' },
-            { title: 'Module 2: Machine Learning Models', duration: '10 hours' },
-            { title: 'Module 3: Deep Learning & Neural Networks', duration: '10 hours' },
-            { title: 'Module 4: Project - AI Chatbot', duration: '5 hours' },
+            { segmentId: 'ai-intro', title: 'Module 1: Introduction to AI', duration: '5 hours', keywords: ['ai concepts', 'machine learning overview'], price: 100 },
+            { segmentId: 'ai-ml-models', title: 'Module 2: Machine Learning Models', duration: '10 hours', keywords: ['regression', 'classification', 'supervised learning'], price: 200 },
+            { segmentId: 'ai-deep-learning', title: 'Module 3: Deep Learning & Neural Networks', duration: '10 hours', keywords: ['neural networks', 'tensorflow', 'pytorch'], price: 250 },
+            { segmentId: 'ai-chatbot-project', title: 'Module 4: Project - AI Chatbot', duration: '5 hours', keywords: ['nlp', 'chatbot', 'project'], price: 150 },
         ]
     },
     {
@@ -120,10 +125,10 @@ export const courses: Course[] = [
         duration: '20 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Introduction to Cyber Security', duration: '4 hours' },
-            { title: 'Module 2: Network Security', duration: '6 hours' },
-            { title: 'Module 3: Ethical Hacking', duration: '6 hours' },
-            { title: 'Module 4: Cryptography', duration: '4 hours' },
+            { segmentId: 'cysec-intro', title: 'Module 1: Introduction to Cyber Security', duration: '4 hours', keywords: ['cyber security basics', 'threats'], price: 150 },
+            { segmentId: 'cysec-network', title: 'Module 2: Network Security', duration: '6 hours', keywords: ['firewalls', 'vpn', 'network protocols'], price: 200 },
+            { segmentId: 'cysec-hacking', title: 'Module 3: Ethical Hacking', duration: '6 hours', keywords: ['penetration testing', 'ethical hacking'], price: 200 },
+            { segmentId: 'cysec-crypto', title: 'Module 4: Cryptography', duration: '4 hours', keywords: ['encryption', 'cryptography'], price: 150 },
         ]
     },
     {
@@ -146,10 +151,10 @@ export const courses: Course[] = [
         duration: '35 hours',
         level: 'Intermediate',
         curriculum: [
-            { title: 'Module 1: Arrays & Strings', duration: '5 hours' },
-            { title: 'Module 2: Linked Lists, Stacks & Queues', duration: '10 hours' },
-            { title: 'Module 3: Trees & Graphs', duration: '15 hours' },
-            { title: 'Module 4: Advanced Algorithms', duration: '5 hours' },
+            { segmentId: 'dsa-arrays', title: 'Module 1: Arrays & Strings', duration: '5 hours', keywords: ['arrays', 'strings', 'pointers'], price: 100 },
+            { segmentId: 'dsa-linear', title: 'Module 2: Linked Lists, Stacks & Queues', duration: '10 hours', keywords: ['linked lists', 'stacks', 'queues'], price: 150 },
+            { segmentId: 'dsa-nonlinear', title: 'Module 3: Trees & Graphs', duration: '15 hours', keywords: ['trees', 'graphs', 'bst'], price: 200 },
+            { segmentId: 'dsa-adv-algo', title: 'Module 4: Advanced Algorithms', duration: '5 hours', keywords: ['dynamic programming', 'greedy algorithms'], price: 150 },
         ]
     },
     {
@@ -172,10 +177,10 @@ export const courses: Course[] = [
         duration: '15 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: SQL Basics', duration: '3 hours' },
-            { title: 'Module 2: Advanced Queries', duration: '5 hours' },
-            { title: 'Module 3: Database Design', duration: '4 hours' },
-            { title: 'Module 4: Performance Tuning', duration: '3 hours' },
+            { segmentId: 'sql-basics', title: 'Module 1: SQL Basics', duration: '3 hours', keywords: ['select', 'where', 'from'], price: 100 },
+            { segmentId: 'sql-advanced', title: 'Module 2: Advanced Queries', duration: '5 hours', keywords: ['joins', 'subqueries', 'group by'], price: 150 },
+            { segmentId: 'sql-design', title: 'Module 3: Database Design', duration: '4 hours', keywords: ['normalization', 'schemas'], price: 100 },
+            { segmentId: 'sql-perf', title: 'Module 4: Performance Tuning', duration: '3 hours', keywords: ['indexing', 'query optimization'], price: 100 },
         ]
     },
      {
@@ -198,10 +203,10 @@ export const courses: Course[] = [
         duration: '18 hours',
         level: 'Intermediate',
         curriculum: [
-            { title: 'Module 1: Introduction to OS', duration: '3 hours' },
-            { title: 'Module 2: Process Management', duration: '6 hours' },
-            { title: 'Module 3: Memory Management', duration: '5 hours' },
-            { title: 'Module 4: File Systems', duration: '4 hours' },
+            { segmentId: 'os-intro', title: 'Module 1: Introduction to OS', duration: '3 hours', keywords: ['os basics', 'kernel'], price: 100 },
+            { segmentId: 'os-process', title: 'Module 2: Process Management', duration: '6 hours', keywords: ['processes', 'threads', 'scheduling'], price: 150 },
+            { segmentId: 'os-memory', title: 'Module 3: Memory Management', duration: '5 hours', keywords: ['virtual memory', 'paging'], price: 150 },
+            { segmentId: 'os-files', title: 'Module 4: File Systems', duration: '4 hours', keywords: ['file systems', 'storage'], price: 100 },
         ]
     },
 
@@ -226,9 +231,9 @@ export const courses: Course[] = [
         duration: '12 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Introduction to Accounting', duration: '3 hours' },
-            { title: 'Module 2: Journal & Ledger', duration: '4 hours' },
-            { title: 'Module 3: Financial Statements', duration: '5 hours' },
+            { segmentId: 'acc-intro', title: 'Module 1: Introduction to Accounting', duration: '3 hours', keywords: ['accounting principles', 'debits', 'credits'], price: 100 },
+            { segmentId: 'acc-journal', title: 'Module 2: Journal & Ledger', duration: '4 hours', keywords: ['journal entries', 't-accounts'], price: 100 },
+            { segmentId: 'acc-statements', title: 'Module 3: Financial Statements', duration: '5 hours', keywords: ['balance sheet', 'income statement'], price: 150 },
         ]
     },
     {
@@ -251,9 +256,9 @@ export const courses: Course[] = [
         duration: '16 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Income Tax Basics', duration: '6 hours' },
-            { title: 'Module 2: Filing ITR', duration: '4 hours' },
-            { title: 'Module 3: Introduction to GST', duration: '6 hours' },
+            { segmentId: 'tax-income', title: 'Module 1: Income Tax Basics', duration: '6 hours', keywords: ['income tax', 'slabs', 'deductions'], price: 150 },
+            { segmentId: 'tax-itr', title: 'Module 2: Filing ITR', duration: '4 hours', keywords: ['itr filing', 'tax forms'], price: 100 },
+            { segmentId: 'tax-gst', title: 'Module 3: Introduction to GST', duration: '6 hours', keywords: ['gst', 'goods and services tax'], price: 150 },
         ]
     },
     {
@@ -276,10 +281,10 @@ export const courses: Course[] = [
         duration: '20 hours',
         level: 'Intermediate',
         curriculum: [
-            { title: 'Module 1: Advanced Excel Functions', duration: '5 hours' },
-            { title: 'Module 2: Financial Modeling', duration: '8 hours' },
-            { title: 'Module 3: Data Visualization', duration: '4 hours' },
-            { title: 'Module 4: VBA for Finance', duration: '3 hours' },
+            { segmentId: 'excel-adv', title: 'Module 1: Advanced Excel Functions', duration: '5 hours', keywords: ['vlookup', 'pivot tables', 'index match'], price: 150 },
+            { segmentId: 'excel-fm', title: 'Module 2: Financial Modeling', duration: '8 hours', keywords: ['financial modeling', 'forecasting'], price: 200 },
+            { segmentId: 'excel-viz', title: 'Module 3: Data Visualization', duration: '4 hours', keywords: ['charts', 'dashboards'], price: 100 },
+            { segmentId: 'excel-vba', title: 'Module 4: VBA for Finance', duration: '3 hours', keywords: ['vba', 'macros'], price: 100 },
         ]
     },
     {
@@ -302,9 +307,9 @@ export const courses: Course[] = [
         duration: '10 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Contract Law', duration: '4 hours' },
-            { title: 'Module 2: Company Law', duration: '4 hours' },
-            { title: 'Module 3: Intellectual Property', duration: '2 hours' },
+            { segmentId: 'law-contract', title: 'Module 1: Contract Law', duration: '4 hours', keywords: ['contracts', 'indian contract act'], price: 100 },
+            { segmentId: 'law-company', title: 'Module 2: Company Law', duration: '4 hours', keywords: ['company law', 'incorporation'], price: 100 },
+            { segmentId: 'law-ip', title: 'Module 3: Intellectual Property', duration: '2 hours', keywords: ['patents', 'trademarks', 'copyright'], price: 100 },
         ]
     },
     
@@ -329,9 +334,9 @@ export const courses: Course[] = [
         duration: '8 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: Building Confidence', duration: '2 hours' },
-            { title: 'Module 2: Structuring Your Speech', duration: '3 hours' },
-            { title: 'Module 3: Delivery Techniques', duration: '3 hours' },
+            { segmentId: 'psm-confidence', title: 'Module 1: Building Confidence', duration: '2 hours', keywords: ['public speaking confidence', 'stage fright'], price: 200 },
+            { segmentId: 'psm-structure', title: 'Module 2: Structuring Your Speech', duration: '3 hours', keywords: ['speech writing', 'presentation structure'], price: 150 },
+            { segmentId: 'psm-delivery', title: 'Module 3: Delivery Techniques', duration: '3 hours', keywords: ['body language', 'voice modulation'], price: 150 },
         ]
     },
      {
@@ -339,7 +344,7 @@ export const courses: Course[] = [
         title: 'English Confidence Booster',
         description: 'Improve your spoken English and build confidence for interviews and professional settings.',
         image: 'https://img.youtube.com/vi/qlqsh5cmt1I/hqdefault.jpg',
-        price: 99,
+        price: 299,
         dataAiHint: "conversation class",
         domain: "Soft Skills",
         category: "Confidence Building",
@@ -354,9 +359,9 @@ export const courses: Course[] = [
         duration: '10 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Pronunciation & Fluency', duration: '4 hours' },
-            { title: 'Module 2: Vocabulary for Professionals', duration: '3 hours' },
-            { title: 'Module 3: Conversational Practice', duration: '3 hours' },
+            { segmentId: 'eng-pronunciation', title: 'Module 1: Pronunciation & Fluency', duration: '4 hours', keywords: ['english pronunciation', 'fluency'], price: 100 },
+            { segmentId: 'eng-vocab', title: 'Module 2: Vocabulary for Professionals', duration: '3 hours', keywords: ['business english', 'vocabulary'], price: 100 },
+            { segmentId: 'eng-convo', title: 'Module 3: Conversational Practice', duration: '3 hours', keywords: ['spoken english', 'english speaking', 'english confidence'], price: 100 },
         ]
     },
     {
@@ -379,9 +384,9 @@ export const courses: Course[] = [
         duration: '6 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: Pre-interview Preparation', duration: '2 hours' },
-            { title: 'Module 2: During the Interview', duration: '3 hours' },
-            { title: 'Module 3: Post-interview Strategy', duration: '1 hour' },
+            { segmentId: 'int-prep', title: 'Module 1: Pre-interview Preparation', duration: '2 hours', keywords: ['interview prep', 'researching company'], price: 70 },
+            { segmentId: 'int-during', title: 'Module 2: During the Interview', duration: '3 hours', keywords: ['answering questions', 'star method'], price: 100 },
+            { segmentId: 'int-post', title: 'Module 3: Post-interview Strategy', duration: '1 hour', keywords: ['follow up', 'salary negotiation'], price: 50 },
         ]
     },
     {
@@ -404,9 +409,9 @@ export const courses: Course[] = [
         duration: '4 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: Resume Formatting', duration: '1 hour' },
-            { title: 'Module 2: Content that Sells', duration: '2 hours' },
-            { title: 'Module 3: Tailoring and Review', duration: '1 hour' },
+            { segmentId: 'res-format', title: 'Module 1: Resume Formatting', duration: '1 hour', keywords: ['resume format', 'ats'], price: 40 },
+            { segmentId: 'res-content', title: 'Module 2: Content that Sells', duration: '2 hours', keywords: ['resume writing', 'projects section'], price: 40 },
+            { segmentId: 'res-tailor', title: 'Module 3: Tailoring and Review', duration: '1 hour', keywords: ['customizing resume', 'resume review'], price: 20 },
         ]
     },
 
@@ -431,10 +436,10 @@ export const courses: Course[] = [
         duration: '50 hours',
         level: 'Advanced',
         curriculum: [
-            { title: 'Module 1: Constitutional Framework', duration: '15 hours' },
-            { title: 'Module 2: System of Government', duration: '15 hours' },
-            { title: 'Module 3: Constitutional & Non-Constitutional Bodies', duration: '10 hours' },
-            { title: 'Module 4: Local Government & Special Provisions', duration: '10 hours' },
+            { segmentId: 'pol-framework', title: 'Module 1: Constitutional Framework', duration: '15 hours', keywords: ['constitution', 'preamble', 'fundamental rights'], price: 200 },
+            { segmentId: 'pol-gov', title: 'Module 2: System of Government', duration: '15 hours', keywords: ['parliament', 'judiciary', 'executive'], price: 200 },
+            { segmentId: 'pol-bodies', title: 'Module 3: Constitutional & Non-Constitutional Bodies', duration: '10 hours', keywords: ['election commission', 'cag', 'attorney general'], price: 150 },
+            { segmentId: 'pol-local', title: 'Module 4: Local Government & Special Provisions', duration: '10 hours', keywords: ['panchayati raj', 'municipalities'], price: 150 },
         ]
     },
     {
@@ -457,10 +462,10 @@ export const courses: Course[] = [
         duration: '45 hours',
         level: 'Advanced',
         curriculum: [
-            { title: 'Module 1: Physical Geography', duration: '15 hours' },
-            { title: 'Module 2: Indian Geography', duration: '15 hours' },
-            { title: 'Module 3: World Geography', duration: '10 hours' },
-            { title: 'Module 4: Map Work and Current Affairs', duration: '5 hours' },
+            { segmentId: 'geo-physical', title: 'Module 1: Physical Geography', duration: '15 hours', keywords: ['geomorphology', 'climatology', 'oceanography'], price: 200 },
+            { segmentId: 'geo-indian', title: 'Module 2: Indian Geography', duration: '15 hours', keywords: ['indian geography', 'monsoon', 'rivers'], price: 200 },
+            { segmentId: 'geo-world', title: 'Module 3: World Geography', duration: '10 hours', keywords: ['world geography', 'continents'], price: 150 },
+            { segmentId: 'geo-map', title: 'Module 4: Map Work and Current Affairs', duration: '5 hours', keywords: ['map work', 'current events geography'], price: 100 },
         ]
     },
 
@@ -485,10 +490,10 @@ export const courses: Course[] = [
         duration: '40 hours',
         level: 'Advanced',
         curriculum: [
-            { title: 'Module 1: Arithmetic', duration: '15 hours' },
-            { title: 'Module 2: Algebra & Geometry', duration: '15 hours' },
-            { title: 'Module 3: Modern Math', duration: '5 hours' },
-            { title: 'Module 4: Mock Tests & Analysis', duration: '5 hours' },
+            { segmentId: 'cat-arithmetic', title: 'Module 1: Arithmetic', duration: '15 hours', keywords: ['percentages', 'profit and loss', 'time and work'], price: 200 },
+            { segmentId: 'cat-algebra', title: 'Module 2: Algebra & Geometry', duration: '15 hours', keywords: ['algebra', 'geometry', 'mensuration'], price: 200 },
+            { segmentId: 'cat-modern-math', title: 'Module 3: Modern Math', duration: '5 hours', keywords: ['permutation', 'combination', 'probability'], price: 100 },
+            { segmentId: 'cat-mocks', title: 'Module 4: Mock Tests & Analysis', duration: '5 hours', keywords: ['mock tests', 'cat exam strategy'], price: 100 },
         ]
     },
 
@@ -513,10 +518,10 @@ export const courses: Course[] = [
         duration: '25 hours',
         level: 'Intermediate',
         curriculum: [
-            { title: 'Module 1: Python for Data Science', duration: '5 hours' },
-            { title: 'Module 2: Data Analysis with Pandas', duration: '8 hours' },
-            { title: 'Module 3: Data Visualization', duration: '6 hours' },
-            { title: 'Module 4: Machine Learning with Scikit-learn', duration: '6 hours' },
+            { segmentId: 'ds-python', title: 'Module 1: Python for Data Science', duration: '5 hours', keywords: ['python basics', 'numpy', 'pandas'], price: 150 },
+            { segmentId: 'ds-analysis', title: 'Module 2: Data Analysis with Pandas', duration: '8 hours', keywords: ['data cleaning', 'data manipulation', 'pandas'], price: 200 },
+            { segmentId: 'ds-viz', title: 'Module 3: Data Visualization', duration: '6 hours', keywords: ['matplotlib', 'seaborn', 'plotting'], price: 150 },
+            { segmentId: 'ds-ml', title: 'Module 4: Machine Learning with Scikit-learn', duration: '6 hours', keywords: ['scikit-learn', 'machine learning models'], price: 150 },
         ]
     },
     {
@@ -539,9 +544,9 @@ export const courses: Course[] = [
         duration: '22 hours',
         level: 'All Levels',
         curriculum: [
-            { title: 'Module 1: SEO & Content Marketing', duration: '8 hours' },
-            { title: 'Module 2: Social Media Marketing', duration: '6 hours' },
-            { title: 'Module 3: Paid Advertising (SEM)', duration: '8 hours' },
+            { segmentId: 'dm-seo', title: 'Module 1: SEO & Content Marketing', duration: '8 hours', keywords: ['seo', 'content marketing', 'keywords'], price: 200 },
+            { segmentId: 'dm-smm', title: 'Module 2: Social Media Marketing', duration: '6 hours', keywords: ['social media', 'facebook marketing', 'instagram marketing'], price: 150 },
+            { segmentId: 'dm-sem', title: 'Module 3: Paid Advertising (SEM)', duration: '8 hours', keywords: ['google ads', 'ppc', 'sem'], price: 200 },
         ]
     },
     {
@@ -564,9 +569,9 @@ export const courses: Course[] = [
         duration: '18 hours',
         level: 'Beginner',
         curriculum: [
-            { title: 'Module 1: Design Principles', duration: '4 hours' },
-            { title: 'Module 2: Adobe Photoshop for Beginners', duration: '7 hours' },
-            { title: 'Module 3: Adobe Illustrator Essentials', duration: '7 hours' },
+            { segmentId: 'gd-principles', title: 'Module 1: Design Principles', duration: '4 hours', keywords: ['design principles', 'color theory', 'typography'], price: 150 },
+            { segmentId: 'gd-photoshop', title: 'Module 2: Adobe Photoshop for Beginners', duration: '7 hours', keywords: ['photoshop', 'photo editing'], price: 200 },
+            { segmentId: 'gd-illustrator', title: 'Module 3: Adobe Illustrator Essentials', duration: '7 hours', keywords: ['illustrator', 'vector graphics'], price: 200 },
         ]
     },
     {
@@ -589,9 +594,9 @@ export const courses: Course[] = [
         duration: '35 hours',
         level: 'Advanced',
         curriculum: [
-            { title: 'Module 1: Project Management Framework', duration: '10 hours' },
-            { title: 'Module 2: Process Groups', duration: '15 hours' },
-            { title: 'Module 3: Agile Practice Guide', duration: '10 hours' },
+            { segmentId: 'pmp-framework', title: 'Module 1: Project Management Framework', duration: '10 hours', keywords: ['pmp', 'pmbok', 'project lifecycle'], price: 200 },
+            { segmentId: 'pmp-process', title: 'Module 2: Process Groups', duration: '15 hours', keywords: ['initiating', 'planning', 'executing', 'monitoring', 'closing'], price: 250 },
+            { segmentId: 'pmp-agile', title: 'Module 3: Agile Practice Guide', duration: '10 hours', keywords: ['agile', 'scrum', 'kanban'], price: 200 },
         ]
     }
 ];
