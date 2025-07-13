@@ -90,11 +90,11 @@ export default function CourseVideoPage() {
   }
   
   const handleUnlockFullCourse = () => {
-    addToCart(course.id);
+    addToCart(course.id, undefined, true);
     router.push('/cart');
   }
 
-  const totalSubTopics = course.curriculum.reduce((acc, module) => acc + module.subTopics.length, 0);
+  const totalSubTopics = course.curriculum.reduce((acc, module) => acc + (module.subTopics ? module.subTopics.length : 0), 0);
 
   return (
     <div className="container py-12">
